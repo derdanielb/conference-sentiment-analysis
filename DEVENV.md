@@ -1,3 +1,15 @@
+### Register a Twitter Application
+
+To fully follow through the exercises based on this source repository, i.e. to be able to integrate this application with the Twitter Search API, you need to register a Twitter Application under your Twitter Account. First, if you do not have a Twitter account, sign up at https://twitter.com/
+
+Second, create your own Twitter application by following the steps in the following article and privately store your Consumer Key and Consumer Secret.
+
+Note: You do not need to create an Access Token, since this application is not going to access your (any) Twitter user profile, so you can skip step 6.
+
+https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/ 
+
+Your Consumer Key and Consumer Secret later need to be referenced in the Twitter search service.
+
 ### Install Docker Engine
 
 Note: You do not have to follow any of the optional additional installation steps of Docker, but you may.
