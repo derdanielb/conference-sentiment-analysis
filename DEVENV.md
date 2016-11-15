@@ -1,4 +1,4 @@
-#### Install Docker Engine
+### Install Docker Engine
 
 Note: You do not have to follow any of the optional additional installation steps of Docker, but you may.
 
@@ -16,7 +16,7 @@ https://docs.docker.com/engine/installation/mac/#/docker-for-mac
 
 https://docs.docker.com/engine/installation/
 
-#### Install Docker Compose
+### Install Docker Compose
 
 ##### On Linux
 
@@ -37,7 +37,7 @@ Note: This is okay for development environments, but it should not be done in pr
 
 https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group
 
-#### Install Java JDK
+### Install Java JDK
 
 ##### On Ubuntu
 
@@ -50,7 +50,7 @@ You may install a default JDK on ubuntu with:
 
 http://openjdk.java.net/install/
 
-#### Install a self-contained Maven
+### Install a self-contained Maven
 
 Instead of using apt-get to install Maven, which really clutters up your overall packages on Ubuntu, it is better to manually install it.
 
@@ -73,11 +73,11 @@ Now you can use Maven. Try the CLI with the command "mvn -version". For using mv
 
 Note: The default directory where Maven stores the local Maven repository with all the Java libraries is located at ~/.m2/repository/
 
-#### Install your favourite Java IDE
+### Install your favourite Java IDE
 
 For example https://www.jetbrains.com/idea/
 
-#### Notes on Java project structure
+### Notes on Java project structure
 
 Every Java project using Maven should follow the Maven project structure conventions.
 
