@@ -39,6 +39,8 @@ https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-
 
 ### Install Java JDK
 
+Java version is 8 or higher. This guide refers to OpenJDK. You may alternatively use Oracle JDK.
+
 ##### On Ubuntu
 
 You may install a default JDK on ubuntu with:
