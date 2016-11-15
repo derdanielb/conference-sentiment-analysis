@@ -52,7 +52,7 @@ http://openjdk.java.net/install/
 
 ### Install a self-contained Maven
 
-Instead of using apt-get to install Maven, which really clutters up your overall packages on Ubuntu, it is better to manually install it.
+Instead of using e.g. apt-get to install Maven, it is better to manually install it.
 
 Just follow these steps:
 
