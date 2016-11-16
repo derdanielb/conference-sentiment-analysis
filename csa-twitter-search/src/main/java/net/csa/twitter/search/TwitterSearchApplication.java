@@ -1,4 +1,4 @@
-package net.sourcekick.twitter.search.spring.social;
+package net.csa.twitter.search;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

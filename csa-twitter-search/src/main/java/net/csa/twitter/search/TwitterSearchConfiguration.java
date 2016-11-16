@@ -1,10 +1,9 @@
-package net.sourcekick.twitter.search.spring.social;
+package net.csa.twitter.search;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.social.twitter.api.Twitter;
 
 @Configuration

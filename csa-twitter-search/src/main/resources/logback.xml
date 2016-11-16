@@ -3,6 +3,6 @@
 
     <logger name="org.springframework.social.twitter" level="debug"/>
 
-    <logger name="net.sourcekick.twitter.search.spring.social" level="debug"/>
+    <logger name="net.csa.twitter.search.spring.social" level="debug"/>
 
 </configuration>

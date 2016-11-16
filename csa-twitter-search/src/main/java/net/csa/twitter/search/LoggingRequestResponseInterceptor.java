@@ -1,4 +1,4 @@
-package net.sourcekick.twitter.search.spring.social;
+package net.csa.twitter.search;
 
 import org.slf4j.Logger;
 import org.springframework.http.HttpRequest;

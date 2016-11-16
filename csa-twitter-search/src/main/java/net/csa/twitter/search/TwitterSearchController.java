@@ -1,4 +1,4 @@
-package net.sourcekick.twitter.search.spring.social;
+package net.csa.twitter.search;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
