@@ -41,6 +41,25 @@ class TwitterSearchController {
     @RequestMapping(path = "/{hashtag}", method = RequestMethod.GET)
     public List<String> helloTwitter(@PathVariable String hashtag) throws ParseException {
 
+
+        // to further develop this search functionality consult the following links
+        // https://dev.twitter.com/rest/public/search
+        // https://dev.twitter.com/rest/reference/get/search/tweets
+        // http://docs.spring.io/spring-social-twitter/docs/1.1.2.RELEASE/reference/htmlsingle/
+        // http://docs.spring.io/spring-social-twitter/docs/1.1.2.RELEASE/apidocs/
+
+        // also try to use the public twitter search web application and check the query strings in the request URLs
+        // https://twitter.com/search-home
+        // https://dev.twitter.com/rest/public/search
+        // https://dev.twitter.com/rest/reference/get/search/tweets
+
+        // consider parameters customizing the language, the time frame or even the geo location
+        // also consider parameters for using the paging mechanism to query more tweets in subsequent requests
+        // something that happens if you scroll down in the main Twitter web user interface as well
+        // https://dev.twitter.com/rest/public/search > Iterating in a result set
+        // https://dev.twitter.com/rest/reference/get/search/tweets
+
+
         //"?f=tweets&vertical=default&q=%23" + hashtag + "+since:2016-06-13+until:2016-06-18&language=en&result_type=recent");
 
         //SearchParameters searchParameters = new SearchParameters("#" + hashtag + "+since:2016-06-13+until:2016-06-18")
