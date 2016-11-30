@@ -6,11 +6,12 @@ package net.csa.conference.model;
 public class Person extends Persona{
     private String firstName;
 
-    public String getFirstName() {
-        return firstName;
+    public Person(String firstName, String name) {
+        super(name);
+        this.firstName = firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public String getFirstName() {
+        return firstName;
     }
 }
