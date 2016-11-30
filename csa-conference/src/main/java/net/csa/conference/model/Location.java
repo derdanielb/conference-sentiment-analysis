@@ -1,5 +1,7 @@
 package net.csa.conference.model;
 
+import java.util.Objects;
+
 /**
  * Created by Felix on 30.11.2016.
  */
@@ -28,5 +30,14 @@ public class Location {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!Location.class.isAssignableFrom(obj.getClass()))
+            return false;
+        Location o = (Location)obj;
+        return Objects.equals(latitude, o.latitude) &&
+                Objects.equals(longitude, o.longitude);
     }
 }

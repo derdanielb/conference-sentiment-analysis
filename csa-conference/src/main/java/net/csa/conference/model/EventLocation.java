@@ -1,5 +1,7 @@
 package net.csa.conference.model;
 
+import java.util.Objects;
+
 /**
  * Created by Felix on 30.11.2016.
  */
@@ -30,5 +32,15 @@ public class EventLocation {
 
     public void setGeoLocation(Location geoLocation) {
         this.geoLocation = geoLocation;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!EventLocation.class.isAssignableFrom(obj.getClass()))
+            return false;
+        EventLocation o = (EventLocation)obj;
+        return Objects.equals(name, o.name) &&
+                Objects.equals(address, o.address) &&
+                Objects.equals(geoLocation, o.geoLocation);
     }
 }

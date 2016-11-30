@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Document
@@ -67,5 +68,19 @@ public class Conference {
 
     public void setSponsors(List<Persona> sponsors) {
         this.sponsors = sponsors;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!Conference.class.isAssignableFrom(obj.getClass()))
+            return false;
+        Conference o = (Conference)obj;
+        return Objects.equals(uuid, o.uuid) &&
+                Objects.equals(name, o.name) &&
+                Objects.equals(timeSpan, o.timeSpan) &&
+                Objects.equals(location, o.location) &&
+                Objects.equals(hashTag, o.hashTag) &&
+                Objects.equals(organisers, o.organisers) &&
+                Objects.equals(sponsors, o.sponsors);
     }
 }

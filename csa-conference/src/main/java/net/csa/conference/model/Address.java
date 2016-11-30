@@ -1,5 +1,7 @@
 package net.csa.conference.model;
 
+import java.util.Objects;
+
 /**
  * Created by Felix on 30.11.2016.
  */
@@ -8,7 +10,7 @@ public class Address {
     private int number;
     private String town;
     private int zipCode;
-    private String Country;
+    private String country;
 
     public String getStreet() {
         return street;
@@ -43,10 +45,22 @@ public class Address {
     }
 
     public String getCountry() {
-        return Country;
+        return country;
     }
 
     public void setCountry(String country) {
-        Country = country;
+        this.country = country;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!Address.class.isAssignableFrom(obj.getClass()))
+            return false;
+        Address o = (Address)obj;
+        return Objects.equals(street, o.street) &&
+                Objects.equals(number, o.number) &&
+                Objects.equals(town, o.town) &&
+                Objects.equals(zipCode, o.zipCode) &&
+                Objects.equals(country, o.country);
     }
 }
