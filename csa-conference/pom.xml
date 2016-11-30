@@ -5,7 +5,7 @@
 
     <groupId>net.csa</groupId>
     <artifactId>csa-conference</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>Microservice managing the entity type Conference and its embedded entities.</description>
 
     <parent>
