@@ -1,9 +1,14 @@
 package net.csa.conference.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 import java.util.UUID;
 
+@Document
 public class Conference {
+    @Id
     private UUID uuid = UUID.randomUUID();
     private String name;
     private TimeSpan timeSpan;
