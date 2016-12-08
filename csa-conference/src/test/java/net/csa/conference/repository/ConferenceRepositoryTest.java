@@ -2,6 +2,8 @@ package net.csa.conference.repository;
 
 import net.csa.conference.model.*;
 import static org.junit.Assert.*;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +13,32 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class ConferenceRepositoryTest {
-    @Autowired ConferenceRepository repository;
+    @Autowired
+    private ConferenceRepository repository;
+
+    @Before
+    public void clearDatabase() throws ExecutionException, InterruptedException {
+        repository.deleteAll().get();
+    }
 
     @Test
-    public void conferenceTest() {
+    public void testSaveSingle() {
+        try {
+            Conference c = createConference();
+            Conference cTest = repository.save(c).get();
+            assertNotNull(cTest);
+            assertEquals(c, cTest);
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    private static Conference createConference() {
         Conference c = new Conference();
         c.setHashTag("baum");
         c.setName("Baum");
@@ -44,11 +64,6 @@ public class ConferenceRepositoryTest {
         a.setTown("BaumCity");
         a.setZipCode(424242);
         el.setAddress(a);
-
-        repository.insert(c);
-
-        Conference cTest = repository.findOne(c.getUuid());
-        assertNotNull(cTest);
-        assertEquals(c, cTest);
+        return c;
     }
 }
