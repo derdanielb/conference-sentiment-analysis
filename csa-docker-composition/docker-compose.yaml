@@ -6,7 +6,6 @@ services:
     image: mongo:3.4.0
     ports:
      - "19017/tcp:27017/tcp"
-    restart: always
     volumes:
     - csa_mongodb_01_data:/data/db
   # csa_zookeeper4kafka_01:

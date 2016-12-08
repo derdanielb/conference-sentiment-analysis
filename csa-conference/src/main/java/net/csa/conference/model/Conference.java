@@ -71,6 +71,11 @@ public class Conference {
     }
 
     @Override
+    public String toString() {
+        return uuid.toString();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if(!Conference.class.isAssignableFrom(obj.getClass()))
             return false;
