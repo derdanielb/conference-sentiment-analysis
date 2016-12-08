@@ -118,8 +118,6 @@ public class ConferenceRepositoryTest {
 
             Iterable<Conference> allInList = repository.findAll(listUUID).get();
             assertNotNull(allInList);
-            System.out.println(list);
-            System.out.println(allInList);
             assertThat(list, containsInAnyOrder(IterableUtil.toArray(allInList)));
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
@@ -179,7 +177,8 @@ public class ConferenceRepositoryTest {
 
             repository.delete(deleters).get();
             Iterable<Conference> all = repository.findAll().get();
-            assertArrayEquals(keepers.toArray(), IterableUtil.toArray(all));
+            assertNotNull(all);
+            assertThat(keepers, containsInAnyOrder(IterableUtil.toArray(all)));
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }
