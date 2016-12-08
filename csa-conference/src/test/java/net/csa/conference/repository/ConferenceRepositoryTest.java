@@ -3,6 +3,7 @@ package net.csa.conference.repository;
 import net.csa.conference.model.*;
 import static org.junit.Assert.*;
 
+import org.assertj.core.util.IterableUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -33,6 +35,78 @@ public class ConferenceRepositoryTest {
             Conference cTest = repository.save(c).get();
             assertNotNull(cTest);
             assertEquals(c, cTest);
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCount() {
+        try {
+            int count = 10;
+            for(int i = 0; i < count; i++)
+                repository.save(createConference()).get();
+
+            assertEquals(count, repository.count().get().longValue());
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testDeleteById() {
+        try {
+            Conference c = createConference();
+            repository.save(c).get();
+            repository.delete(c.getUuid());
+            assertEquals(0, repository.count().get().longValue());
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testDeleteByConference() {
+        try {
+            Conference c = createConference();
+            repository.save(c).get();
+            repository.delete(c);
+            assertEquals(0, repository.count().get().longValue());
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testDeleteMultiple() {
+        try {
+            List<Conference> deleters = new ArrayList<>();
+            List<Conference> keepers = new ArrayList<>();
+            for(int i = 0; i < 5; i++) {
+                Conference c = createConference();
+                repository.save(c).get();
+                if(i%2 == 0)
+                    deleters.add(c);
+                else
+                    keepers.add(c);
+            }
+
+            repository.delete(deleters).get();
+            Iterable<Conference> all = repository.findAll().get();
+            assertArrayEquals(keepers.toArray(), IterableUtil.toArray(all));
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testDeleteAll() {
+        try {
+            for(int i = 0; i < 10; i++)
+                repository.save(createConference()).get();
+
+            repository.deleteAll().get();
+            assertEquals(0, repository.count().get().longValue());
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }
