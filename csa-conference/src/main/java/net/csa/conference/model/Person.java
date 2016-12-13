@@ -12,6 +12,7 @@ public class Person extends Persona{
         super(name);
         this.firstName = firstName;
     }
+    public Person() {}
 
     public String getFirstName() {
         return firstName;

@@ -6,10 +6,8 @@ import org.apache.catalina.connector.Response;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.inject.Inject;
 
@@ -59,7 +57,29 @@ public class ConferenceController {
             else
                 return createNotFound(id);
         } catch (IllegalArgumentException e) {
-            return createError("Error: Invalid conference id: " + id);
+            return createError("Invalid conference id: " + id);
+        } catch (Throwable t) {
+            return createServerError(t);
+        }
+    }
+
+    @RequestMapping(path = "/conferences", method = RequestMethod.POST)
+    public ResponseEntity<?> postConference(@RequestBody Conference conference){
+        try {
+            if(repository.exists(conference.getUuid()).get())
+                return createError("Conference with id already exists: " + conference.getUuid(), HttpStatus.CONFLICT);
+            else {
+                Conference c = repository.save(conference).get();
+                if(c != null) {
+                    return ResponseEntity.created(
+                            ServletUriComponentsBuilder.fromCurrentContextPath()
+                                    .path("/csa/v1/conferences/" + c.getUuid())
+                                    .build()
+                                    .toUri()
+                    ).body(c);
+                } else
+                    return createServerError("Conference is null");
+            }
         } catch (Throwable t) {
             return createServerError(t);
         }

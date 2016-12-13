@@ -31,10 +31,14 @@ public class ErrorGenerator {
     }
 
     public static ResponseEntity<Error> createNotFound(String resource){
-        return createError("Error: Resource not found: " + resource, HttpStatus.NOT_FOUND);
+        return createError("Resource not found: " + resource, HttpStatus.NOT_FOUND);
     }
 
     public static ResponseEntity<Error> createServerError(Throwable throwable){
         return createError(throwable.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public static ResponseEntity<Error> createServerError(String error){
+        return createError(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

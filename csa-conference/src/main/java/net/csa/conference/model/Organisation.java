@@ -7,6 +7,7 @@ public class Organisation extends Persona {
     public Organisation(String name) {
         super(name);
     }
+    public Organisation() {}
 
     @Override
     public boolean equals(Object obj) {

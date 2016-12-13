@@ -15,6 +15,8 @@ public class TimeSpan {
         this.end = end;
     }
 
+    public TimeSpan(){}
+
     public Date getBegin() {
         return begin;
     }

@@ -9,6 +9,7 @@ public class Group extends Persona {
     public Group(String name) {
         super(name);
     }
+    public Group() {}
 
     @Override
     public boolean equals(Object obj) {
