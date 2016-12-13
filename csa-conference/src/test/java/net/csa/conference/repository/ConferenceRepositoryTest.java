@@ -224,6 +224,7 @@ public class ConferenceRepositoryTest {
         a.setTown("BaumCity");
         a.setZipCode(424242);
         el.setAddress(a);
+        c.setLocation(el);
         return c;
     }
 }
