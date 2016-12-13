@@ -3,6 +3,7 @@ package net.csa.conference.rest;
 import net.csa.conference.model.Conference;
 import net.csa.conference.repository.ConferenceRepository;
 import org.slf4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -79,25 +80,23 @@ public class ConferenceController {
         }
     }
 
-//    @RequestMapping(path = "/conferences/{id}", method = RequestMethod.PUT)
-//    public ResponseEntity<?> putConference(@PathVariable String id, @RequestBody Conference conference){
-//        try {
-//            if(repository.exists(conference.getUuid()).get())
-//                return createError("Conference with id already exists: " + conference.getUuid(), HttpStatus.CONFLICT);
-//            else {
-//                Conference c = repository.save(conference).get();
-//                if(c != null) {
-//                    return ResponseEntity.created(
-//                            ServletUriComponentsBuilder.fromCurrentContextPath()
-//                                    .path("/csa/v1/conferences/" + c.getUuid())
-//                                    .build()
-//                                    .toUri()
-//                    ).body(c);
-//                } else
-//                    return createServerError("Conference is null");
-//            }
-//        } catch (Throwable t) {
-//            return createServerError(t);
-//        }
-//    }
+    @RequestMapping(path = "/conferences/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<?> putConference(@PathVariable String id, @RequestBody Conference conference){
+        try {
+            conference.setUuid(UUID.fromString(id));
+            if(repository.exists(conference.getUuid()).get()){
+                Conference c = repository.save(conference).get();
+                if(c != null)
+                    return ResponseEntity.ok(c);
+                else
+                    return createServerError("Conference is null");
+            }
+            else
+                return createError("Conference with id does not exists: " + conference.getUuid(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return createError("Invalid conference id: " + id);
+        } catch (Throwable t) {
+            return createServerError(t);
+        }
+    }
 }
