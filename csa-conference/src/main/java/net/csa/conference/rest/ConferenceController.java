@@ -99,6 +99,7 @@ public class ConferenceController {
             return createServerError(t);
         }
     }
+    
     @RequestMapping(path = "/conferences/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteConference(@PathVariable String id){
         try {
