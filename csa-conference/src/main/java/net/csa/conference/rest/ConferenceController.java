@@ -99,4 +99,25 @@ public class ConferenceController {
             return createServerError(t);
         }
     }
+    @RequestMapping(path = "/conferences/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteConference(@PathVariable String id){
+        try {
+            repository.delete(UUID.fromString(id)).get();
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return createError("Invalid conference id: " + id);
+        } catch (Throwable t) {
+            return createServerError(t);
+        }
+    }
+
+    @RequestMapping(path = "/conferences", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteAllConferences(){
+        try {
+            repository.deleteAll().get();
+            return ResponseEntity.noContent().build();
+        } catch (Throwable t) {
+            return createServerError(t);
+        }
+    }
 }

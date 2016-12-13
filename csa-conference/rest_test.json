@@ -43,6 +43,40 @@
 			"_type": "request_group"
 		},
 		{
+			"_id": "req_357176ec02fb4717afe324719189a3ca",
+			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
+			"modified": 1481645747479,
+			"created": 1481645608267,
+			"url": "http://localhost:8080/csa/v1/conferences/478aec5e-91f2-45cd-8c57-c940dcdd959c",
+			"name": "Delete",
+			"method": "DELETE",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1481645608267,
+			"_type": "request"
+		},
+		{
+			"_id": "req_a29a10c349564501aad299cadd66b1d0",
+			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
+			"modified": 1481645718837,
+			"created": 1481645713056,
+			"url": "http://localhost:8080/csa/v1/conferences",
+			"name": "DeleteAll",
+			"method": "DELETE",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1481645713056,
+			"_type": "request"
+		},
+		{
 			"_id": "req_a4924cd7026e4d448690799626d6744a",
 			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
 			"modified": 1481645776335,
