@@ -37,8 +37,8 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
      */
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
-        repository.deleteAll();
-        repository.save(createConference());
+//        repository.deleteAll();
+//        repository.save(createConference());
     }
 
     private static Conference createConference() {
