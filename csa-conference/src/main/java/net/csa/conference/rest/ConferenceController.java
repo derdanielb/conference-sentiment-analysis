@@ -79,25 +79,25 @@ public class ConferenceController {
         }
     }
 
-//    @RequestMapping(path = "/conferences/{id}", method = RequestMethod.PUT)
-//    public ResponseEntity<?> putConference(@PathVariable String id, @RequestBody Conference conference){
-//        try {
-//            if(repository.exists(conference.getUuid()).get())
-//                return createError("Conference with id already exists: " + conference.getUuid(), HttpStatus.CONFLICT);
-//            else {
-//                Conference c = repository.save(conference).get();
-//                if(c != null) {
-//                    return ResponseEntity.created(
-//                            ServletUriComponentsBuilder.fromCurrentContextPath()
-//                                    .path("/csa/v1/conferences/" + c.getUuid())
-//                                    .build()
-//                                    .toUri()
-//                    ).body(c);
-//                } else
-//                    return createServerError("Conference is null");
-//            }
-//        } catch (Throwable t) {
-//            return createServerError(t);
-//        }
-//    }
+    @RequestMapping(path = "/conferences/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteConference(@PathVariable String id){
+        try {
+            repository.delete(UUID.fromString(id)).get();
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return createError("Invalid conference id: " + id);
+        } catch (Throwable t) {
+            return createServerError(t);
+        }
+    }
+
+    @RequestMapping(path = "/conferences", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteAllConferences(){
+        try {
+            repository.deleteAll().get();
+            return ResponseEntity.noContent().build();
+        } catch (Throwable t) {
+            return createServerError(t);
+        }
+    }
 }

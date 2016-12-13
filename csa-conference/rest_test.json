@@ -1,7 +1,7 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2016-12-13T16:07:55.604Z",
+	"__export_date": "2016-12-13T16:16:25.321Z",
 	"__export_source": "insomnia.desktop.app:v4.0.9",
 	"resources": [
 		{
@@ -26,7 +26,7 @@
 		{
 			"_id": "jar_0a100aec9813456f84c249edff645a4a",
 			"parentId": "wrk_576bdb96b995447c98a865dc3445f85b",
-			"modified": 1481645248482,
+			"modified": 1481645748844,
 			"created": 1481644908967,
 			"name": "Default Jar",
 			"cookies": [],
@@ -41,6 +41,40 @@
 			"environment": {},
 			"metaSortKey": -1481645070604,
 			"_type": "request_group"
+		},
+		{
+			"_id": "req_357176ec02fb4717afe324719189a3ca",
+			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
+			"modified": 1481645747479,
+			"created": 1481645608267,
+			"url": "http://localhost:8080/csa/v1/conferences/478aec5e-91f2-45cd-8c57-c940dcdd959c",
+			"name": "Delete",
+			"method": "DELETE",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1481645608267,
+			"_type": "request"
+		},
+		{
+			"_id": "req_a29a10c349564501aad299cadd66b1d0",
+			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
+			"modified": 1481645718837,
+			"created": 1481645713056,
+			"url": "http://localhost:8080/csa/v1/conferences",
+			"name": "DeleteAll",
+			"method": "DELETE",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1481645713056,
+			"_type": "request"
 		},
 		{
 			"_id": "req_a4924cd7026e4d448690799626d6744a",
@@ -85,7 +119,7 @@
 		{
 			"_id": "req_ed11c2bbfc8a4dde9f15d75e252288ab",
 			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
-			"modified": 1481645076131,
+			"modified": 1481645675050,
 			"created": 1481644902574,
 			"url": "http://localhost:8080/csa/v1/conferences",
 			"name": "GetAll",
