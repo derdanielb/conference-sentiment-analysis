@@ -199,6 +199,7 @@ public class ConferenceRepositoryTest {
 
     private static Conference createConference() {
         Conference c = new Conference();
+        c.generateUUID();
         c.setHashTag("baum");
         c.setName("Baum");
         List<Persona> orcs = new ArrayList<>();

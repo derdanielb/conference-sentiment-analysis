@@ -10,7 +10,7 @@ import java.util.UUID;
 @Document
 public class Conference {
     @Id
-    private UUID uuid = UUID.randomUUID();
+    private UUID uuid;
     private String name;
     private TimeSpan timeSpan;
     private EventLocation location;
@@ -20,6 +20,14 @@ public class Conference {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public void generateUUID(){
+        this.uuid = UUID.randomUUID();
     }
 
     public String getName() {

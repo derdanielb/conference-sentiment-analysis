@@ -2,9 +2,7 @@ package net.csa.conference.rest;
 
 import net.csa.conference.model.Conference;
 import net.csa.conference.repository.ConferenceRepository;
-import org.apache.catalina.connector.Response;
 import org.slf4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,7 +12,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 import static net.csa.conference.rest.ErrorGenerator.createError;
 import static net.csa.conference.rest.ErrorGenerator.createNotFound;
@@ -66,22 +63,41 @@ public class ConferenceController {
     @RequestMapping(path = "/conferences", method = RequestMethod.POST)
     public ResponseEntity<?> postConference(@RequestBody Conference conference){
         try {
-            if(repository.exists(conference.getUuid()).get())
-                return createError("Conference with id already exists: " + conference.getUuid(), HttpStatus.CONFLICT);
-            else {
-                Conference c = repository.save(conference).get();
-                if(c != null) {
-                    return ResponseEntity.created(
-                            ServletUriComponentsBuilder.fromCurrentContextPath()
-                                    .path("/csa/v1/conferences/" + c.getUuid())
-                                    .build()
-                                    .toUri()
-                    ).body(c);
-                } else
-                    return createServerError("Conference is null");
-            }
+            conference.generateUUID();
+            Conference c = repository.save(conference).get();
+            if(c != null) {
+                return ResponseEntity.created(
+                        ServletUriComponentsBuilder.fromCurrentContextPath()
+                                .path("/csa/v1/conferences/" + c.getUuid())
+                                .build()
+                                .toUri()
+                ).body(c);
+            } else
+                return createServerError("Conference is null");
         } catch (Throwable t) {
             return createServerError(t);
         }
     }
+
+//    @RequestMapping(path = "/conferences/{id}", method = RequestMethod.PUT)
+//    public ResponseEntity<?> putConference(@PathVariable String id, @RequestBody Conference conference){
+//        try {
+//            if(repository.exists(conference.getUuid()).get())
+//                return createError("Conference with id already exists: " + conference.getUuid(), HttpStatus.CONFLICT);
+//            else {
+//                Conference c = repository.save(conference).get();
+//                if(c != null) {
+//                    return ResponseEntity.created(
+//                            ServletUriComponentsBuilder.fromCurrentContextPath()
+//                                    .path("/csa/v1/conferences/" + c.getUuid())
+//                                    .build()
+//                                    .toUri()
+//                    ).body(c);
+//                } else
+//                    return createServerError("Conference is null");
+//            }
+//        } catch (Throwable t) {
+//            return createServerError(t);
+//        }
+//    }
 }
