@@ -1,0 +1,103 @@
+{
+	"_type": "export",
+	"__export_format": 3,
+	"__export_date": "2016-12-13T16:07:55.604Z",
+	"__export_source": "insomnia.desktop.app:v4.0.9",
+	"resources": [
+		{
+			"_id": "wrk_576bdb96b995447c98a865dc3445f85b",
+			"parentId": null,
+			"modified": 1481644641460,
+			"created": 1481644641460,
+			"name": "Insomnia",
+			"description": "",
+			"certificates": [],
+			"_type": "workspace"
+		},
+		{
+			"_id": "env_5e83766d571f4675a9a40683f0153a0c",
+			"parentId": "wrk_576bdb96b995447c98a865dc3445f85b",
+			"modified": 1481644908843,
+			"created": 1481644908843,
+			"name": "Base Environment",
+			"data": {},
+			"_type": "environment"
+		},
+		{
+			"_id": "jar_0a100aec9813456f84c249edff645a4a",
+			"parentId": "wrk_576bdb96b995447c98a865dc3445f85b",
+			"modified": 1481645248482,
+			"created": 1481644908967,
+			"name": "Default Jar",
+			"cookies": [],
+			"_type": "cookie_jar"
+		},
+		{
+			"_id": "fld_c42be99889e2472ab5c715118cf646f7",
+			"parentId": "wrk_576bdb96b995447c98a865dc3445f85b",
+			"modified": 1481645070604,
+			"created": 1481645070604,
+			"name": "conference",
+			"environment": {},
+			"metaSortKey": -1481645070604,
+			"_type": "request_group"
+		},
+		{
+			"_id": "req_a4924cd7026e4d448690799626d6744a",
+			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
+			"modified": 1481645213201,
+			"created": 1481645175912,
+			"url": "http://localhost:8080/csa/v1/conferences",
+			"name": "Post",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"name\": \"Baum42\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1481645175912,
+			"_type": "request"
+		},
+		{
+			"_id": "req_ccf30effeb734c4abaa9d4f979f6200f",
+			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
+			"modified": 1481645183338,
+			"created": 1481644994093,
+			"url": "http://localhost:8080/csa/v1/conferences/cba67eb3-36eb-4a6b-bef8-c7bbe4d1db71",
+			"name": "Get",
+			"method": "GET",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1481644994093,
+			"_type": "request"
+		},
+		{
+			"_id": "req_ed11c2bbfc8a4dde9f15d75e252288ab",
+			"parentId": "fld_c42be99889e2472ab5c715118cf646f7",
+			"modified": 1481645076131,
+			"created": 1481644902574,
+			"url": "http://localhost:8080/csa/v1/conferences",
+			"name": "GetAll",
+			"method": "GET",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1481644994143,
+			"_type": "request"
+		}
+	]
+}
