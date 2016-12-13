@@ -8,11 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ConferenceMicroservice {
 
-    @Autowired
-    private ConferenceRepository repository;
-
     public static void main(String[] args) {
         SpringApplication.run(ConferenceMicroservice.class, args);
     }
+
 
 }

@@ -207,9 +207,9 @@ public class ConferenceRepositoryTest {
         orcs.add(new Person("Ralf", "Baum"));
         c.setOrganisers(orcs);
         List<Persona> spon = new ArrayList<>();
-        orcs.add(new Organisation("o2"));
-        orcs.add(new Group("g2"));
-        orcs.add(new Person("Rolf", "B42"));
+        spon.add(new Organisation("o2"));
+        spon.add(new Group("g2"));
+        spon.add(new Person("Rolf", "B42"));
         c.setSponsors(spon);
         c.setTimeSpan(new TimeSpan(new Date(2016, 1, 1),
                 new Date(2016, 1, 2)));
