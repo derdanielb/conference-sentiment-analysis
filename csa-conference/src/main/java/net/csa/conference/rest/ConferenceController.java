@@ -37,10 +37,7 @@ public class ConferenceController {
     @RequestMapping(path = "/conferences", method = RequestMethod.GET)
     public ResponseEntity<?> listConferences(){
         try {
-            List<Conference> target = new ArrayList<>();
-            for (Conference c : repository.findAll().get())
-                target.add(c);
-            return ResponseEntity.ok(target);
+            return ResponseEntity.ok(repository.findAll().get());
         } catch (Throwable t) {
             return createServerError(t);
         }
@@ -117,6 +114,15 @@ public class ConferenceController {
         try {
             repository.deleteAll().get();
             return ResponseEntity.noContent().build();
+        } catch (Throwable t) {
+            return createServerError(t);
+        }
+    }
+
+    @RequestMapping(path = "/conferences", method = RequestMethod.GET, params = {"name"})
+    public ResponseEntity<?> findByNameContaining(@RequestParam String name){
+        try {
+            return ResponseEntity.ok(repository.findByNameContaining(name).get());
         } catch (Throwable t) {
             return createServerError(t);
         }
