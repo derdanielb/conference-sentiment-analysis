@@ -13,11 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -192,6 +188,29 @@ public class ConferenceRepositoryTest {
 
             repository.deleteAll().get();
             assertEquals(0, repository.count().get().longValue());
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testFindByNameContaining() {
+        try {
+            Conference c1 = createConference();
+            c1.setName("Baum42");
+            repository.save(c1).get();
+            Conference c2 = createConference();
+            c2.setName("Baum666");
+            repository.save(c2).get();
+
+            Iterable<Conference> list = repository.findByNameContaining("42").get();
+            assertThat(Arrays.asList(c1), containsInAnyOrder(IterableUtil.toArray(list)));
+
+            list = repository.findByNameContaining("666").get();
+            assertThat(Arrays.asList(c2), containsInAnyOrder(IterableUtil.toArray(list)));
+
+            list = repository.findByNameContaining("Baum").get();
+            assertThat(Arrays.asList(c1, c2), containsInAnyOrder(IterableUtil.toArray(list)));
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }

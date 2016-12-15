@@ -27,6 +27,9 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
     ListenableFuture<Conference> findOne(UUID conferenceId);
 
     @Async
+    ListenableFuture<Iterable<Conference>> findByNameContaining(String name);
+
+    @Async
     ListenableFuture<Boolean> exists(UUID conferenceId);
 
     @Async
