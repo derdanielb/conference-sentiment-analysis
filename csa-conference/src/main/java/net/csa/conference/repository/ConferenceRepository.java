@@ -20,9 +20,6 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
     @Async
     <S extends Conference> ListenableFuture<S> save(S conference);
 
-//    @Async
-//    <S extends Conference> ListenableFuture<Iterable<S>> save(Iterable<S> conferences);
-
     @Async
     ListenableFuture<Conference> findOne(UUID conferenceId);
 

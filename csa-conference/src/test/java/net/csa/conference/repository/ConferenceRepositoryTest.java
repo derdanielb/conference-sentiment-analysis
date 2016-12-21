@@ -39,21 +39,6 @@ public class ConferenceRepositoryTest {
         }
     }
 
-//    @Test
-//    public void testSaveList() {
-//        try {
-//            List<Conference> list = new ArrayList<>();
-//            for (int i = 0; i < 10; i++)
-//                list.add(createConference());
-//
-//            Iterable<Conference> listTest = repository.save(list).get();
-//            assertNotNull(listTest);
-//            assertArrayEquals(list.toArray(), IterableUtil.toArray(listTest));
-//        } catch (InterruptedException | ExecutionException e) {
-//            fail(e.getMessage());
-//        }
-//    }
-
     @Test
     public void testFindOne() {
         try {
