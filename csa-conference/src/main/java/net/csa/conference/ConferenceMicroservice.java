@@ -24,6 +24,11 @@ class ConferenceMicroservice implements CommandLineRunner{
     @Override
     public void run(String... args) throws Exception {
 
+        createTestData();
+
+    }
+
+    public void createTestData() {
         repository.deleteAll();
 
         NatPerson dummyNatPerson1 = new NatPerson("Mustermann", "Max");
@@ -38,9 +43,10 @@ class ConferenceMicroservice implements CommandLineRunner{
         Location dummyLocation1 = new Location("dummyLocation1", dummyAddress1);
         TimePeriod dummyTimePeriod1 = new TimePeriod("01.12.2016", "12.12.2016");
         Conference dummyConference1 = new Conference("0001", "dummyConference1", dummyTimePeriod1, dummyLocation1, "dummyHashtag1", dummyOrganizerList1, dummySponsorList1);
-
         repository.save(dummyConference1);
 
+        Conference dummyConference2 = new Conference("0002", "dummyConference2", dummyTimePeriod1, dummyLocation1, "dummyHashtag2", dummyOrganizerList1, dummySponsorList1);
+        repository.save(dummyConference2);
     }
 
 }
