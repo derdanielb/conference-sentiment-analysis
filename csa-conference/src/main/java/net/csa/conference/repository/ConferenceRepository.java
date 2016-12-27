@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 /**
  * Created by leoneck on 15.12.16.
@@ -18,6 +19,7 @@ public interface ConferenceRepository extends PagingAndSortingRepository<Confere
     @Async Future<List<Conference>> findByName(String name);
     @Async Future<List<Conference>> findByTwitterHashtag(String twitterHastag);
     @Async Future<List<Conference>> findByVeranstaltungsortAdresseStadt(String stadt);
+    Stream<Conference> findAllByOrganisatorenName(String name);
 
     // Delete:
     int deleteConferenceByName(String name);

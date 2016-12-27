@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -80,6 +81,13 @@ public class ConferenceRepositoryTest {
 
         assertEquals("dummyConference1", conf.get(0).getName());
         assertEquals("Sankt Augustin", conf.get(0).getVeranstaltungsort().getAdresse().getStadt());
+    }
+
+    @Test
+    public void findAllByOrganisatorName() {
+        try (Stream<Conference> stream = repository.findAllByOrganisatorenName("Mustermann")) {
+            assertEquals(1, stream.count());
+        }
     }
 
     @Test
