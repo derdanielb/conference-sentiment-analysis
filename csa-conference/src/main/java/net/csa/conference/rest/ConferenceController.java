@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by leoneck on 15.12.16.
@@ -60,6 +62,16 @@ public class ConferenceController {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        }
+
+        return returnConference;
+    }
+
+    @RequestMapping(path = "/organisatorname/{organisatorName}", method = RequestMethod.GET, produces = "application/json")
+    public List<Conference> getConferenceByOrganisatorName(@PathVariable String organisatorName) {
+        List<Conference> returnConference = null;
+        try (Stream<Conference> stream = repository.findAllByOrganisatorenName("Mustermann")) {
+            returnConference = stream.collect(Collectors.toList());
         }
 
         return returnConference;
