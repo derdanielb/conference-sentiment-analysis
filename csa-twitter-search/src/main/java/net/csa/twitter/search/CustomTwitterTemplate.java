@@ -15,6 +15,7 @@ class CustomTwitterTemplate extends TwitterTemplate {
 
     private static final Logger log = getLogger(CustomTwitterTemplate.class);
 
+
     CustomTwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
         super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
     }

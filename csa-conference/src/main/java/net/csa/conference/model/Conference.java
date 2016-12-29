@@ -2,6 +2,10 @@ package net.csa.conference.model;
 
 public class Conference {
 
-    // TODO implement
-
+   /* private int uuid;
+    private String name;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Location location;
+*/
 }
