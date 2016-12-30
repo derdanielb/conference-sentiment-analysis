@@ -8,9 +8,8 @@ class ConferenceMicroservice {
 
     public static void main(String[] args) {
 
-        System.out.println("Test");
-
         SpringApplication.run(ConferenceMicroservice.class, args);
+
     }
 
 }
