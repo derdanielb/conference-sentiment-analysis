@@ -1,11 +1,14 @@
 package net.csa.conference.model;
 
+import org.springframework.data.annotation.Id;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Conference {
 
-    private int uuid;
+    @Id
+    private long uuid;
     private String name;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
@@ -16,6 +19,9 @@ public class Conference {
     private ArrayList<AbstractOrganiserSponsor> organisers;
     private ArrayList<AbstractOrganiserSponsor> sponsors;
 
+    public Conference(String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;
@@ -73,7 +79,7 @@ public class Conference {
         this.hashtag = hashtag;
     }
 
-    public int getUuid() {
+    public long getUuid() {
         return uuid;
     }
 

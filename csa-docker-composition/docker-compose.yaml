@@ -5,7 +5,8 @@ services:
     container_name: csa_mongodb_01
     image: mongo:3.4.0
     ports:
-     - "19017/tcp:27017/tcp"
+     #- "19017/tcp:27017/tcp"
+      - "27017/tcp:27017/tcp"
     restart: always
     volumes:
     - csa_mongodb_01_data:/data/db
