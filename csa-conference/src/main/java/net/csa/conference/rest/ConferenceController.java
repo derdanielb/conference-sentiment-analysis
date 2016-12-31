@@ -70,7 +70,7 @@ public class ConferenceController {
     @RequestMapping(path = "/organisatorname/{organisatorName}", method = RequestMethod.GET, produces = "application/json")
     public List<Conference> getConferenceByOrganisatorName(@PathVariable String organisatorName) {
         List<Conference> returnConference = null;
-        try (Stream<Conference> stream = repository.findAllByOrganisatorenName("Mustermann")) {
+        try (Stream<Conference> stream = repository.findAllByOrganisatorenName(organisatorName)) {
             returnConference = stream.collect(Collectors.toList());
         }
 

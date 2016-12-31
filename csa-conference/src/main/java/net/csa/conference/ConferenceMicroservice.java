@@ -31,7 +31,7 @@ class ConferenceMicroservice implements CommandLineRunner{
     public void createTestData() {
         repository.deleteAll();
 
-        NatPerson dummyNatPerson1 = new NatPerson("Mustermann", "Max");
+        NatPerson dummyNatPerson1 = new NatPerson("Hans", "Max");
         ArrayList<Person> dummyOrganizerList1 = new ArrayList<>();
         dummyOrganizerList1.add(dummyNatPerson1);
         dummyOrganizerList1.add(dummyNatPerson1);
