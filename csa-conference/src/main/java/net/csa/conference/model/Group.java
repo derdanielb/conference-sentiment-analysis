@@ -1,5 +1,11 @@
 package net.csa.conference.model;
 
-class Group {
+public class Group extends AbstractOrganiserSponsor {
+
+    public Group() {}
+
+    public Group(String name) {
+        super(name);
+    }
 
 }

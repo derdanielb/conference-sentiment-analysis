@@ -1,11 +1,23 @@
 package net.csa.conference.model;
 
-class NaturalPerson extends AbstractOrganiserSponsor {
+public class NaturalPerson extends AbstractOrganiserSponsor {
 
-    private String firstName;
+    private String firstname;
 
-    public NaturalPerson(String name, String firstName) {
+    public NaturalPerson() {}
+
+    public NaturalPerson(String name, String firstname) {
         super(name);
-        this.firstName = firstName;
+        this.firstname = firstname;
     }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+
 }

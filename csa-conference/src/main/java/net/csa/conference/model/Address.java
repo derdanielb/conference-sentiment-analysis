@@ -1,12 +1,14 @@
 package net.csa.conference.model;
 
-class Address {
+public class Address {
 
     private String street;
     private String houseNumber;
     private String city;
     private String zipCode;
     private String country;
+
+    public Address() {}
 
     public Address(String street, String houseNumber, String city, String zipCode, String country) {
         this.street = street;
