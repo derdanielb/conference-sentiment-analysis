@@ -1,0 +1,129 @@
+<h3>Conference-App</h3>
+<div name="newConference">
+  <button (click)="newConferenceFormular()">New Conference</button>
+  <button (click)="createTestDataFormular()">Create TestData</button>
+  <button (click)="deleteAllConferences()">Delete All</button>
+  <p *ngIf="returnDeleteAll == '1'" style="color: green">All Conferences deleted!</p>
+  <p *ngIf="returnDeleteAll == '0'" style="color: red">Failed to delete All Conferences!</p>
+  <div *ngIf="createTestDataVisible">
+    <label for="count">No GeoLocation is requested for TestData.</label>
+    <input id="count" type="text" name="testDataCountInput" placeholder="count" [(ngModel)]="count">
+    <button (click)="createTestData()">Create</button>
+    <p *ngIf="testDataError" style="color: red">Please fill the Count-Field!</p>
+  </div>
+  <p *ngIf="returnCount" style="color: green">{{returnCount}} TestData saved!</p>
+  <div *ngIf="newConferenceVisible">
+    <form>
+      <label for="newConferenceName">ConferenceName: </label>
+      <input id="newConferenceName" typ="text" name="newConferenceNameInput" [(ngModel)]="newConference.conferenceName">
+      <br>
+      <label for="newFrom">From (Date): </label>
+      <input id="newFrom" type="text" name="newConferenceFromInput" [(ngModel)]="newConference.from">
+      <br>
+      <label for="newTo">To (Date): </label>
+      <input id="newTo" type="text" name="newConferenceToInput" [(ngModel)]="newConference.to">
+      <br>
+      <label for="newLocationName">LocationName: </label>
+      <input id="newLocationName" type="text" name="newConferenceLocationNameInput"
+             [(ngModel)]="newConference.locationName">
+      <br>
+      <label for="newStreet">Street: </label>
+      <input id="newStreet" type="text" name="newConferenceStreetInput" [(ngModel)]="newConference.street">
+      <label for="newHouseNumber">HouseNumber: </label>
+      <input id="newHouseNumber" type="text" name="newConferenceHouseNumberInput"
+             [(ngModel)]="newConference.houseNumber">
+      <label for="newPostcode">Postcode: </label>
+      <input id="newPostcode" type="text" name="newConferencePostcodeInput" [(ngModel)]="newConference.postcode">
+      <label for="newCity">City: </label>
+      <input id="newCity" type="text" name="newConferenceCityInput" [(ngModel)]="newConference.city">
+      <label for="newCountry">Country: </label>
+      <input id="newCountry" type="text" name="newConferenceCountryInput" [(ngModel)]="newConference.country">
+      <br>
+      <label for="newHashTag">Twitter-HashTag: </label>
+      <input id="newHashTag" type="text" name="newConferenceHashTagInput" [(ngModel)]="newConference.twitterHashTag">
+      <br>
+      <label for="organizer-div">Organizer (Example: 'Person;FirstName;LastName' 'Group|Organisation;Name')</label>
+      <div id="organizer-div">
+        <input type="text" name="organizerInput" [(ngModel)]="organizerString">
+        <button (click)="addOrganizer()">Add Organizer</button>
+        <p *ngIf="organizerError" style="color: red">Please fill the Organizer-Field correctly!</p>
+        <ul name="organizer-list">
+          <li name="organizer-list-entry" *ngFor="let element of newConference.organizerStringArray; let i = index">
+            <p name="organizer">{{i+1}}. Organizer: {{element}}</p>
+            <button (click)="deleteOrganizer(i)">Delete</button>
+          </li>
+        </ul>
+      </div>
+      <label for="sponsor-div">Sponsor (Example: 'Person;FirstName;LastName' 'Group|Organisation;Name')</label>
+      <div id="sponsor-div">
+        <input type="text" name="sponsorInput" [(ngModel)]="sponsorString">
+        <button (click)="addSponsor()">Add Sponsor</button>
+        <p *ngIf="sponsorError" style="color: red">Please fill the Sponsor-Field correctly!</p>
+        <ul name="sponsor-list">
+          <li name="sponsor-list-entry" *ngFor="let element of newConference.sponsorStringArray; let i = index">
+            <p id="sponsorElement">{{i+1}}. Sponsor: {{element}}</p>
+            <button (click)="deleteSponsor(i)">Delete</button>
+          </li>
+        </ul>
+      </div>
+      <button *ngIf="!conferenceClicked" type="submit" (click)="saveConference()">Save</button>
+      <button *ngIf="conferenceClicked" type="submit" (click)="updateConference()">Change</button>
+      <p *ngIf="saveError" style="color: red">Please fill all fields!</p>
+    </form>
+  </div>
+  <p *ngIf="returnConference" style="color: green">{{returnConference.conferenceName}} saved!</p>
+</div>
+<div name="filter">
+  <h3>Filter Selection</h3>
+  <p>Search with:</p>
+  <input id="conferenceNameFilter" type="radio" name="group2" [(ngModel)]="filter" value="getByConferenceName">
+  <label for="conferenceNameFilter">Conference Name</label>
+  <input id="hashtagFilter" type="radio" name="group2" [(ngModel)]="filter" value="getByTwitterHashtag">
+  <label for="hashtagFilter">Conference HashTag</label>
+</div>
+<div name="search" *ngIf="filter">
+  <input type="text" name="search-q" [(ngModel)]="search">
+  <button (click)="getResults()">Search</button>
+  <p *ngIf="searchError" style="color: red">Please fill the Search-Field!</p>
+  <p *ngIf="returnDelete == '1'" style="color: green">Conference deleted!</p>
+  <p *ngIf="returnDelete == '0'" style="color: red">Failed to Delete Conference!</p>
+</div>
+<p name="test" *ngIf="resultConferences.length == 0 && searched">No Results!</p>
+<div name="results" *ngIf="resultConferences.length > 0">
+  <h4>Results</h4>
+  <ul>
+    <li name="conference-list-entry" *ngFor="let conference of resultConferences">
+      <label for="conferenceName">ConferenceName: </label>
+      <p id="conferenceName">{{conference.conferenceName}}</p>
+      <label for="from">From (Date): </label>
+      <p id="from">{{conference.from}}</p>
+      <label for="to">To (Date): </label>
+      <p id="to">{{conference.to}}</p>
+      <label for="locationName">LocationName: </label>
+      <p id="locationName">{{conference.locationName}}</p>
+      <label for="address">Address: </label>
+      <p id="address">{{conference.street}} {{conference.houseNumber}}, {{conference.postcode}} {{conference.city}},
+        {{conference.country}}</p>
+      <label for="long-lat" *ngIf="conference.geoLocation.longitude">Longitude x Latitude: </label>
+      <p id="long-lat" *ngIf="conference.geoLocation.longitude">{{conference.geoLocation.longitude}} x
+        {{conference.geoLocation.latitude}}</p>
+      <label for="hashTag">Twitter-HashTag: </label>
+      <p id="hashTag">{{conference.twitterHashTag}}</p>
+      <label for="organizer-list">Organizer: </label>
+      <ul id="organizer-list">
+        <li name="organizer-list-entry" *ngFor="let gop of conference.organizerList">
+          <p>{{gop.name}}</p>
+        </li>
+      </ul>
+      <label for="sponsors-list">Sponsors: </label>
+      <ul id="sponsors-list">
+        <li name="sponsor-list-entry" *ngFor="let gop of conference.sponsorsList">
+          <p>{{gop.name}}</p>
+        </li>
+      </ul>
+      <button (click)="clickResultEntry(conference)">Change</button>
+      <button (click)="deleteConference(conference)">Delete</button>
+      <br>
+    </li>
+  </ul>
+</div>

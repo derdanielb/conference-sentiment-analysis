@@ -1,0 +1,14 @@
+<h3>Twitter-App</h3>
+<p>Search with #HashTag</p>
+<input type="text" name="hashTag" [(ngModel)]="hashTag">
+<button (click)="search()">Search</button>
+<p *ngIf="error" style="color: red">Please fill the #HashTag</p>
+<p *ngIf="tweets.length == 0 && searched">No Results!</p>
+<div *ngIf="tweets.length > 0">
+  <h4>Results</h4>
+  <ul>
+    <li name="list-entry" *ngFor="let tweet of tweets">
+      <p>{{tweet}}</p>
+    </li>
+  </ul>
+</div>

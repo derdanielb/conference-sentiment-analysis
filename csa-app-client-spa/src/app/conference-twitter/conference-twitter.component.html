@@ -1,0 +1,19 @@
+<h1>Conference-Twitter Single Page Application</h1>
+<div>
+  <h2>Application Selection</h2>
+  <input id="conference-radio" type="radio" name="group1" [(ngModel)]="select" value="conference">
+  <label for="conference-radio">Conference-App</label>
+  <input id="twitter-radio" type="radio" name="group1" [(ngModel)]="select" value="twitter">
+  <label for="twitter-radio">Twitter-App</label>
+  <input id="conference-tweets-radio" type="radio" name="group1" [(ngModel)]="select" value="conferenceTweets">
+  <label for="conference-tweets-radio">ConferenceTweets-App</label>
+</div>
+<div name="conference-div" *ngIf="select=='conference'">
+  <app-conference>Loading Conference-App ...</app-conference>
+</div>
+<div name="twitter-div" *ngIf="select=='twitter'">
+  <app-twitter>Loading Twitter-App ...</app-twitter>
+</div>
+<div name="conferenceTweets-div" *ngIf="select=='conferenceTweets'">
+  <app-conference-tweets>Loading Conference-Tweets-App ...</app-conference-tweets>
+</div>
