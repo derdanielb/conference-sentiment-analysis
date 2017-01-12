@@ -6,7 +6,7 @@
     <groupId>net.csa</groupId>
     <artifactId>csa-conference-collector</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <description>Job collecting conferences from CSV source and importing them to MongoDB.</description>
+    <description>Job collecting conferences from a CSV source and importing them to MongoDB.</description>
 
     <properties>
         <java.version>1.8</java.version>
