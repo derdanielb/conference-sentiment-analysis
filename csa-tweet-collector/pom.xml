@@ -6,7 +6,7 @@
     <groupId>net.csa</groupId>
     <artifactId>csa-tweet-collector</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <description>Job collecting tweets from twitter via csa-twitter-search in Kafka topics.</description>
+    <description>Job collecting tweets from twitter via csa-twitter-search to Kafka topics.</description>
 
     <properties>
         <java.version>1.8</java.version>
