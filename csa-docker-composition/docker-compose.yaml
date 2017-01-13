@@ -8,38 +8,38 @@ services:
      - "19017/tcp:27017/tcp"
     volumes:
     - csa_mongodb_01_data:/data/db
-  # csa_zookeeper4kafka_01:
-    # container_name: csa_zookeeper4kafka_01
-    # image: confluentinc/cp-zookeeper:3.1.0
-    # environment:
-      # ZOOKEEPER_SERVER_ID: 1
-      # ZOOKEEPER_CLIENT_PORT: 19336
-      # ZOOKEEPER_TICK_TIME: 2000
-      # ZOOKEEPER_INIT_LIMIT: 5
-      # ZOOKEEPER_SYNC_LIMIT: 2
-      # ZOOKEEPER_SERVERS: csa_zookeeper4kafka_01:19337:19338
-    # restart: always
-    # volumes:
-      # - csa_zookeeper4kafka_01_data:/var/lib/zookeeper/data
-      # - csa_zookeeper4kafka_01_log:/var/lib/zookeeper/log
-  # csa_kafka_01:
-    # container_name: csa_kafka_01
-    # image: confluentinc/cp-kafka:3.1.0
-    # ports:
-     # - "19092/tcp:9092/tcp"
-    # depends_on:
-      # - csa_zookeeper4kafka_01
-    # environment:
-      # KAFKA_BROKER_ID: 1
-      # KAFKA_ZOOKEEPER_CONNECT: csa_zookeeper4kafka_01:19336
-      # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19333
-      # KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-      # KAFKA_DELETE_TOPIC_ENABLE: 'true'
-    # restart: always
-    # volumes:
-      # - csa_kafka_01_data:/var/lib/kafka/data
+  csa_zookeeper4kafka_01:
+    container_name: csa_zookeeper4kafka_01
+    image: confluentinc/cp-zookeeper:3.1.0
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 19336
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: csa_zookeeper4kafka_01:19337:19338
+    restart: always
+    volumes:
+      - csa_zookeeper4kafka_01_data:/var/lib/zookeeper/data
+      - csa_zookeeper4kafka_01_log:/var/lib/zookeeper/log
+  csa_kafka_01:
+    container_name: csa_kafka_01
+    image: confluentinc/cp-kafka:3.1.0
+    ports:
+     - "19092/tcp:9092/tcp"
+    depends_on:
+      - csa_zookeeper4kafka_01
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: csa_zookeeper4kafka_01:19336
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19333
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    restart: always
+    volumes:
+      - csa_kafka_01_data:/var/lib/kafka/data
 volumes:
   csa_mongodb_01_data:
-  # csa_zookeeper4kafka_01_data:
-  # csa_zookeeper4kafka_01_log:
-  # csa_kafka_01_data:
+  csa_zookeeper4kafka_01_data:
+  csa_zookeeper4kafka_01_log:
+  csa_kafka_01_data:
