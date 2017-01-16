@@ -84,84 +84,9 @@ services:
       - csa_kafka_01_data:/var/lib/kafka/data
 volumes:
   csa_mongodb_01_data:
+  csa_conference_01_data:
+  csa_twitter_search_01_data:
+  csa_conference_tweets_01_data:
   csa_zookeeper4kafka_01_data:
   csa_zookeeper4kafka_01_log:
   csa_kafka_01_data:
-
-
-
-  version: '2'
-  # storage engines for the microservices of the conference sentiment analysis (csa) application
-  services:
-    csa_mongodb_01:
-      container_name: csa_mongodb_01
-      image: mongo:3.4.0
-      ports:
-       - "19017/tcp:27017/tcp"
-  #    restart: always
-      volumes:
-      - csa_mongodb_01_data:/data/db
-    csa_conference_01:
-      container_name: csa_conference_01
-      image: springio/csa-conference:latest
-      ports:
-        - "8080/tcp:8080/tcp"
-      links:
-        - csa_mongodb_01
-      volumes:
-        - csa_conference_01_data:/var/lib/conference/data
-    csa_twitter_search_01:
-      container_name: csa_twitter_search_01
-      image: springio/csa-twitter-search:latest
-      ports:
-        - "8070/tcp:8080/tcp"
-      volumes:
-        - csa_twitter_search_01_data:/var/lib/twittersearch/data
-    csa_conference_tweets_01:
-      container_name: csa_conference_tweets_01
-      image: springio/csa-conference-tweets:latest
-      ports:
-        - "8090/tcp:8080/tcp"
-      links:
-        - csa_conference_01
-        - csa_twitter_search_01
-      volumes:
-        - csa_conference_tweets_01_data:/var/lib/conferencetweets/data
-  #  csa_zookeeper4kafka_01:
-  #    container_name: csa_zookeeper4kafka_01
-  #    image: confluentinc/cp-zookeeper:3.1.0
-  #    environment:
-  #      ZOOKEEPER_SERVER_ID: 1
-  #      ZOOKEEPER_CLIENT_PORT: 19336
-  #      ZOOKEEPER_TICK_TIME: 2000
-  #      ZOOKEEPER_INIT_LIMIT: 5
-  #      ZOOKEEPER_SYNC_LIMIT: 2
-  #      ZOOKEEPER_SERVERS: csa_zookeeper4kafka_01:19337:19338
-  ##    restart: always
-  #    volumes:
-  #      - csa_zookeeper4kafka_01_data:/var/lib/zookeeper/data
-  #      - csa_zookeeper4kafka_01_log:/var/lib/zookeeper/log
-  #  csa_kafka_01:
-  #    container_name: csa_kafka_01
-  #    image: confluentinc/cp-kafka:3.1.0
-  #    ports:
-  #     - "19092/tcp:9092/tcp"
-  #    depends_on:
-  #      - csa_zookeeper4kafka_01
-  #    environment:
-  #      KAFKA_BROKER_ID: 1
-  #      KAFKA_ZOOKEEPER_CONNECT: csa_zookeeper4kafka_01:19336
-  #      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:19333
-  #      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-  #      KAFKA_DELETE_TOPIC_ENABLE: 'true'
-  ##    restart: always
-  #    volumes:
-  #      - csa_kafka_01_data:/var/lib/kafka/data
-  volumes:
-    csa_mongodb_01_data:
-    csa_conference_01_data:
-    csa_twitter_search_01_data:
-    csa_conference_tweets_01_data:
-  #  csa_zookeeper4kafka_01_data:
-  #  csa_zookeeper4kafka_01_log:
-  #  csa_kafka_01_data:
