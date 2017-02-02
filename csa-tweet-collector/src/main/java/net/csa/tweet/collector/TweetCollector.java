@@ -9,6 +9,8 @@ import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.japi.Pair;
 import akka.japi.function.Function;
+import akka.kafka.ProducerSettings;
+import akka.kafka.javadsl.Producer;
 import akka.stream.ActorMaterializer;
 import akka.stream.ActorMaterializerSettings;
 import akka.stream.ClosedShape;
@@ -29,11 +31,15 @@ import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.stream.javadsl.ZipWith;
 import akka.util.ByteString;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.Int;
 import scala.util.Try;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -121,10 +127,16 @@ public class TweetCollector {
             });
         }
 
-        // TODO stream the tweets to Kafka instead of just logging status code of response
-        Sink<Pair<String, Integer>, CompletionStage<Done>> sink
-                = Sink.foreach(p -> log.info("#REPLY " + p));
+        Flow<Pair<String, Integer>, ProducerRecord<String, String>, NotUsed> kafkaFlow =
+                Flow.<Pair<String, Integer>>create()
+                        .map(p -> Pair.create(p.first(), "tc-topic-" + p.second()))
+                        .map(p -> new ProducerRecord<>(p.second(), 0, Instant.now().toEpochMilli(), p.second(), p.first()));
 
+        ProducerSettings<String, String> settings = ProducerSettings.create(system,
+                new StringSerializer(),
+                new StringSerializer())
+                .withBootstrapServers("localhost:19092");
+        Sink<ProducerRecord<String, String>, CompletionStage<Done>> sink = Producer.plainSink(settings);
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
@@ -147,6 +159,7 @@ public class TweetCollector {
 
             final FlowShape<Pair<Try<HttpResponse>, Integer>, Pair<String, Integer>> conversionFlowShape = b.add(conversionFlow);
 
+            final FlowShape<Pair<String, Integer>, ProducerRecord<String, String>> kafkaFlowShape = b.add(kafkaFlow);
 
             b.from(hashtagSourceShape).toInlet(zipShape.in0());
             b.from(integerSourceShape).toInlet(zipShape.in1());
@@ -155,7 +168,7 @@ public class TweetCollector {
                     .via(createRequestFlowShape)
                     .via(httpClientFlowShape)
                     .via(conversionFlowShape)
-                    // TODO thereafter missing is the sink to stream the tweets to Kafka
+                    .via(kafkaFlowShape)
                     .to(s);
 
             return ClosedShape.getInstance();
