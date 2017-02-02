@@ -22,7 +22,6 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_MAX_CLIENT_CNXNS: 20
       ZOOKEEPER_SERVERS: csa_zookeeper4kafka_01:19337:19338
-    restart: always
     volumes:
       - csa_zookeeper4kafka_01_data:/var/lib/zookeeper/data
       - csa_zookeeper4kafka_01_log:/var/lib/zookeeper/log
@@ -52,7 +51,6 @@ services:
       KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,state.change.logger=INFO"
       KAFKA_TOOLS_LOG4J_LOGLEVEL: INFO
-    restart: always
     volumes:
       - csa_kafka_01_data:/var/lib/kafka/data
 volumes:
