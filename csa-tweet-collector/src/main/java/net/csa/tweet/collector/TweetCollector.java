@@ -4,6 +4,7 @@ import akka.Done;
 import akka.NotUsed;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.Http;
+import akka.http.javadsl.model.HttpEntity;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.japi.Pair;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import scala.util.Try;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -109,9 +111,22 @@ public class TweetCollector {
             httpClientFlow = flow.log("csa-tweet-collector-httpClientFlow");
         }
 
+        final Flow<Pair<Try<HttpResponse>, Integer>, Pair<String, Integer>, NotUsed> conversionFlow;
+        {
+            conversionFlow = Flow.fromFunction(pair -> {
+                CompletableFuture<HttpEntity.Strict> rep = pair
+                        .first()
+                        .get()
+                        .entity()
+                        .toStrict(42, materializer)
+                        .toCompletableFuture();
+                return Pair.create(rep.get().getData().utf8String(), pair.second());
+            });
+        }
+
         // TODO stream the tweets to Kafka instead of just logging status code of response
-        Sink<Pair<Try<HttpResponse>, Integer>, CompletionStage<Done>> sink
-                = Sink.foreach(p -> log.info("Status Code: " + p.first().get().status()));
+        Sink<Pair<String, Integer>, CompletionStage<Done>> sink
+                = Sink.foreach(p -> log.info("#REPLY " + p));
 
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
@@ -133,6 +148,8 @@ public class TweetCollector {
             // flow shape to apply Akka HTTP client-side in the processing graph to call csa-twitter-search for each hashtag
             final FlowShape<Pair<HttpRequest, Integer>, Pair<Try<HttpResponse>, Integer>> httpClientFlowShape = b.add(httpClientFlow);
 
+            final FlowShape<Pair<Try<HttpResponse>, Integer>, Pair<String, Integer>> conversionFlowShape = b.add(conversionFlow);
+
 
             b.from(hashtagSourceShape).toInlet(zipShape.in0());
             b.from(integerSourceShape).toInlet(zipShape.in1());
@@ -140,6 +157,7 @@ public class TweetCollector {
             b.from(zipShape.out())
                     .via(createRequestFlowShape)
                     .via(httpClientFlowShape)
+                    .via(conversionFlowShape)
                     // TODO here missing is the parsing of the obtained HttpResponse to extract the Tweets
                     // TODO thereafter missing is the sink to stream the tweets to Kafka
                     .to(s);

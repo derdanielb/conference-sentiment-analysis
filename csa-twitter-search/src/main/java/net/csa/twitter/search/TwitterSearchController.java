@@ -7,13 +7,11 @@ import org.springframework.social.twitter.api.SearchParameters;
 import org.springframework.social.twitter.api.SearchResults;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,8 +65,8 @@ class TwitterSearchController {
                 .includeEntities(false)
                 .count(MAX_RESULTS)
                 .resultType(SearchParameters.ResultType.MIXED);
-        //.since(new SimpleDateFormat("yyyy-MM-dd").parse("2016-06-13"))
-        //.until(new SimpleDateFormat("yyyy-MM-dd").parse("2016-06-18"));
+        //.since(new SimpleDateFormat("yyyy-MM-dd").parse(from))
+        //.until(new SimpleDateFormat("yyyy-MM-dd").parse(to));
 
         log.debug(ReflectionToStringBuilder.toString(searchParameters, ToStringStyle.DEFAULT_STYLE));
 
