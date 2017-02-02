@@ -96,7 +96,7 @@ public class TweetCollector {
             // TODO this does not yet query for tweets with respect to a period of time (from and to date)
             Flow<Pair<String, Integer>, Pair<HttpRequest, Integer>, NotUsed> flow
                     = Flow.fromFunction(p -> new Pair<>(HttpRequest
-                    .create("http://localhost:8080//twitter/search/" + p.first()),
+                    .create("http://localhost:4201//twitter/search/" + p.first()),
                     p.second()));
             createRequestFlow = flow.log("csa-tweet-collector-createRequestFlow");
         }
