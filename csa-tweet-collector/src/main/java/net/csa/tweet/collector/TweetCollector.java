@@ -47,8 +47,6 @@ public class TweetCollector {
 
     public static void main(String args[]) throws InterruptedException, TimeoutException, ExecutionException {
 
-        // TODO this is just a rough sketch to provide a basis, please change and develop further
-
         // this decider applies the default supervision strategy, but it adds some logging in case of an error
         final Function<Throwable, Supervision.Directive> decider = ex -> {
             log.error("Error during stream processing.", ex);
@@ -66,8 +64,7 @@ public class TweetCollector {
         final Source<String, CompletionStage<IOResult>> hashtagSource;
         {
             // source for streaming the input file
-            // TODO adjust to use your file and possibly make the path to the file an input variable
-            final Source<ByteString, CompletionStage<IOResult>> fileSource = FileIO.fromFile(new File("hashtags.csv"))
+            final Source<ByteString, CompletionStage<IOResult>> fileSource = FileIO.fromFile(new File(args[0]))
                     .log("csa-tweet-collector-fileSource");
 
             // each line is used as a hastag thus split by line separator
@@ -158,7 +155,6 @@ public class TweetCollector {
                     .via(createRequestFlowShape)
                     .via(httpClientFlowShape)
                     .via(conversionFlowShape)
-                    // TODO here missing is the parsing of the obtained HttpResponse to extract the Tweets
                     // TODO thereafter missing is the sink to stream the tweets to Kafka
                     .to(s);
 
@@ -169,7 +165,7 @@ public class TweetCollector {
         CompletionStage<Done> completionStage = RunnableGraph.fromGraph(g).run(materializer);
         CompletableFuture<Done> completableFuture = completionStage.toCompletableFuture();
         // TODO if you process a lot remove this waiting for the result and instead loop and sleep until completed
-        Done done = completableFuture.get(10, TimeUnit.SECONDS); // awaiting the future to complete with a timeout
+        Done done = completableFuture.get(30, TimeUnit.SECONDS); // awaiting the future to complete with a timeout
 
         // log the overall status
         if (completableFuture.isDone()) {
