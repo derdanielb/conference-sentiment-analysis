@@ -11,9 +11,12 @@ import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+
 class CustomTwitterTemplate extends TwitterTemplate {
 
     private static final Logger log = getLogger(CustomTwitterTemplate.class);
+
+
 
     CustomTwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
         super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
