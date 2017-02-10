@@ -1,14 +1,13 @@
 package net.csa.conference;
 
-import net.csa.conference.repository.CRUD_operationen;
+import net.csa.conference.repository.CRUD_operationen.KonferenzRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 class ConferenceMicroservice {
-
+	KonferenzRepository kr;
     public static void main(String[] args) {
-        CRUD_operationen.KonferenzRepository kr;
         SpringApplication.run(ConferenceMicroservice.class, args);
         /*
         Konferenz K = new Konferenz();
