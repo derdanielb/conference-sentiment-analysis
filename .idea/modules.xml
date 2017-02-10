@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/conference-sentiment-analysis.iml" filepath="$PROJECT_DIR$/.idea/conference-sentiment-analysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/csa-conference/csa-conference.iml" filepath="$PROJECT_DIR$/csa-conference/csa-conference.iml" />
+      <module fileurl="file://$PROJECT_DIR$/csa-twitter-search/csa-twitter-search.iml" filepath="$PROJECT_DIR$/csa-twitter-search/csa-twitter-search.iml" />
+    </modules>
+  </component>
+</project>
