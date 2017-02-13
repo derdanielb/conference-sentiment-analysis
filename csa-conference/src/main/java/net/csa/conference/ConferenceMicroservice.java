@@ -11,7 +11,7 @@ class ConferenceMicroservice {
         SpringApplication.run(ConferenceMicroservice.class, args);
         /*
         Konferenz K = new Konferenz();
-        K.setUUID("t1");
+        K.setUuid("t1");
         K.setName("Jan");
         K.setZeitinterval(5);
 

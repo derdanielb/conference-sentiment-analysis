@@ -26,7 +26,7 @@ public class ConferenceController implements KonferenzRepository{
     public Konferenz findById(@PathVariable String id) {
         Konferenz k_search;
         k_search = mongoOps.findById(id, Konferenz.class);
-        //System.out.println("k_search id: "+k_search.getUUID()+"\n"+"k_search name: "+k_search.getName()+"\n"+"k_search Zeitinterval: "+k_search.getZeitinterval()+"\n");
+        //System.out.println("k_search id: "+k_search.getUuid()+"\n"+"k_search name: "+k_search.getName()+"\n"+"k_search Zeitinterval: "+k_search.getZeitinterval()+"\n");
         return k_search;
     }
 
@@ -34,24 +34,24 @@ public class ConferenceController implements KonferenzRepository{
     @RequestMapping(path = "/insertonebyparameter/{id}/{name}/{timeinterval}")
     public void insertentity(@PathVariable String id, @PathVariable String name, @PathVariable Integer timeinterval) {
         Konferenz k = new Konferenz();
-        k.setUUID(id);
+        k.setUuid(id);
         k.setName(name);
         k.setZeitinterval(timeinterval);
         mongoOps.insert(k);
     }
 
     @RequestMapping(path = "/findbyname/name/{name}")
-    public List<Konferenz> findByName(@PathVariable String name) {
+    public List<Konferenz> findByName(@PathVariable String input_name) {
         List<Konferenz> ve_ko;
         //Konferenz k_search_n;
         //ve_ko = new Vector<Konferenz>();
-        ve_ko = mongoOps.find(org.springframework.data.mongodb.core.query.Query.query(Criteria.where("name").is(name)), Konferenz.class);
+        ve_ko = mongoOps.find(org.springframework.data.mongodb.core.query.Query.query(Criteria.where("name").is(input_name)), Konferenz.class);
         //k_search_n = mongoOps.findOne(org.springframework.data.mongodb.core.query.Query.query(Criteria.where("name").is(name)), Konferenz.class);
-        //System.out.println("k_search: "+k_search_n.getUUID()+"\n"+"name: "+k_search_n.getName()+"\n"+"Zeitinterval: "+k_search_n.getZeitinterval()+"\n");
+        //System.out.println("k_search: "+k_search_n.getUuid()+"\n"+"name: "+k_search_n.getName()+"\n"+"Zeitinterval: "+k_search_n.getZeitinterval()+"\n");
         for (Konferenz aVe_ko : ve_ko) {
-            System.out.println("ve_ko id: " + aVe_ko.getUUID() + "\n" + "ve_ko name: " + aVe_ko.getName() + "\n" + "ve_ko Zeitinterval: " + aVe_ko.getZeitinterval() + "\n");
+            System.out.println("ve_ko id: " + aVe_ko.getUuid() + "\n" + "ve_ko name: " + aVe_ko.getName() + "\n" + "ve_ko Zeitinterval: " + aVe_ko.getZeitinterval() + "\n");
         }
-        return null;
+        return ve_ko;
     }
 
 
@@ -61,7 +61,7 @@ public class ConferenceController implements KonferenzRepository{
 	public Konferenz findOne(String id) {
 		return null;
 	}
-	
+
 	@RequestMapping(path = "/deleteone", method = RequestMethod.DELETE)
 	public void delete(Konferenz entity) {
 		// TODO Auto-generated method stub
@@ -71,7 +71,7 @@ public class ConferenceController implements KonferenzRepository{
 		return null;
 	}
 
-	
+
 	@RequestMapping(path = "/saveone", method = RequestMethod.PUT)
 	public <S extends Konferenz> S save(S entity) {
 		// TODO Auto-generated method stub
@@ -96,7 +96,7 @@ public class ConferenceController implements KonferenzRepository{
 		return null;
 	}
 
-	
+
 
 	@Override
 	public <S extends Konferenz> List<S> insert(Iterable<S> entities) {
@@ -123,7 +123,7 @@ public class ConferenceController implements KonferenzRepository{
 	}
 
 
-	
+
 
 	@Override
 	public boolean exists(String id) {
@@ -146,21 +146,21 @@ public class ConferenceController implements KonferenzRepository{
 	@Override
 	public void delete(String id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
+
 
 	@Override
 	public void delete(Iterable<? extends Konferenz> entities) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void deleteAll() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public class ConferenceController implements KonferenzRepository{
 		return false;
 	}
 
-	
-	
+
+
 }
  

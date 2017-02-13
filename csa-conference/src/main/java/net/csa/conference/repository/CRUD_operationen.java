@@ -2,7 +2,6 @@ package net.csa.conference.repository;
 
 import net.csa.conference.model.Konferenz;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
