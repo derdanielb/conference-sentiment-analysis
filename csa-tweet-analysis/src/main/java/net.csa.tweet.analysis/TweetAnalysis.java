@@ -76,9 +76,13 @@ public class TweetAnalysis {
                 });
 
         Sink<Object, CompletionStage<Done>> sink
-                = Sink.foreach(p -> log.info("BAUM42: " + p.toString()));
+                = Sink.foreach(p -> log.info(p.toString()));
 
         // ----- construct analysis -----
+
+        //tweet count
+        final Flow<Pair<String, List<String>>, String, NotUsed> tweetCount = Flow.fromFunction((Pair<String, List<String>> p) -> Pair.create(p.first(), p.second().size()))
+                .map(p -> p.first() + ": " + p.second() + " tweets");
 
         //word count
         final int MAXIMUM_DISTINCT_WORDS = 1000;
@@ -104,11 +108,16 @@ public class TweetAnalysis {
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
+            //analyser
+
+            final FlowShape<Pair<String, List<String>>, String> tweetCountShape = b.add(tweetCount);
+
             b.from(kafkaSourceShape)
                     .via(kafkaStringFlowShape)
                     .viaFanOut(broad);
 
             b.from(broad)
+                    .via(tweetCountShape)
                     .viaFanIn(merge);
 
             b.from(merge)
