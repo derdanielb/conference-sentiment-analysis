@@ -13,6 +13,7 @@ import akka.stream.*;
 import akka.stream.javadsl.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sun.org.apache.xerces.internal.xs.StringList;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -91,6 +92,11 @@ public class TweetAnalysis {
         //tweet count
         final Flow<Pair<String, Integer>, String, NotUsed> tweetCountInfo = Flow.fromFunction(p -> p.first() + ": " + p.second() + " tweets");
 
+        //word count
+        Flow<Pair<String, List<String>>, String, NotUsed> wordCountFlow =
+                Flow.fromFunction((Pair<String, List<String>> p) ->
+                        p.first() + ": " + String.join(" ", p.second()).split(" ").length + " words");
+
         //tweet ranking
         final Flow<Pair<String, Integer>, String, NotUsed> tweetRanking =
                 Flow.<Pair<String, Integer>>create()
@@ -116,7 +122,7 @@ public class TweetAnalysis {
             // flow shape to convert messages to strings
             final FlowShape<ConsumerMessage.CommittableMessage<String, String>, Pair<String, List<String>>> kafkaStringFlowShape = b.add(kafkaStringFlow);
 
-            final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(1));
+            final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(2));
 
             final UniformFanInShape<String, String> merge = b.add(Merge.create(2));
 
@@ -138,6 +144,8 @@ public class TweetAnalysis {
 
             final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(2));
 
+            final FlowShape<Pair<String, List<String>>, String> wordCountShape = b.add(wordCountFlow);
+
             //count
             b.from(broad)
                     .via(tweetCountShape)
@@ -146,6 +154,11 @@ public class TweetAnalysis {
             //count log
             b.from(countCast)
                     .via(tweetCountInfoShape)
+                    .viaFanIn(merge);
+
+            //word count
+            b.from(broad)
+                    .via(wordCountShape)
                     .viaFanIn(merge);
 
             //count rank
