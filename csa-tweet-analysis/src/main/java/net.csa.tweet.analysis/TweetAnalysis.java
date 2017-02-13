@@ -91,10 +91,20 @@ public class TweetAnalysis {
             // flow shape to convert messages to strings
             final FlowShape<ConsumerMessage.CommittableMessage<String, String>, Pair<String, String>> kafkaStringFlowShape = b.add(kafkaStringFlow);
 
+            final UniformFanOutShape<Pair<String, String>, Pair<String, String>> broad = b.add(Broadcast.create(1));
+
+            final UniformFanInShape<Pair<String, String>, Pair<String, String>> merge = b.add(Merge.create(1));
+
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
             b.from(kafkaSourceShape)
                     .via(kafkaStringFlowShape)
+                    .viaFanOut(broad);
+
+            b.from(broad)
+                    .viaFanIn(merge);
+
+            b.from(merge)
                     .via(killShape)
                     .to(s);
 
