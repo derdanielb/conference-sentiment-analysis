@@ -77,6 +77,8 @@ public class TweetAnalysis {
         Sink<Object, CompletionStage<Done>> sink
                 = Sink.foreach(p -> log.info("BAUM42: " + p.toString()));
 
+        // ----- construct analysis -----
+
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
         SharedKillSwitch killSwitch = KillSwitches.shared("baumKiller");
