@@ -102,14 +102,16 @@ public class TweetAnalysis {
                 Flow.<Pair<String, Integer>>create()
                 .grouped(10)
                 .map(pairs -> {
-                    pairs.sort(Comparator.comparingInt(Pair::second));
-                    return pairs;
+                    List<Pair<String, Integer>> sortList = new ArrayList<>(pairs);
+                    sortList.sort(Comparator.comparingInt(Pair::second));
+                    Collections.reverse(sortList);
+                    return sortList;
                 }).map(pairs -> {
                     List<String> result = new ArrayList<>();
                     for (Pair<String, Integer> pair : pairs)
-                        result.add(Integer.toString(pair.second()));
+                        result.add(pair.first() + " (" + pair.second() + ")");
                     return result;
-                }).map(t -> String.join(" ", t));
+                }).map(t -> "Tweet Count Ranking: " + String.join(", ", t));
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
@@ -124,7 +126,7 @@ public class TweetAnalysis {
 
             final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(2));
 
-            final UniformFanInShape<String, String> merge = b.add(Merge.create(2));
+            final UniformFanInShape<String, String> merge = b.add(Merge.create(3));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
@@ -138,13 +140,15 @@ public class TweetAnalysis {
 
             //analyser
 
+            final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(2));
+
             final FlowShape<Pair<String, List<String>>, Pair<String, Integer>> tweetCountShape = b.add(tweetCount);
 
             final FlowShape<Pair<String, Integer>, String> tweetCountInfoShape = b.add(tweetCountInfo);
 
-            final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(2));
-
             final FlowShape<Pair<String, List<String>>, String> wordCountShape = b.add(wordCountFlow);
+
+            final FlowShape<Pair<String, Integer>, String> tweetRankingShape = b.add(tweetRanking);
 
             //count
             b.from(broad)
@@ -163,7 +167,7 @@ public class TweetAnalysis {
 
             //count rank
             b.from(countCast)
-                    .via(tweetCountInfoShape)
+                    .via(tweetRankingShape)
                     .viaFanIn(merge);
 
             return ClosedShape.getInstance();
