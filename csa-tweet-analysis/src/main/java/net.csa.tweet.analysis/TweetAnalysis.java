@@ -100,7 +100,7 @@ public class TweetAnalysis {
         final Flow<Pair<String, Integer>, String, NotUsed> tweetCountInfo = Flow.fromFunction(p -> p.first() + ": " + p.second() + " tweets");
 
         //word count
-        Flow<Pair<String, List<String>>, String, NotUsed> wordCountFlow =
+        final Flow<Pair<String, List<String>>, String, NotUsed> wordCountFlow =
                 Flow.fromFunction((Pair<String, List<String>> p) ->
                         p.first() + ": " + String.join(" ", p.second()).split(" ").length + " words");
 
@@ -121,7 +121,7 @@ public class TweetAnalysis {
                 }).map(t -> "Tweet Count Ranking: " + String.join(", ", t));
 
         //Sentiment Analysis
-        Flow<Pair<String, List<String>>, String, NotUsed> sentimentAnalysisFlow = Flow.fromFunction((Pair<String, List<String>> p) -> {
+        final Flow<Pair<String, List<String>>, String, NotUsed> sentimentAnalysisFlow = Flow.fromFunction((Pair<String, List<String>> p) -> {
             List<Integer> l = new ArrayList<>();
             for (String tweet : p.second()) {
                 l.add(findSentiment(tweet));
@@ -140,9 +140,9 @@ public class TweetAnalysis {
             // flow shape to convert messages to strings
             final FlowShape<ConsumerMessage.CommittableMessage<String, String>, Pair<String, List<String>>> kafkaStringFlowShape = b.add(kafkaStringFlow);
 
-            final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(2));
+            final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(3));
 
-            final UniformFanInShape<String, String> merge = b.add(Merge.create(3));
+            final UniformFanInShape<String, String> merge = b.add(Merge.create(4));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
@@ -166,6 +166,8 @@ public class TweetAnalysis {
 
             final FlowShape<Pair<String, Integer>, String> tweetRankingShape = b.add(tweetRanking);
 
+            final FlowShape<Pair<String, List<String>>, String> sentimentAnalysisFlowShape = b.add(sentimentAnalysisFlow);
+
             //count
             b.from(broad)
                     .via(tweetCountShape)
@@ -184,6 +186,11 @@ public class TweetAnalysis {
             //count rank
             b.from(countCast)
                     .via(tweetRankingShape)
+                    .viaFanIn(merge);
+
+            //sentiment Analysis
+            b.from(broad)
+                    .via(sentimentAnalysisFlowShape)
                     .viaFanIn(merge);
 
             return ClosedShape.getInstance();
