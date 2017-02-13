@@ -75,9 +75,13 @@ public class TweetAnalysis {
                 });
 
         Sink<Object, CompletionStage<Done>> sink
-                = Sink.foreach(p -> log.info("BAUM42: " + p.toString()));
+                = Sink.foreach(p -> log.info(p.toString()));
 
         // ----- construct analysis -----
+
+        //tweet count
+        final Flow<Pair<String, List<String>>, String, NotUsed> tweetCount = Flow.fromFunction((Pair<String, List<String>> p) -> Pair.create(p.first(), p.second().size()))
+                .map(p -> p.first() + ": " + p.second() + " tweets");
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
@@ -92,15 +96,20 @@ public class TweetAnalysis {
 
             final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(1));
 
-            final UniformFanInShape<Pair<String, List<String>>, Pair<String, List<String>>> merge = b.add(Merge.create(1));
+            final UniformFanInShape<String, String> merge = b.add(Merge.create(1));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
+
+            //analyser
+
+            final FlowShape<Pair<String, List<String>>, String> tweetCountShape = b.add(tweetCount);
 
             b.from(kafkaSourceShape)
                     .via(kafkaStringFlowShape)
                     .viaFanOut(broad);
 
             b.from(broad)
+                    .via(tweetCountShape)
                     .viaFanIn(merge);
 
             b.from(merge)
