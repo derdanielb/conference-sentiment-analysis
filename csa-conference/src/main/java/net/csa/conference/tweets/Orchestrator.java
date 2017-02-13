@@ -23,7 +23,7 @@ public class Orchestrator {
         String resultstring;
         twitter_response = twitter_response(hashtag);
         mogodb_response = mogodb_response(hashtag);
-        resultstring = twitter_response.toString() + mogodb_response.formatstring();
+        resultstring = twitter_response.toString() + "\n" + "\n" + "\n" + mogodb_response.formatstring();
         //mogodb_response(hashtag);
         return resultstring;
     }
@@ -45,7 +45,8 @@ public class Orchestrator {
         String mogodb_fooResourceUrl = null;
         ResponseEntity<Konferenz> mogodb_response = null;
 
-        mogodb_fooResourceUrl = "http://localhost:8080/conference/search/findbyname/name/" + hashtag;
+        mogodb_fooResourceUrl = "http://localhost:8090/conference/search/findbyname/" + hashtag;
+        //System.out.println(mogodb_fooResourceUrl);
         mogodb_response = restTemplate.getForEntity(mogodb_fooResourceUrl, Konferenz.class);
         return mogodb_response.getBody();
     }

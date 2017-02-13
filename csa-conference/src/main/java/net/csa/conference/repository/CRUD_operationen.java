@@ -37,7 +37,7 @@ public class CRUD_operationen {
 		Konferenz findById(String id);
 		void insertentity (String id, String name, Integer timeinterval);
 		@Async
-		List<Konferenz> findByName(String name);
+		Konferenz findByName(String name);
 
 	}
 }
