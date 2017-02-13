@@ -85,11 +85,9 @@ public class TweetAnalysis {
                 .map(p -> p.first() + ": " + p.second() + " tweets");
 
         //word count
-        final int MAXIMUM_DISTINCT_WORDS = 1000;
-        Flow<List<String>, String, NotUsed> listToStringFlow =
-                Flow.fromFunction((List<String> l) -> "" + String.join(" ", l).split(" ").length);
-
-
+        Flow<Pair<String, List<String>>, String, NotUsed> listToStringFlow =
+                Flow.fromFunction((Pair<String, List<String>> p) ->
+                        p.first() + ": " + String.join(" ", p.second()).split(" ").length + "words");
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
