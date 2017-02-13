@@ -19,6 +19,9 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -88,6 +91,20 @@ public class TweetAnalysis {
         //tweet count
         final Flow<Pair<String, Integer>, String, NotUsed> tweetCountInfo = Flow.fromFunction(p -> p.first() + ": " + p.second() + " tweets");
 
+        //tweet ranking
+        final Flow<Pair<String, Integer>, String, NotUsed> tweetRanking =
+                Flow.<Pair<String, Integer>>create()
+                .grouped(10)
+                .map(pairs -> {
+                    pairs.sort(Comparator.comparingInt(Pair::second));
+                    return pairs;
+                }).map(pairs -> {
+                    List<String> result = new ArrayList<>();
+                    for (Pair<String, Integer> pair : pairs)
+                        result.add(Integer.toString(pair.second()));
+                    return result;
+                }).map(t -> String.join(" ", t));
+
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
         SharedKillSwitch killSwitch = KillSwitches.shared("baumKiller");
@@ -101,7 +118,7 @@ public class TweetAnalysis {
 
             final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(1));
 
-            final UniformFanInShape<String, String> merge = b.add(Merge.create(1));
+            final UniformFanInShape<String, String> merge = b.add(Merge.create(2));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
@@ -119,13 +136,19 @@ public class TweetAnalysis {
 
             final FlowShape<Pair<String, Integer>, String> tweetCountInfoShape = b.add(tweetCountInfo);
 
-            final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(1));
+            final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(2));
 
             //count
             b.from(broad)
                     .via(tweetCountShape)
                     .viaFanOut(countCast);
 
+            //count log
+            b.from(countCast)
+                    .via(tweetCountInfoShape)
+                    .viaFanIn(merge);
+
+            //count rank
             b.from(countCast)
                     .via(tweetCountInfoShape)
                     .viaFanIn(merge);
