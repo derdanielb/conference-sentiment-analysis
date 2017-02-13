@@ -63,10 +63,8 @@ class TwitterSearchController {
         //SearchParameters searchParameters = new SearchParameters("#" + hashtag + "+since:2016-06-13+until:2016-06-18")
         SearchParameters searchParameters = new SearchParameters(hashtag)
                 .includeEntities(false)
-                .count(MAX_RESULTS)
+                .count(13)
                 .resultType(SearchParameters.ResultType.MIXED);
-        //.since(new SimpleDateFormat("yyyy-MM-dd").parse(from))
-        //.until(new SimpleDateFormat("yyyy-MM-dd").parse(to));
 
         log.debug(ReflectionToStringBuilder.toString(searchParameters, ToStringStyle.DEFAULT_STYLE));
 

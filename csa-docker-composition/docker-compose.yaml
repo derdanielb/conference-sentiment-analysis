@@ -53,8 +53,21 @@ services:
       KAFKA_TOOLS_LOG4J_LOGLEVEL: INFO
     volumes:
       - csa_kafka_01_data:/var/lib/kafka/data
+  csa_kafka_manager_01:
+    container_name: csa_kafka_manager_01
+    image: sheepkiller/kafka-manager
+    ports:
+     - "8000/tcp:9000/tcp"
+    depends_on:
+      - csa_zookeeper4kafka_01
+      - csa_kafka_01
+    environment:
+      ZK_HOSTS: csa_zookeeper4kafka_01:19336
+    volumes:
+      - csa_kafka_manager_01_data:/var/lib/kafka_manager/data
 volumes:
   csa_mongodb_01_data:
   csa_zookeeper4kafka_01_data:
   csa_zookeeper4kafka_01_log:
   csa_kafka_01_data:
+  csa_kafka_manager_01_data:
