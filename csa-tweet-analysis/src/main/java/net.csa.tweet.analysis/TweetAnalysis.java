@@ -148,7 +148,7 @@ public class TweetAnalysis {
 
             final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(3));
 
-            final UniformFanInShape<String, String> merge = b.add(Merge.create(4));
+            final UniformFanInShape<String, String> merge = b.add(Merge.create(5));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
             
@@ -163,6 +163,7 @@ public class TweetAnalysis {
             //analyser
 
             final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(2));
+            final UniformFanOutShape<Pair<String, Double>, Pair<String, Double>> sentimentCast = b.add(Broadcast.create(2));
 
             final FlowShape<Pair<String, List<String>>, Pair<String, Integer>> tweetCountShape = b.add(tweetCount);
 
@@ -172,9 +173,9 @@ public class TweetAnalysis {
 
             final FlowShape<Pair<String, Integer>, String> tweetRankingShape = b.add(tweetRanking);
 
-            FlowShape<Pair<String, List<String>>, Pair<String, Double>> sentimentAnalysisShape = b.add(sentimentAnalysisFlow);
+            final FlowShape<Pair<String, List<String>>, Pair<String, Double>> sentimentAnalysisShape = b.add(sentimentAnalysisFlow);
 
-            FlowShape<Pair<String, Double>, String> averageSentimentLevelShape = b.add(averageSentimentLevelFlow);
+            final FlowShape<Pair<String, Double>, String> averageSentimentLevelShape = b.add(averageSentimentLevelFlow);
 
             //count
             b.from(broad)
@@ -199,7 +200,16 @@ public class TweetAnalysis {
             //sentiment Analysis
             b.from(broad)
                     .via(sentimentAnalysisShape)
+                    .viaFanOut(sentimentCast);
+
+            //sentiment average
+            b.from(sentimentCast)
                     .via(averageSentimentLevelShape)
+                    .viaFanIn(merge);
+
+            //sentiment ranking
+            b.from(sentimentCast)
+                    .via(null)
                     .viaFanIn(merge);
 
             return ClosedShape.getInstance();
@@ -210,7 +220,7 @@ public class TweetAnalysis {
         CompletableFuture<Done> completableFuture = completionStage.toCompletableFuture();
 
         try {
-            Thread.sleep(5000);//TODO adjust time!
+            Thread.sleep(10000);//TODO adjust time!
             killSwitch.shutdown();
             completableFuture.get(5, TimeUnit.SECONDS); // awaiting the future to complete with a timeout
             // log the overall status
