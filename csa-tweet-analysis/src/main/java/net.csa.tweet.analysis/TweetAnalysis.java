@@ -129,7 +129,7 @@ public class TweetAnalysis {
                     double x = 0;
                     for(int i: p.second())
                         x += i;
-                    return Pair.create(p.first(), x/p.second().size());
+                    return Pair.create(p.first(), p.second().size() == 0 ? 0.0 : x/p.second().size());
                 });
 
         final Flow<Pair<String, Double>, String, NotUsed> averageSentimentLevelFlow =
@@ -193,6 +193,8 @@ public class TweetAnalysis {
 
             final FlowShape<Pair<String, Double>, String> averageSentimentLevelShape = b.add(averageSentimentLevelFlow);
 
+            final FlowShape<Pair<String, Double>, String> saRankingShape = b.add(saRanking);
+
             //count
             b.from(broad)
                     .via(tweetCountShape)
@@ -225,7 +227,7 @@ public class TweetAnalysis {
 
             //sentiment ranking
             b.from(sentimentCast)
-                    .via(null)
+                    .via(saRankingShape)
                     .viaFanIn(merge);
 
             return ClosedShape.getInstance();
