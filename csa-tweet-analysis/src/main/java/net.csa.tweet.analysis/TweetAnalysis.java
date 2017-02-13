@@ -14,6 +14,7 @@ import akka.stream.javadsl.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,7 @@ public class TweetAnalysis {
                     }
                 }));
 
+
         final Flow<ConsumerMessage.CommittableMessage<String, String>, Pair<String, List<String>>, NotUsed> kafkaStringFlow =
                 Flow.fromFunction((ConsumerMessage.CommittableMessage<String, String> committableMessagePair) ->
                         Pair.create(committableMessagePair.record().key(), committableMessagePair.record().value()))
@@ -80,8 +82,11 @@ public class TweetAnalysis {
         // ----- construct analysis -----
 
         //tweet count
-        final Flow<Pair<String, List<String>>, String, NotUsed> tweetCount = Flow.fromFunction((Pair<String, List<String>> p) -> Pair.create(p.first(), p.second().size()))
-                .map(p -> p.first() + ": " + p.second() + " tweets");
+        final Flow<Pair<String, List<String>>, Pair<String, Integer>, NotUsed> tweetCount =
+                Flow.fromFunction((Pair<String, List<String>> p) -> Pair.create(p.first(), p.second().size()));
+
+        //tweet count
+        final Flow<Pair<String, Integer>, String, NotUsed> tweetCountInfo = Flow.fromFunction(p -> p.first() + ": " + p.second() + " tweets");
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
@@ -100,21 +105,30 @@ public class TweetAnalysis {
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
-            //analyser
-
-            final FlowShape<Pair<String, List<String>>, String> tweetCountShape = b.add(tweetCount);
-
             b.from(kafkaSourceShape)
                     .via(kafkaStringFlowShape)
                     .viaFanOut(broad);
 
-            b.from(broad)
-                    .via(tweetCountShape)
-                    .viaFanIn(merge);
-
             b.from(merge)
                     .via(killShape)
                     .to(s);
+
+            //analyser
+
+            final FlowShape<Pair<String, List<String>>, Pair<String, Integer>> tweetCountShape = b.add(tweetCount);
+
+            final FlowShape<Pair<String, Integer>, String> tweetCountInfoShape = b.add(tweetCountInfo);
+
+            final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(1));
+
+            //count
+            b.from(broad)
+                    .via(tweetCountShape)
+                    .viaFanOut(countCast);
+
+            b.from(countCast)
+                    .via(tweetCountInfoShape)
+                    .viaFanIn(merge);
 
             return ClosedShape.getInstance();
         });
