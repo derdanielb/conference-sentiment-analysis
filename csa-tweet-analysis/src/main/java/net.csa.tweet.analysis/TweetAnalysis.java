@@ -25,10 +25,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class TweetAnalysis {
@@ -121,13 +118,22 @@ public class TweetAnalysis {
                 }).map(t -> "Tweet Count Ranking: " + String.join(", ", t));
 
         //Sentiment Analysis
-        final Flow<Pair<String, List<String>>, String, NotUsed> sentimentAnalysisFlow = Flow.fromFunction((Pair<String, List<String>> p) -> {
-            List<Integer> l = new ArrayList<>();
-            for (String tweet : p.second()) {
-                l.add(findSentiment(tweet));
-            }
-            return p.first() + ": " + l.toString();
-        });
+        final Flow<Pair<String, List<String>>, Pair<String, Double>, NotUsed> sentimentAnalysisFlow =
+                Flow.fromFunction((Pair<String, List<String>> p) -> {
+                    List<Integer> l = new ArrayList<>();
+                    for (String tweet : p.second()) {
+                        l.add(findSentiment(tweet));
+                    }
+                    return Pair.create(p.first(), l);
+                }).map(p -> {
+                    double x = 0;
+                    for(int i: p.second())
+                        x += i;
+                    return Pair.create(p.first(), x/p.second().size());
+                });
+
+        Flow<Pair<String, Double>, String, NotUsed> averageSentimentLevelFlow =
+                Flow.fromFunction((Pair<String, Double> p) -> p.first() + ": average sentiment level is " + p.second());
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
@@ -145,7 +151,7 @@ public class TweetAnalysis {
             final UniformFanInShape<String, String> merge = b.add(Merge.create(4));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
-
+            
             b.from(kafkaSourceShape)
                     .via(kafkaStringFlowShape)
                     .viaFanOut(broad);
@@ -166,7 +172,9 @@ public class TweetAnalysis {
 
             final FlowShape<Pair<String, Integer>, String> tweetRankingShape = b.add(tweetRanking);
 
-            final FlowShape<Pair<String, List<String>>, String> sentimentAnalysisFlowShape = b.add(sentimentAnalysisFlow);
+            FlowShape<Pair<String, List<String>>, Pair<String, Double>> sentimentAnalysisShape = b.add(sentimentAnalysisFlow);
+
+            FlowShape<Pair<String, Double>, String> averageSentimentLevelShape = b.add(averageSentimentLevelFlow);
 
             //count
             b.from(broad)
@@ -190,7 +198,8 @@ public class TweetAnalysis {
 
             //sentiment Analysis
             b.from(broad)
-                    .via(sentimentAnalysisFlowShape)
+                    .via(sentimentAnalysisShape)
+                    .via(averageSentimentLevelShape)
                     .viaFanIn(merge);
 
             return ClosedShape.getInstance();
