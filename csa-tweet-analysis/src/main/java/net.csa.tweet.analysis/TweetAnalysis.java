@@ -261,6 +261,7 @@ public class TweetAnalysis {
         Thread.sleep(500);
     }
 
+    //taken from http://rahular.com/twitter-sentiment-analysis/
     public static int findSentiment(String tweet) {
 
         int mainSentiment = 0;
