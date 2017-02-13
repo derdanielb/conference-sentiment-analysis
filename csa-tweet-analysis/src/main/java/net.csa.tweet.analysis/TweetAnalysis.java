@@ -13,6 +13,7 @@ import akka.stream.*;
 import akka.stream.javadsl.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sun.org.apache.xerces.internal.xs.StringList;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -79,6 +80,13 @@ public class TweetAnalysis {
 
         // ----- construct analysis -----
 
+        //word count
+        final int MAXIMUM_DISTINCT_WORDS = 1000;
+        Flow<List<String>, String, NotUsed> listToStringFlow =
+                Flow.fromFunction((List<String> l) -> "" + String.join(" ", l).split(" ").length);
+
+
+
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
         SharedKillSwitch killSwitch = KillSwitches.shared("baumKiller");
@@ -92,7 +100,7 @@ public class TweetAnalysis {
 
             final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(1));
 
-            final UniformFanInShape<Pair<String, List<String>>, Pair<String, List<String>>> merge = b.add(Merge.create(1));
+            final UniformFanInShape<String, String> merge = b.add(Merge.create(1));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
