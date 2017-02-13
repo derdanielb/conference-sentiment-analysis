@@ -132,8 +132,24 @@ public class TweetAnalysis {
                     return Pair.create(p.first(), x/p.second().size());
                 });
 
-        Flow<Pair<String, Double>, String, NotUsed> averageSentimentLevelFlow =
+        final Flow<Pair<String, Double>, String, NotUsed> averageSentimentLevelFlow =
                 Flow.fromFunction((Pair<String, Double> p) -> p.first() + ": average sentiment level is " + p.second());
+
+        //sa ranking
+        final Flow<Pair<String, Double>, String, NotUsed> saRanking =
+                Flow.<Pair<String, Double>>create()
+                        .grouped(10)
+                        .map(pairs -> {
+                            List<Pair<String, Double>> sortList = new ArrayList<>(pairs);
+                            sortList.sort(Comparator.comparingDouble(Pair::second));
+                            Collections.reverse(sortList);
+                            return sortList;
+                        }).map(pairs -> {
+                            List<String> result = new ArrayList<>();
+                            for (Pair<String, Double> pair : pairs)
+                                result.add(pair.first() + " (" + pair.second() + ")");
+                            return result;
+                        }).map(t -> "Sentiment analysis Ranking: " + String.join(", ", t));
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
