@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -102,6 +104,22 @@ public class TweetAnalysis {
                 Flow.fromFunction((Pair<String, List<String>> p) ->
                         p.first() + ": " + String.join(" ", p.second()).split(" ").length + " words");
 
+        //tweet ranking
+        final Flow<Pair<String, Integer>, String, NotUsed> tweetRanking =
+                Flow.<Pair<String, Integer>>create()
+                .grouped(10)
+                .map(pairs -> {
+                    List<Pair<String, Integer>> sortList = new ArrayList<>(pairs);
+                    sortList.sort(Comparator.comparingInt(Pair::second));
+                    Collections.reverse(sortList);
+                    return sortList;
+                }).map(pairs -> {
+                    List<String> result = new ArrayList<>();
+                    for (Pair<String, Integer> pair : pairs)
+                        result.add(pair.first() + " (" + pair.second() + ")");
+                    return result;
+                }).map(t -> "Tweet Count Ranking: " + String.join(", ", t));
+
         //Sentiment Analysis
         Flow<Pair<String, List<String>>, String, NotUsed> sentimentAnalysisFlow = Flow.fromFunction((Pair<String, List<String>> p) -> {
             List<Integer> l = new ArrayList<>();
@@ -124,7 +142,7 @@ public class TweetAnalysis {
 
             final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(2));
 
-            final UniformFanInShape<String, String> merge = b.add(Merge.create(2));
+            final UniformFanInShape<String, String> merge = b.add(Merge.create(3));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
@@ -138,19 +156,22 @@ public class TweetAnalysis {
 
             //analyser
 
+            final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(2));
+
             final FlowShape<Pair<String, List<String>>, Pair<String, Integer>> tweetCountShape = b.add(tweetCount);
 
             final FlowShape<Pair<String, Integer>, String> tweetCountInfoShape = b.add(tweetCountInfo);
 
-            final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(1));
-
             final FlowShape<Pair<String, List<String>>, String> wordCountShape = b.add(wordCountFlow);
+
+            final FlowShape<Pair<String, Integer>, String> tweetRankingShape = b.add(tweetRanking);
 
             //count
             b.from(broad)
                     .via(tweetCountShape)
                     .viaFanOut(countCast);
 
+            //count log
             b.from(countCast)
                     .via(tweetCountInfoShape)
                     .viaFanIn(merge);
@@ -158,6 +179,11 @@ public class TweetAnalysis {
             //word count
             b.from(broad)
                     .via(wordCountShape)
+                    .viaFanIn(merge);
+
+            //count rank
+            b.from(countCast)
+                    .via(tweetRankingShape)
                     .viaFanIn(merge);
 
             return ClosedShape.getInstance();
