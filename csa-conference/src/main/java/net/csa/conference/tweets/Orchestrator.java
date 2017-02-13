@@ -46,7 +46,7 @@ public class Orchestrator {
         ResponseEntity<Konferenz> mogodb_response = null;
 
         mogodb_fooResourceUrl = "http://localhost:8080/conference/search/findbyname/name/" + hashtag;
-        mogodb_response = restTemplate.getForEntity(mogodb_fooResourceUrl, List<Konferenz>.getClass())
+        mogodb_response = restTemplate.getForEntity(mogodb_fooResourceUrl, Konferenz.class);
         return mogodb_response.getBody();
     }
     //testcommit
