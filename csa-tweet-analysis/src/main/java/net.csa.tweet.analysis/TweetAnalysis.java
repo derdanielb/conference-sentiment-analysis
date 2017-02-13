@@ -7,25 +7,18 @@ import akka.japi.Pair;
 import akka.japi.function.Function;
 import akka.kafka.ConsumerMessage;
 import akka.kafka.ConsumerSettings;
-import akka.kafka.ProducerSettings;
 import akka.kafka.Subscriptions;
 import akka.kafka.javadsl.Consumer;
-import akka.kafka.javadsl.Producer;
 import akka.stream.*;
 import akka.stream.javadsl.*;
-import akka.util.ByteString;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.Float;
-import scala.util.Try;
 
-import java.io.File;
-import java.time.Instant;
-import java.util.Objects;
+import java.util.List;
 import java.util.concurrent.*;
 
 public class TweetAnalysis {
@@ -73,9 +66,13 @@ public class TweetAnalysis {
                     }
                 }));
 
-        final Flow<ConsumerMessage.CommittableMessage<String, String>, Pair<String, String>, NotUsed> kafkaStringFlow =
-                Flow.fromFunction(committableMessagePair -> Pair.create(committableMessagePair.record().key(),
-                        committableMessagePair.record().value()));
+        final Flow<ConsumerMessage.CommittableMessage<String, String>, Pair<String, List<String>>, NotUsed> kafkaStringFlow =
+                Flow.fromFunction((ConsumerMessage.CommittableMessage<String, String> committableMessagePair) ->
+                        Pair.create(committableMessagePair.record().key(), committableMessagePair.record().value()))
+                .map(p -> {
+                    Gson gson = new Gson();
+                    return Pair.create(p.first(), gson.fromJson(p.second(), new TypeToken<List<String>>(){}.getType()));
+                });
 
         Sink<Object, CompletionStage<Done>> sink
                 = Sink.foreach(p -> log.info("BAUM42: " + p.toString()));
@@ -89,11 +86,11 @@ public class TweetAnalysis {
             final SourceShape<ConsumerMessage.CommittableMessage<String, String>> kafkaSourceShape = b.add(kafkaSource);
 
             // flow shape to convert messages to strings
-            final FlowShape<ConsumerMessage.CommittableMessage<String, String>, Pair<String, String>> kafkaStringFlowShape = b.add(kafkaStringFlow);
+            final FlowShape<ConsumerMessage.CommittableMessage<String, String>, Pair<String, List<String>>> kafkaStringFlowShape = b.add(kafkaStringFlow);
 
-            final UniformFanOutShape<Pair<String, String>, Pair<String, String>> broad = b.add(Broadcast.create(1));
+            final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(1));
 
-            final UniformFanInShape<Pair<String, String>, Pair<String, String>> merge = b.add(Merge.create(1));
+            final UniformFanInShape<Pair<String, List<String>>, Pair<String, List<String>>> merge = b.add(Merge.create(1));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
