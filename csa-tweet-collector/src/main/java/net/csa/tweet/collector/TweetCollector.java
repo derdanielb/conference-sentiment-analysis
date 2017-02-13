@@ -91,20 +91,18 @@ public class TweetCollector {
         final Graph<FanInShape2<String, Integer, Pair<String, Integer>>, NotUsed> zip = ZipWith.create(Pair::new);
 
         // flow to create a http request to our twitter search
-        final Flow<Pair<String, Integer>, Pair<HttpRequest, Integer>, NotUsed> createRequestFlow;
+        final Flow<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>, NotUsed> createRequestFlow;
         {
-            // TODO this does not yet query for tweets with respect to a period of time (from and to date)
-            Flow<Pair<String, Integer>, Pair<HttpRequest, Integer>, NotUsed> flow
+            Flow<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>, NotUsed> flow
                     = Flow.fromFunction(p -> new Pair<>(HttpRequest
-                    .create("http://localhost:4201//twitter/search/" + p.first()),
-                    p.second()));
+                    .create("http://localhost:4201//twitter/search/" + p.first()), p));
             createRequestFlow = flow.log("csa-tweet-collector-createRequestFlow");
         }
 
         // flow to actually execute each http request to the twitter flow using Akka HTTP client-side
-        final Flow<Pair<HttpRequest, Integer>, Pair<Try<HttpResponse>, Integer>, NotUsed> httpClientFlow;
+        final Flow<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>, NotUsed> httpClientFlow;
         {
-            Flow<Pair<HttpRequest, Integer>, Pair<Try<HttpResponse>, Integer>, NotUsed> flow
+            Flow<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>, NotUsed> flow
                     = Http.get(system).superPool(materializer);
             flow = flow
                     .map(p -> {
@@ -114,7 +112,7 @@ public class TweetCollector {
             httpClientFlow = flow.log("csa-tweet-collector-httpClientFlow");
         }
 
-        final Flow<Pair<Try<HttpResponse>, Integer>, Pair<String, Integer>, NotUsed> conversionFlow;
+        final Flow<Pair<Try<HttpResponse>, Pair<String, Integer>>, Pair<String, Pair<String, Integer>>, NotUsed> conversionFlow;
         {
             conversionFlow = Flow.fromFunction(pair -> {
                 CompletableFuture<HttpEntity.Strict> rep = pair
@@ -127,10 +125,14 @@ public class TweetCollector {
             });
         }
 
-        Flow<Pair<String, Integer>, ProducerRecord<String, String>, NotUsed> kafkaFlow =
-                Flow.<Pair<String, Integer>>create()
-                        .map(p -> Pair.create(p.first(), "tc-topic-" + p.second()))
-                        .map(p -> new ProducerRecord<>(p.second(), 0, Instant.now().toEpochMilli(), p.second(), p.first()));
+        Flow<Pair<String, Pair<String, Integer>>, ProducerRecord<String, String>, NotUsed> kafkaFlow =
+                Flow.<Pair<String, Pair<String, Integer>>>create()
+                        .map(p -> Pair.create(p.first(), Pair.create(p.second().first(), "tc-topic-" + p.second().second())))
+                        .map(p -> new ProducerRecord<>(p.second().second(),
+                                0,
+                                Instant.now().toEpochMilli(),
+                                p.second().first(),
+                                p.first()));
 
         ProducerSettings<String, String> settings = ProducerSettings.create(system,
                 new StringSerializer(),
@@ -152,14 +154,14 @@ public class TweetCollector {
             final FanInShape2<String, Integer, Pair<String, Integer>> zipShape = b.add(zip);
 
             // flow shape to create an HttpRequest for every hashtag
-            final FlowShape<Pair<String, Integer>, Pair<HttpRequest, Integer>> createRequestFlowShape = b.add(createRequestFlow);
+            final FlowShape<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>> createRequestFlowShape = b.add(createRequestFlow);
 
             // flow shape to apply Akka HTTP client-side in the processing graph to call csa-twitter-search for each hashtag
-            final FlowShape<Pair<HttpRequest, Integer>, Pair<Try<HttpResponse>, Integer>> httpClientFlowShape = b.add(httpClientFlow);
+            final FlowShape<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>> httpClientFlowShape = b.add(httpClientFlow);
 
-            final FlowShape<Pair<Try<HttpResponse>, Integer>, Pair<String, Integer>> conversionFlowShape = b.add(conversionFlow);
+            final FlowShape<Pair<Try<HttpResponse>, Pair<String, Integer>>, Pair<String, Pair<String, Integer>>> conversionFlowShape = b.add(conversionFlow);
 
-            final FlowShape<Pair<String, Integer>, ProducerRecord<String, String>> kafkaFlowShape = b.add(kafkaFlow);
+            final FlowShape<Pair<String, Pair<String, Integer>>, ProducerRecord<String, String>> kafkaFlowShape = b.add(kafkaFlow);
 
             b.from(hashtagSourceShape).toInlet(zipShape.in0());
             b.from(integerSourceShape).toInlet(zipShape.in1());

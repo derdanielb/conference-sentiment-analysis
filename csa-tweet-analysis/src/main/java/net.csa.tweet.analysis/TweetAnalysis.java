@@ -73,11 +73,12 @@ public class TweetAnalysis {
                     }
                 }));
 
-        final Flow<ConsumerMessage.CommittableMessage<String, String>, String, NotUsed> kafkaStringFlow =
-                Flow.fromFunction(committableMessagePair -> committableMessagePair.record().value());
+        final Flow<ConsumerMessage.CommittableMessage<String, String>, Pair<String, String>, NotUsed> kafkaStringFlow =
+                Flow.fromFunction(committableMessagePair -> Pair.create(committableMessagePair.record().key(),
+                        committableMessagePair.record().value()));
 
         Sink<Object, CompletionStage<Done>> sink
-                = Sink.foreach(s -> log.info("BAUM42: " + s.toString()));
+                = Sink.foreach(p -> log.info("BAUM42: " + p.toString()));
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
@@ -87,10 +88,10 @@ public class TweetAnalysis {
             // source shape for kafka
             final SourceShape<ConsumerMessage.CommittableMessage<String, String>> kafkaSourceShape = b.add(kafkaSource);
 
-            FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
-
             // flow shape to convert messages to strings
-            final FlowShape<ConsumerMessage.CommittableMessage<String, String>, String> kafkaStringFlowShape = b.add(kafkaStringFlow);
+            final FlowShape<ConsumerMessage.CommittableMessage<String, String>, Pair<String, String>> kafkaStringFlowShape = b.add(kafkaStringFlow);
+
+            final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
             b.from(kafkaSourceShape)
                     .via(kafkaStringFlowShape)
