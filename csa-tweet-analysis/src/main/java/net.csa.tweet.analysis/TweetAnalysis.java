@@ -13,18 +13,26 @@ import akka.stream.*;
 import akka.stream.javadsl.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sun.org.apache.xerces.internal.xs.StringList;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.util.CoreMap;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
 public class TweetAnalysis {
     private static final Logger log = LoggerFactory.getLogger(TweetAnalysis.class);
+
+    static StanfordCoreNLP pipeline = new StanfordCoreNLP("MyPropFile.properties");
 
     public static void main(String args[]) throws InterruptedException, TimeoutException, ExecutionException {
 
@@ -93,6 +101,15 @@ public class TweetAnalysis {
         Flow<Pair<String, List<String>>, String, NotUsed> wordCountFlow =
                 Flow.fromFunction((Pair<String, List<String>> p) ->
                         p.first() + ": " + String.join(" ", p.second()).split(" ").length + " words");
+
+        //Sentiment Analysis
+        Flow<Pair<String, List<String>>, String, NotUsed> sentimentAnalysisFlow = Flow.fromFunction((Pair<String, List<String>> p) -> {
+            List<Integer> l = new ArrayList<>();
+            for (String tweet : p.second()) {
+                l.add(findSentiment(tweet));
+            }
+            return p.first() + ": " + l.toString();
+        });
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
@@ -174,4 +191,25 @@ public class TweetAnalysis {
         Thread.sleep(500);
     }
 
+    public static int findSentiment(String tweet) {
+
+        int mainSentiment = 0;
+        if (tweet != null && tweet.length() > 0) {
+            int longest = 0;
+            Annotation annotation = pipeline.process(tweet);
+            for (CoreMap sentence : annotation
+                    .get(CoreAnnotations.SentencesAnnotation.class)) {
+                Tree tree = sentence
+                        .get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
+                int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
+                String partText = sentence.toString();
+                if (partText.length() > longest) {
+                    mainSentiment = sentiment;
+                    longest = partText.length();
+                }
+
+            }
+        }
+        return mainSentiment;
+    }
 }
