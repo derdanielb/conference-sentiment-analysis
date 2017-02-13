@@ -53,7 +53,17 @@ public class TweetAnalysis {
                         .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
                         .withProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
-        Source<ConsumerMessage.CommittableMessage<String, String>, Consumer.Control> kafkaSource = Consumer.committableSource(consumerSettings, Subscriptions.topics("tc-topic-0"))
+        Source<ConsumerMessage.CommittableMessage<String, String>, Consumer.Control> kafkaSource =
+                Consumer.committableSource(consumerSettings, Subscriptions.topics("tc-topic-0",
+                        "tc-topic-1",
+                        "tc-topic-2",
+                        "tc-topic-3",
+                        "tc-topic-4",
+                        "tc-topic-5",
+                        "tc-topic-6",
+                        "tc-topic-7",
+                        "tc-topic-8",
+                        "tc-topic-9"))
                 //.map(msg -> new Pair<>(msg, msg.record().value()));
                 .mapAsync(1, msg -> CompletableFuture.supplyAsync(() -> {
                     try {
