@@ -90,9 +90,9 @@ public class TweetAnalysis {
         final Flow<Pair<String, Integer>, String, NotUsed> tweetCountInfo = Flow.fromFunction(p -> p.first() + ": " + p.second() + " tweets");
 
         //word count
-        Flow<Pair<String, List<String>>, String, NotUsed> listToStringFlow =
+        Flow<Pair<String, List<String>>, String, NotUsed> wordCountFlow =
                 Flow.fromFunction((Pair<String, List<String>> p) ->
-                        p.first() + ": " + String.join(" ", p.second()).split(" ").length + "words");
+                        p.first() + ": " + String.join(" ", p.second()).split(" ").length + " words");
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
@@ -105,9 +105,9 @@ public class TweetAnalysis {
             // flow shape to convert messages to strings
             final FlowShape<ConsumerMessage.CommittableMessage<String, String>, Pair<String, List<String>>> kafkaStringFlowShape = b.add(kafkaStringFlow);
 
-            final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(1));
+            final UniformFanOutShape<Pair<String, List<String>>, Pair<String, List<String>>> broad = b.add(Broadcast.create(2));
 
-            final UniformFanInShape<String, String> merge = b.add(Merge.create(1));
+            final UniformFanInShape<String, String> merge = b.add(Merge.create(2));
 
             final FlowShape<Object, Object> killShape = b.add(killSwitch.flow());
 
@@ -127,6 +127,8 @@ public class TweetAnalysis {
 
             final UniformFanOutShape<Pair<String, Integer>, Pair<String, Integer>> countCast = b.add(Broadcast.create(1));
 
+            final FlowShape<Pair<String, List<String>>, String> wordCountShape = b.add(wordCountFlow);
+
             //count
             b.from(broad)
                     .via(tweetCountShape)
@@ -134,6 +136,11 @@ public class TweetAnalysis {
 
             b.from(countCast)
                     .via(tweetCountInfoShape)
+                    .viaFanIn(merge);
+
+            //word count
+            b.from(broad)
+                    .via(wordCountShape)
                     .viaFanIn(merge);
 
             return ClosedShape.getInstance();
