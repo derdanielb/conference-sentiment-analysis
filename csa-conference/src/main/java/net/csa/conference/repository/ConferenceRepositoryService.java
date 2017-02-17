@@ -3,6 +3,7 @@ package net.csa.conference.repository;
 import net.csa.conference.model.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class ConferenceRepositoryService {
 		return repository.findAll();
 	}
 
-	public void createTestdata(int count) {
+	public int createTestdata(int count) {
 		repository.deleteAll();
 		List<Conference> conferenceList = new ArrayList<>();
 		Person person = new Person("Philipp", "Amkreutz");
@@ -61,21 +62,30 @@ public class ConferenceRepositoryService {
 					"Bergisch Gladbach", "DE", "test", organizerList, sponsorList);
 			conferenceList.add(c);
 		}
-		repository.save(conferenceList);
+		try {
+			repository.save(conferenceList);
+		} catch (DataAccessException e) {
+			return 0;
+		}
 		log.info(count + " Testdaten persistiert");
+		return 1;
 	}
 
-	public Conference add(Conference conference) {
+	public int add(Conference conference) {
 		conference.initGeoLocation();
-		repository.save(conference);
+		try {
+			repository.save(conference);
+		} catch (DataAccessException e) {
+			return 0;
+		}
 		log.info("Konferenz " + conference.getConferenceName() + " erfolgreich erstellt und persistiert");
-		return conference;
+		return 1;
 	}
 
-	public Conference update(Conference conference) {
+	public int update(Conference conference) {
 		if (conference.getUuid() == null) {
-			log.info("Konferenz mit der UUID: " + conference.getConferenceName() + " wurde nicht gefunden");
-			return new Conference();
+			log.info("Konferenz " + conference.getConferenceName() + " hat keine UUID");
+			return -1;
 		}
 		Conference old = repository.findByUuid(conference.getUuid());
 		if (!(conference.getStreet().equals(old.getStreet()) && conference.getHouseNumber().equals(old.getHouseNumber()) &&
@@ -83,26 +93,38 @@ public class ConferenceRepositoryService {
 				conference.getCountry().equals(old.getCountry()))) {
 			conference.initGeoLocation();
 		}
-		repository.save(conference);
-		log.info("Konferenz: " + conference.getConferenceName() + " erfolgreich geupdatet!");
-		return conference;
-	}
-
-	public String delete(Conference conference) {
-		Conference toDelete = repository.findByUuid(conference.getUuid());
-		if(toDelete == null) {
-			log.info("Konferenz mit der UUID: " + conference.getUuid() + " wurde nicht gefunden");
-			return "0";
+		try {
+			repository.save(conference);
+		} catch (DataAccessException e) {
+			return 0;
 		}
-		repository.delete(conference);
-		log.info("Konferenz " + conference.getConferenceName() + " erfolgreich gelöscht");
-		return "1";
+		log.info("Konferenz: " + conference.getConferenceName() + " erfolgreich geupdatet!");
+		return 1;
 	}
 
-	public String deleteAll() {
-		repository.deleteAll();
+	public int delete(Conference conference) {
+		Conference toDelete = repository.findByUuid(conference.getUuid());
+		if (toDelete == null) {
+			log.info("Konferenz mit der UUID: " + conference.getUuid() + " wurde nicht gefunden");
+			return -1;
+		}
+		try {
+			repository.delete(conference);
+		} catch (DataAccessException e) {
+			return 0;
+		}
+		log.info("Konferenz " + conference.getConferenceName() + " erfolgreich gelöscht");
+		return 1;
+	}
+
+	public int deleteAll() {
+		try {
+			repository.deleteAll();
+		} catch (DataAccessException e) {
+			return 0;
+		}
 		log.info("Alle Konferenzen gelöscht");
-		return "1";
+		return 1;
 	}
 
 }

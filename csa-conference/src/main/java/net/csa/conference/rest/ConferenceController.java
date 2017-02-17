@@ -23,67 +23,97 @@ public class ConferenceController {
 	@Autowired
 	private ConferenceRepositoryService conferenceRepositoryService;
 
-	@RequestMapping(value = "/")
-	public List<Conference> home() {
-		log.info("GET Request /conference");
-		List<Conference> conferences = conferenceRepositoryService.findAll();
-		return conferences;
-	}
-
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/add", method = RequestMethod.POST)
-	public Conference add(@RequestBody Conference conference) {
+	public ResponseEntity<Void> add(@RequestBody Conference conference) {
 		log.info("POST Request /conference/add");
-		Conference returnConference = conferenceRepositoryService.add(conference);
-		return returnConference;
+		int result = conferenceRepositoryService.add(conference);
+		if(result == 1) {
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} else if(result == 0) {
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/getByConferenceName/{conferenceName}", method = RequestMethod.GET, produces = "application/json")
-	public List<Conference> getConferenceByConferenceName(@PathVariable String conferenceName) {
+	public ResponseEntity<List<Conference>> getConferenceByConferenceName(@PathVariable String conferenceName) {
 		log.info("GET Request /conference/getByConferenceName");
 		List<Conference> conference = conferenceRepositoryService.findByConferenceName(conferenceName);
-		return conference;
+		if(conference.isEmpty()) {
+			return new ResponseEntity<List<Conference>>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<List<Conference>>(conference, HttpStatus.OK);
+		}
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/getByTwitterHashtag/{hashtag}", method = RequestMethod.GET, produces = "application/json")
-	public List<Conference> getConferenceByTwitterHashtag(@PathVariable String hashtag) {
+	public ResponseEntity<List<Conference>> getConferenceByTwitterHashtag(@PathVariable String hashtag) {
 		log.info("GET Request /conference/getByTwitterHashtag");
 		List<Conference> conferences = conferenceRepositoryService.findByTwitterHashTag(hashtag);
-		return conferences;
+		if(conferences.isEmpty()) {
+			return new ResponseEntity<List<Conference>>(HttpStatus.NOT_FOUND);
+		} else {
+			return new ResponseEntity<List<Conference>>(conferences, HttpStatus.OK);
+		}
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/update", method = RequestMethod.POST)
-	public Conference updateConference(@RequestBody Conference conference) {
+	public ResponseEntity<Void> updateConference(@RequestBody Conference conference) {
 		log.info("POST Request /conference/update");
-		Conference returnConference = conferenceRepositoryService.update(conference);
-		return returnConference;
+		int result = conferenceRepositoryService.update(conference);
+		if(result == 1) {
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} else if(result == 0) {
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} else if(result == -1) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/delete", method = RequestMethod.POST)
-	public String delete(@RequestBody Conference conference) {
+	public ResponseEntity<Void> delete(@RequestBody Conference conference) {
 		log.info("DELETE Request /conference/delete");
-		String returnString = conferenceRepositoryService.delete(conference);
-		return returnString;
+		int result = conferenceRepositoryService.delete(conference);
+		if(result == 1) {
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} else if(result == 0) {
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} else if(result == -1) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/deleteAll", method = RequestMethod.POST)
-	public String deleteAll() {
+	public ResponseEntity<Void> deleteAll() {
 		log.info("DELETE Request /conference/deleteAll");
-		String returnString = conferenceRepositoryService.deleteAll();
-		return returnString;
+		int result = conferenceRepositoryService.deleteAll();
+		if(result == 1) {
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} else if(result == 0) {
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/createTestdata/{count}", method = RequestMethod.POST)
-	public String createTestdata(@PathVariable String count) {
+	public ResponseEntity<Void> createTestdata(@PathVariable String count) {
 		log.info("POST Request /conference/createTestdata");
-		conferenceRepositoryService.createTestdata(Integer.parseInt(count));
-		return count;
+		int result = conferenceRepositoryService.createTestdata(Integer.parseInt(count));
+		if(result == 1) {
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} else if(result == 0) {
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

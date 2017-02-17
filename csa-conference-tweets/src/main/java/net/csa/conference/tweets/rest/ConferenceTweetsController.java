@@ -31,13 +31,13 @@ public class ConferenceTweetsController {
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping("/{hashtag}")
-	public List<ConferenceTweets> search(@PathVariable String hashtag) {
+	public ResponseEntity<List<ConferenceTweets>> search(@PathVariable String hashtag) {
 		List<HashMap> conferences = conferenceIntegration.getConferences(hashtag);
 		List<String> tweets = twitterIntegration.getTweets(hashtag);
 		ConferenceTweets conferenceTweets = new ConferenceTweets(conferences, tweets);
 		List<ConferenceTweets> conferenceTweetsList = new ArrayList<>();
 		conferenceTweetsList.add(conferenceTweets);
-		return conferenceTweetsList;
+		return new ResponseEntity<List<ConferenceTweets>>(conferenceTweetsList, HttpStatus.OK);
 	}
 
 }
