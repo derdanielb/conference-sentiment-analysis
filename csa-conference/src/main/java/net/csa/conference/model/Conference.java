@@ -24,15 +24,13 @@ public class Conference {
 	private String country;
 	private GeoLocation geoLocation;
 	private String twitterHashTag;
-	private String[] organizerStringArray;
-	private String[] sponsorStringArray;
 	private List<Organizer> organizerList;
 	private List<Sponsor> sponsorsList;
 
 	public Conference() {
 	}
 
-	public Conference(String conferenceName, String from, String to, String locationName, String street, String houseNumber, String postcode, String city, String country, String twitterHashTag, String[] organizerStringArray, String[] sponsorStringArray) {
+	public Conference(String conferenceName, String from, String to, String locationName, String street, String houseNumber, String postcode, String city, String country, String twitterHashTag, List<Organizer> organizerList, List<Sponsor> sponsorList) {
 		this.conferenceName = conferenceName;
 		this.from = from;
 		this.to = to;
@@ -45,33 +43,8 @@ public class Conference {
 		this.twitterHashTag = twitterHashTag;
 		this.geoLocation = new GeoLocation();
 		this.geoLocation.setAddress(this.street + " " + this.houseNumber + ", " + this.postcode + " " + this.city + " " + this.country);
-		this.organizerStringArray = organizerStringArray;
-		this.sponsorStringArray = sponsorStringArray;
-	}
-
-	private List initList(String[] fillFrom) {
-		if (fillFrom.length == 0) {
-			return null;
-		}
-		List result = new ArrayList();
-		for (String s : fillFrom) {
-			String[] split = s.split(";");
-			if (split[0].equals("Person")) {
-				String firstName = split[1];
-				String lastName = split[2];
-				Person person = new Person(firstName, lastName);
-				result.add(person);
-			} else if (split[0].equals("Group")) {
-				String name = split[1];
-				Group group = new Group(name);
-				result.add(group);
-			} else if (split[0].equals("Organisation")) {
-				String name = split[1];
-				Organisation organisation = new Organisation(name);
-				result.add(organisation);
-			}
-		}
-		return result;
+		this.organizerList = organizerList;
+		this.sponsorsList = sponsorList;
 	}
 
 	public String getUuid() {
@@ -134,21 +107,11 @@ public class Conference {
 		return twitterHashTag;
 	}
 
-	public String[] getOrganizerStringArray() {return organizerStringArray;}
-
-	public String[] getSponsorStringArray() {return sponsorStringArray;}
-
 	public List<Organizer> getOrganizerList() {
-		if (this.organizerList == null) {
-			this.organizerList = initList(this.organizerStringArray);
-		}
 		return this.organizerList;
 	}
 
 	public List<Sponsor> getSponsorsList() {
-		if (this.sponsorsList == null) {
-			this.sponsorsList = initList(this.sponsorStringArray);
-		}
 		return this.sponsorsList;
 	}
 
@@ -190,14 +153,6 @@ public class Conference {
 
 	public void setTwitterHashTag(String twitterHashTag) {
 		this.twitterHashTag = twitterHashTag;
-	}
-
-	public void setOrganizerStringArray(String[] organizerStringArray) {
-		this.organizerStringArray = organizerStringArray;
-	}
-
-	public void setSponsorStringArray(String[] sponsorStringArray) {
-		this.sponsorStringArray = sponsorStringArray;
 	}
 
 	public void setOrganizerList(List<Organizer> organizerList) {

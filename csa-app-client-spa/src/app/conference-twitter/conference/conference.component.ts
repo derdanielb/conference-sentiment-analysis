@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {ConferenceTwitterService} from "../conference-twitter.service";
 import {Conference} from "../conference";
+import {Person} from "../person";
+import {Group} from "../group";
+import {Organisation} from "../organisation";
 
 @Component({
   selector: 'app-conference',
@@ -38,9 +41,15 @@ export class ConferenceComponent implements OnInit {
   newConferenceVisible: boolean = false;
 
   //Empty new Conference
-  organizerString: string = "";
-  sponsorString: string = "";
-  newConference: Conference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], [], null, null);
+  organizerSelection: string = "";
+  firstNameOrganizer: string = "";
+  lastNameOrganizer: string = "";
+  groupOrganisationNameOrganizer: string = "";
+  sponsorSelection: string = "";
+  firstNameSponsor: string = "";
+  lastNameSponsor: string = "";
+  groupOrganisationNameSponsor: string = "";
+  newConference: Conference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], []);
 
   //Response from adding or updating a Conference
   returnConference: Conference;
@@ -104,66 +113,74 @@ export class ConferenceComponent implements OnInit {
 
   addOrganizer() {
     this.organizerError = false;
-    if(this.organizerString == "") {
-      this.organizerError = true;
-      return;
-    }
-    //Organizer Input-Validation
-    let split: string[] = this.organizerString.split(";");
-    if(!(split[0] == "Person" || split[0] == "Group" || split[0] == "Organisation")) {
-      this.organizerError = true;
-      return;
-    }
-    if(split[0] == "Person") {
-      if((!split[1] || !split[2]) || split[3]) {
+    if(this.organizerSelection == "person") {
+      if(this.firstNameOrganizer == "" || this.lastNameOrganizer == "") {
         this.organizerError = true;
         return;
       }
-    }
-    if(split[0] == "Group" || split[0] == "Organisation") {
-      if(!split[1] || split[2]) {
+      let person = new Person(this.firstNameOrganizer, this.lastNameOrganizer);
+      this.newConference.organizerList.push(person);
+      this.organizerSelection = "";
+
+    } else if(this.organizerSelection == "group") {
+      if(this.groupOrganisationNameOrganizer == "") {
         this.organizerError = true;
         return;
       }
+      let group = new Group(this.groupOrganisationNameOrganizer);
+      this.newConference.organizerList.push(group);
+      this.organizerSelection = "";
+
+    } else if(this.organizerSelection == "organisation") {
+      if(this.groupOrganisationNameOrganizer == "") {
+        this.organizerError = true;
+        return;
+      }
+      let organisation = new Organisation(this.groupOrganisationNameOrganizer);
+      this.newConference.organizerList.push(organisation);
+      this.organizerSelection = "";
+
     }
-    this.newConference.organizerStringArray.push(this.organizerString);
-    this.organizerString = "";
   }
 
   deleteOrganizer(index: number) {
-    this.newConference.organizerStringArray.splice(index, 1);
+    this.newConference.organizerList.splice(index, 1);
   }
 
   addSponsor() {
     this.sponsorError = false;
-    if(this.sponsorString == "") {
-      this.sponsorError = true;
-      return;
-    }
-    //Sponsor Input-Validation
-    let split: string[] = this.sponsorString.split(";");
-    if(!(split[0] == "Person" || split[0] == "Group" || split[0] == "Organisation")) {
-      this.sponsorError = true;
-      return;
-    }
-    if(split[0] == "Person") {
-      if((!split[1] || !split[2]) || split[3]) {
+    if(this.sponsorSelection == "person") {
+      if(this.firstNameSponsor == "" || this.lastNameSponsor == "") {
         this.sponsorError = true;
         return;
       }
-    }
-    if(split[0] == "Group" || split[0] == "Organisation") {
-      if(!split[1] || split[2]) {
+      let person = new Person(this.firstNameSponsor, this.lastNameSponsor);
+      this.newConference.sponsorsList.push(person);
+      this.sponsorSelection = "";
+
+    } else if(this.sponsorSelection == "group") {
+      if(this.groupOrganisationNameSponsor == "") {
         this.sponsorError = true;
         return;
       }
+      let group = new Group(this.groupOrganisationNameSponsor);
+      this.newConference.sponsorsList.push(group);
+      this.sponsorSelection = "";
+
+    } else if(this.sponsorSelection == "organisation") {
+      if(this.groupOrganisationNameSponsor == "") {
+        this.sponsorError = true;
+        return;
+      }
+      let organisation = new Organisation(this.groupOrganisationNameSponsor);
+      this.newConference.sponsorsList.push(organisation);
+      this.sponsorSelection = "";
+
     }
-    this.newConference.sponsorStringArray.push(this.sponsorString);
-    this.sponsorString = "";
   }
 
   deleteSponsor(index: number) {
-    this.newConference.sponsorStringArray.splice(index, 1);
+    this.newConference.sponsorsList.splice(index, 1);
   }
 
   saveConference() {
@@ -171,7 +188,7 @@ export class ConferenceComponent implements OnInit {
     this.saveError = false;
     if (this.newConference.conferenceName == "" || this.newConference.from == "" || this.newConference.to == "" || this.newConference.locationName == "" ||
       this.newConference.street == "" || this.newConference.houseNumber == "" || this.newConference.postcode == "" || this.newConference.city == "" ||
-      this.newConference.country == "" || this.newConference.twitterHashTag == "" || this.newConference.organizerStringArray.length == 0 || this.newConference.sponsorStringArray.length == 0) {
+      this.newConference.country == "" || this.newConference.twitterHashTag == "" || this.newConference.organizerList == null || this.newConference.sponsorsList == null) {
       this.saveError = true;
       return;
     }
@@ -184,7 +201,7 @@ export class ConferenceComponent implements OnInit {
       this.returnConference = returnConference;
     });
     this.newConferenceVisible = false;
-    this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], [], null, null);
+    this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], []);
   }
 
   updateConference() {
@@ -192,7 +209,7 @@ export class ConferenceComponent implements OnInit {
     this.saveError = false;
     if (this.newConference.conferenceName == "" || this.newConference.from == "" || this.newConference.to == "" || this.newConference.locationName == "" ||
       this.newConference.street == "" || this.newConference.houseNumber == "" || this.newConference.postcode == "" || this.newConference.city == "" ||
-      this.newConference.country == "" || this.newConference.twitterHashTag == "" || this.newConference.organizerStringArray.length == 0 || this.newConference.sponsorStringArray.length == 0) {
+      this.newConference.country == "" || this.newConference.twitterHashTag == "" || this.newConference.organizerList == null || this.newConference.sponsorsList == null) {
       this.saveError = true;
       return;
     }
@@ -201,20 +218,16 @@ export class ConferenceComponent implements OnInit {
       let split: string[] = this.newConference.twitterHashTag.split("#");
       this.newConference.twitterHashTag = split[1];
     }
-    this.newConference.organizerList = null;
-    this.newConference.sponsorsList = null;
     this.conferenceTwitterService.updateConference(this.newConference).then(returnConference=> {
       this.returnConference = returnConference;
     });
     this.newConferenceVisible = false;
-    this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], [], null, null);
+    this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], []);
   }
 
   deleteConference(conference: Conference) {
     this.returnDelete = "";
     let conferenceToDelete: Conference = conference;
-    conferenceToDelete.organizerList = null;
-    conferenceToDelete.sponsorsList = null;
     this.conferenceTwitterService.deleteConference(conferenceToDelete).then(returnDelete=> {
       this.returnDelete = returnDelete;
     });

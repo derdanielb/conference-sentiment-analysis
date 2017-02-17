@@ -1,6 +1,6 @@
 package net.csa.conference.repository;
 
-import net.csa.conference.model.Conference;
+import net.csa.conference.model.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -45,11 +45,20 @@ public class ConferenceRepositoryService {
 	public void createTestdata(int count) {
 		repository.deleteAll();
 		List<Conference> conferenceList = new ArrayList<>();
-		String[] organizerStringArray = {"Person;Philipp;Amkreutz", "Group;TolleGruppe", "Organisation;TolleOrganisation"};
-		String[] sponsorStringArray = {"Person;Philipp;Amkreutz", "Group;TolleGruppe", "Organisation;TolleOrganisation"};
+		Person person = new Person("Philipp", "Amkreutz");
+		Group group = new Group("TolleGruppe");
+		Organisation organisation = new Organisation("TolleOrganisation");
+		List<Organizer> organizerList = new ArrayList<>();
+		organizerList.add(person);
+		organizerList.add(group);
+		organizerList.add(organisation);
+		List<Sponsor> sponsorList = new ArrayList<>();
+		sponsorList.add(person);
+		sponsorList.add(group);
+		sponsorList.add(organisation);
 		for (int i = 1; i <= count; i++) {
 			Conference c = new Conference("TestKonferenz" + i, "from", "to", "TestLocationName", "Auf der Höhe", "28", "51429",
-					"Bergisch Gladbach", "DE", "test", organizerStringArray, sponsorStringArray);
+					"Bergisch Gladbach", "DE", "test", organizerList, sponsorList);
 			conferenceList.add(c);
 		}
 		repository.save(conferenceList);
@@ -82,7 +91,7 @@ public class ConferenceRepositoryService {
 	public String delete(Conference conference) {
 		Conference toDelete = repository.findByUuid(conference.getUuid());
 		if(toDelete == null) {
-			log.info("Konferenz mit der UUID: " + conference.getConferenceName() + " wurde nicht gefunden");
+			log.info("Konferenz mit der UUID: " + conference.getUuid() + " wurde nicht gefunden");
 			return "0";
 		}
 		repository.delete(conference);

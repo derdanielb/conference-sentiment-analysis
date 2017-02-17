@@ -42,26 +42,46 @@
       <label for="newHashTag">Twitter-HashTag: </label>
       <input id="newHashTag" type="text" name="newConferenceHashTagInput" [(ngModel)]="newConference.twitterHashTag">
       <br>
-      <label for="organizer-div">Organizer (Example: 'Person;FirstName;LastName' 'Group|Organisation;Name')</label>
       <div id="organizer-div">
-        <input type="text" name="organizerInput" [(ngModel)]="organizerString">
+        <select name="organizerSelect" [(ngModel)]="organizerSelection">
+          <option value="person">Person</option>
+          <option value="group">Group</option>
+          <option value="organisation">Organisation</option>
+        </select>
+        <div *ngIf="organizerSelection=='person'">
+          <input type="text" name="firstName" [(ngModel)]="firstNameOrganizer" placeholder="First Name">
+          <input type="text" name="lastName" [(ngModel)]="lastNameOrganizer" placeholder="Last Name">
+        </div>
+        <div *ngIf="organizerSelection=='group' || organizerSelection=='organisation'">
+          <input type="text" name="name" [(ngModel)]="groupOrganisationNameOrganizer" placeholder="Name">
+        </div>
         <button (click)="addOrganizer()">Add Organizer</button>
         <p *ngIf="organizerError" style="color: red">Please fill the Organizer-Field correctly!</p>
         <ul name="organizer-list">
-          <li name="organizer-list-entry" *ngFor="let element of newConference.organizerStringArray; let i = index">
-            <p name="organizer">{{i+1}}. Organizer: {{element}}</p>
+          <li name="organizer-list-entry" *ngFor="let element of newConference.organizerList; let i = index">
+            <p name="organizer">{{i+1}}. Organizer: {{element.name}}</p>
             <button (click)="deleteOrganizer(i)">Delete</button>
           </li>
         </ul>
       </div>
-      <label for="sponsor-div">Sponsor (Example: 'Person;FirstName;LastName' 'Group|Organisation;Name')</label>
       <div id="sponsor-div">
-        <input type="text" name="sponsorInput" [(ngModel)]="sponsorString">
+        <select name="sponsorSelect" [(ngModel)]="sponsorSelection">
+          <option value="person">Person</option>
+          <option value="group">Group</option>
+          <option value="organisation">Organisation</option>
+        </select>
+        <div *ngIf="sponsorSelection=='person'">
+          <input type="text" name="firstName" [(ngModel)]="firstNameSponsor" placeholder="First Name">
+          <input type="text" name="lastName" [(ngModel)]="lastNameSponsor" placeholder="Last Name">
+        </div>
+        <div *ngIf="sponsorSelection=='group' || sponsorSelection=='organisation'">
+          <input type="text" name="name" [(ngModel)]="groupOrganisationNameSponsor" placeholder="Name">
+        </div>
         <button (click)="addSponsor()">Add Sponsor</button>
         <p *ngIf="sponsorError" style="color: red">Please fill the Sponsor-Field correctly!</p>
         <ul name="sponsor-list">
-          <li name="sponsor-list-entry" *ngFor="let element of newConference.sponsorStringArray; let i = index">
-            <p id="sponsorElement">{{i+1}}. Sponsor: {{element}}</p>
+          <li name="sponsor-list-entry" *ngFor="let element of newConference.sponsorsList; let i = index">
+            <p name="sponsor">{{i+1}}. Sponsor: {{element.name}}</p>
             <button (click)="deleteSponsor(i)">Delete</button>
           </li>
         </ul>
@@ -111,14 +131,14 @@
       <p id="hashTag">{{conference.twitterHashTag}}</p>
       <label for="organizer-list">Organizer: </label>
       <ul id="organizer-list">
-        <li name="organizer-list-entry" *ngFor="let gop of conference.organizerList">
-          <p>{{gop.name}}</p>
+        <li name="organizer-list-entry" *ngFor="let organizer of conference.organizerList">
+          <p>{{organizer.name}}</p>
         </li>
       </ul>
       <label for="sponsors-list">Sponsors: </label>
       <ul id="sponsors-list">
-        <li name="sponsor-list-entry" *ngFor="let gop of conference.sponsorsList">
-          <p>{{gop.name}}</p>
+        <li name="sponsor-list-entry" *ngFor="let sponsor of conference.sponsorsList">
+          <p>{{sponsor.name}}</p>
         </li>
       </ul>
       <button (click)="clickResultEntry(conference)">Change</button>

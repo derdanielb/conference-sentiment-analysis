@@ -26,7 +26,7 @@ public class GeoLocation {
 	private static final Logger log = Logger.getLogger(GeoLocation.class);
 
 	@Transient
-	private String googleMapsApiKey = "InsertKeyHere!";
+	private String googleMapsApiKey = "AIzaSyDOwyBEQP7DM0JX7bD758a8oSJBXDW535o";
 
 	private String address;
 

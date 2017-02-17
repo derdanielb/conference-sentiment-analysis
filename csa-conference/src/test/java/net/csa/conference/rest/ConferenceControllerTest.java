@@ -1,7 +1,7 @@
 package net.csa.conference.rest;
 
 import com.google.gson.Gson;
-import net.csa.conference.model.Conference;
+import net.csa.conference.model.*;
 import net.csa.conference.repository.ConferenceRepositoryService;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,9 +39,21 @@ public class ConferenceControllerTest {
 	private ConferenceRepositoryService conferenceRepositoryService;
 
 	private MockMvc mockMvc;
-	String[] organizerStringArray = {"Person;Philipp;Amkreutz", "Group;TestGroup", "Organisation;TestOrganisation"};
-	String[] sponsorStringArray = {"Person;Philipp;Amkreutz", "Group;TestGroup", "Organisation;TestOrganisation"};
-	private Conference testConference = new Conference("MockMVCTestConference", "from", "to", "LocationName", "Auf der Höhe", "28", "51429", "Bergisch Gladbach", "DE", "test", organizerStringArray, sponsorStringArray);
+	Person person = new Person("Philipp", "Amkreutz");
+	Group group = new Group("TolleGruppe");
+	Organisation organisation = new Organisation("TolleOrganisation");
+	List<Organizer> organizerList = new ArrayList<Organizer>() {{
+		add(person);
+		add(group);
+		add(organisation);
+	}};
+	List<Sponsor> sponsorList = new ArrayList<Sponsor>() {{
+		add(person);
+		add(group);
+		add(organisation);
+	}};
+
+	private Conference testConference = new Conference("MockMVCTestConference", "from", "to", "LocationName", "Auf der Höhe", "28", "51429", "Bergisch Gladbach", "DE", "test", organizerList, sponsorList);
 
 	private Gson gson = new Gson();
 
