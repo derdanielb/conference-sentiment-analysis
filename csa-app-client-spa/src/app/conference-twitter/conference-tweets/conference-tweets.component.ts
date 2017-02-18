@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ConferenceTwitterService} from "../conference-twitter.service";
 import {Conference} from "../conference";
 import {Tweet} from "../tweet";
+import {waitForMap} from "@angular/router/src/utils/collection";
 
 @Component({
   selector: 'app-conference-tweets',
@@ -9,6 +10,8 @@ import {Tweet} from "../tweet";
   styleUrls: ['./conference-tweets.component.css']
 })
 export class ConferenceTweetsComponent implements OnInit {
+
+  messageList: string[] = [];
 
   //NgModel searchString
   hashTag: string = "";
@@ -20,7 +23,6 @@ export class ConferenceTweetsComponent implements OnInit {
   tweets: Tweet[] = [];
 
   searched: boolean = false;
-  error: boolean = false;
 
   constructor(private conferenceTwitterService: ConferenceTwitterService) { }
 
@@ -28,9 +30,9 @@ export class ConferenceTweetsComponent implements OnInit {
   }
 
   search() {
-    this.error = false;
+    this.messageList = [];
     if(this.hashTag.length == 0) {
-      this.error = true;
+      this.messageList.push("Bitte Geben Sie ein Suchkriterium an.");
       return;
     }
     this.tweets = [];
@@ -47,5 +49,4 @@ export class ConferenceTweetsComponent implements OnInit {
     });
     this.searched = true;
   }
-
 }

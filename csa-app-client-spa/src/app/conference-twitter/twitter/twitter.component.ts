@@ -11,8 +11,8 @@ export class TwitterComponent implements OnInit {
 
   hashTag: string = "";
   tweets: Tweet[] = [];
+  messageList: string[] = [];
   searched: boolean = false;
-  error: boolean = false;
 
   constructor(private conferenceTwitterService: ConferenceTwitterService) {
   }
@@ -21,9 +21,9 @@ export class TwitterComponent implements OnInit {
   }
 
   search() {
-    this.error = false;
+    this.messageList = [];
     if(this.hashTag.length == 0) {
-      this.error = true;
+      this.messageList.push("Geben Sie ein Suchkriterium ein.");
       return;
     }
     this.tweets = [];

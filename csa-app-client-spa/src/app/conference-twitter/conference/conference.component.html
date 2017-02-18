@@ -3,15 +3,18 @@
   <button (click)="newConferenceFormular()">New Conference</button>
   <button (click)="createTestDataFormular()">Create TestData</button>
   <button (click)="deleteAllConferences()">Delete All</button>
-  <p *ngIf="returnDeleteAll == '1'" style="color: green">All Conferences deleted!</p>
-  <p *ngIf="returnDeleteAll == '0'" style="color: red">Failed to delete All Conferences!</p>
+  <div class="message-div">
+    <ul class="message-list">
+      <li style="list-style: circle" *ngFor="let message of messageListFormular">
+        <p>{{message}}</p>
+      </li>
+    </ul>
+  </div>
   <div *ngIf="createTestDataVisible">
     <label for="count">No GeoLocation is requested for TestData.</label>
     <input id="count" type="text" name="testDataCountInput" placeholder="count" [(ngModel)]="count">
     <button (click)="createTestData()">Create</button>
-    <p *ngIf="testDataError" style="color: red">Please fill the Count-Field!</p>
   </div>
-  <p *ngIf="returnCount" style="color: green">{{returnCount}} TestData saved!</p>
   <div *ngIf="newConferenceVisible">
     <form>
       <label for="newConferenceName">ConferenceName: </label>
@@ -42,6 +45,7 @@
       <label for="newHashTag">Twitter-HashTag: </label>
       <input id="newHashTag" type="text" name="newConferenceHashTagInput" [(ngModel)]="newConference.twitterHashTag">
       <br>
+      <label for="organizer-div">Organizer</label>
       <div id="organizer-div">
         <select name="organizerSelect" [(ngModel)]="organizerSelection">
           <option value="person">Person</option>
@@ -55,8 +59,7 @@
         <div *ngIf="organizerSelection=='group' || organizerSelection=='organisation'">
           <input type="text" name="name" [(ngModel)]="groupOrganisationNameOrganizer" placeholder="Name">
         </div>
-        <button (click)="addOrganizer()">Add Organizer</button>
-        <p *ngIf="organizerError" style="color: red">Please fill the Organizer-Field correctly!</p>
+        <button *ngIf="organizerSelection!=''" (click)="addOrganizer()">Add Organizer</button>
         <ul name="organizer-list">
           <li name="organizer-list-entry" *ngFor="let element of newConference.organizerList; let i = index">
             <p name="organizer">{{i+1}}. Organizer: {{element.name}}</p>
@@ -64,6 +67,7 @@
           </li>
         </ul>
       </div>
+      <label for="sponsor-div">Sponsors</label>
       <div id="sponsor-div">
         <select name="sponsorSelect" [(ngModel)]="sponsorSelection">
           <option value="person">Person</option>
@@ -77,8 +81,7 @@
         <div *ngIf="sponsorSelection=='group' || sponsorSelection=='organisation'">
           <input type="text" name="name" [(ngModel)]="groupOrganisationNameSponsor" placeholder="Name">
         </div>
-        <button (click)="addSponsor()">Add Sponsor</button>
-        <p *ngIf="sponsorError" style="color: red">Please fill the Sponsor-Field correctly!</p>
+        <button *ngIf="sponsorSelection!=''" (click)="addSponsor()">Add Sponsor</button>
         <ul name="sponsor-list">
           <li name="sponsor-list-entry" *ngFor="let element of newConference.sponsorsList; let i = index">
             <p name="sponsor">{{i+1}}. Sponsor: {{element.name}}</p>
@@ -88,10 +91,8 @@
       </div>
       <button *ngIf="!conferenceClicked" type="submit" (click)="saveConference()">Save</button>
       <button *ngIf="conferenceClicked" type="submit" (click)="updateConference()">Change</button>
-      <p *ngIf="saveError" style="color: red">Please fill all fields!</p>
     </form>
   </div>
-  <p *ngIf="returnConference" style="color: green">{{returnConference.conferenceName}} saved!</p>
 </div>
 <div name="filter">
   <h3>Filter Selection</h3>
@@ -104,11 +105,14 @@
 <div name="search" *ngIf="filter">
   <input type="text" name="search-q" [(ngModel)]="search">
   <button (click)="getResults()">Search</button>
-  <p *ngIf="searchError" style="color: red">Please fill the Search-Field!</p>
-  <p *ngIf="returnDelete == '1'" style="color: green">Conference deleted!</p>
-  <p *ngIf="returnDelete == '0'" style="color: red">Failed to Delete Conference!</p>
+  <div class="message-div">
+    <ul class="message-list">
+      <li style="list-style: circle" *ngFor="let message of messageListSearch">
+        <p>{{message}}</p>
+      </li>
+    </ul>
+  </div>
 </div>
-<p name="test" *ngIf="resultConferences.length == 0 && searched">No Results!</p>
 <div name="results" *ngIf="resultConferences.length > 0">
   <h4>Results</h4>
   <ul>

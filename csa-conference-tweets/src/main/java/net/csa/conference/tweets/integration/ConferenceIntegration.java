@@ -3,8 +3,10 @@ package net.csa.conference.tweets.integration;
 import org.apache.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,8 +24,12 @@ public class ConferenceIntegration {
 		String getConferencesByTwitterHashtagURL = "http://csa_conference_01:8080/conference/getByTwitterHashtag/" + hashtag;
 //		Activate for local Test / Deactivate for Docker ->
 //		String getConferencesByTwitterHashtagURL = "http://localhost:8080/conference/getByTwitterHashtag/" + hashtag;
-		ResponseEntity responseEntity = restTemplate.getForEntity(getConferencesByTwitterHashtagURL, List.class);
-		return (List<HashMap>) responseEntity.getBody();
+		try {
+			ResponseEntity responseEntity = restTemplate.getForEntity(getConferencesByTwitterHashtagURL, List.class);
+			return (List<HashMap>) responseEntity.getBody();
+		} catch (HttpClientErrorException e) {
+			return new ArrayList<>();
+		}
 	}
 
 }

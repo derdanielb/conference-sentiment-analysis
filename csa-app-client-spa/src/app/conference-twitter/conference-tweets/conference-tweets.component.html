@@ -2,51 +2,60 @@
 <p>Search with #HashTag</p>
 <input type="text" name="hashTag" [(ngModel)]="hashTag">
 <button (click)="search()">Search</button>
-<p *ngIf="error" style="color: red">Please fill the #HashTag</p>
-<p *ngIf="tweets.length == 0 && conferences.length == 0 && searched">No Results!</p>
+<p *ngIf="searched && conferences.length==0">Keine Konferenz-Suchergebnisse.</p>
+<p *ngIf="searched && tweets.length==0">Keine Twitter-Suchergebnisse.</p>
+<div class="message-div">
+  <ul class="message-list">
+    <li style="list-style: circle" *ngFor="let message of messageList">
+      <p>{{message}}</p>
+    </li>
+  </ul>
+</div>
 <div id="results" *ngIf="tweets.length > 0 || conferences.length > 0">
   <h4>Results</h4>
   <div>
-    <h5>Conference Results</h5>
-    <p *ngIf="conferences.length == 0">No Results!</p>
-    <ul id="conference-results">
-      <li name="list-entry" *ngFor="let conference of conferences">
-        <label for="conferenceName">ConferenceName: </label>
-        <p id="conferenceName">{{conference.conferenceName}}</p>
-        <label for="from">From (Date): </label>
-        <p id="from">{{conference.from}}</p>
-        <label for="to">To (Date): </label>
-        <p id="to">{{conference.to}}</p>
-        <label for="locationName">LocationName: </label>
-        <p id="locationName">{{conference.locationName}}</p>
-        <label for="address">Address: </label>
-        <p id="address">{{conference.street}} {{conference.houseNumber}}, {{conference.postcode}} {{conference.city}},
-          {{conference.country}}</p>
-        <label for="long-lat" *ngIf="conference.geoLocation.longitude">Longitude x Latitude: </label>
-        <p id="long-lat" *ngIf="conference.geoLocation.longitude">{{conference.geoLocation.longitude}} x
-          {{conference.geoLocation.latitude}}</p>
-        <label for="hashTag">Twitter-HashTag: </label>
-        <p id="hashTag">{{conference.twitterHashTag}}</p>
-        <label for="organizer-list">Organizer: </label>
-        <ul id="organizer-list">
-          <li name="organizer-list-entry" *ngFor="let gop of conference.organizerList">
-            <p>{{gop.name}}</p>
-          </li>
-        </ul>
-        <label for="sponsors-list">Sponsors: </label>
-        <ul id="sponsors-list">
-          <li name="sponsor-list-entry" *ngFor="let gop of conference.sponsorsList">
-            <p>{{gop.name}}</p>
-          </li>
-        </ul>
-        <br></li>
-    </ul>
-    <h5>Twitter Results</h5>
-    <p *ngIf="tweets.length == 0">No Results!</p>
-    <ul id="twitter-results">
-      <li name="list-entry" *ngFor="let tweet of tweets">
-        <p>{{tweet}}</p>
-      </li>
-    </ul>
+    <div *ngIf="conferences.length > 0">
+      <h5>Conference Results</h5>
+      <ul id="conference-results">
+        <li name="list-entry" *ngFor="let conference of conferences">
+          <label for="conferenceName">ConferenceName: </label>
+          <p id="conferenceName">{{conference.conferenceName}}</p>
+          <label for="from">From (Date): </label>
+          <p id="from">{{conference.from}}</p>
+          <label for="to">To (Date): </label>
+          <p id="to">{{conference.to}}</p>
+          <label for="locationName">LocationName: </label>
+          <p id="locationName">{{conference.locationName}}</p>
+          <label for="address">Address: </label>
+          <p id="address">{{conference.street}} {{conference.houseNumber}}, {{conference.postcode}} {{conference.city}},
+            {{conference.country}}</p>
+          <label for="long-lat" *ngIf="conference.geoLocation.longitude">Longitude x Latitude: </label>
+          <p id="long-lat" *ngIf="conference.geoLocation.longitude">{{conference.geoLocation.longitude}} x
+            {{conference.geoLocation.latitude}}</p>
+          <label for="hashTag">Twitter-HashTag: </label>
+          <p id="hashTag">{{conference.twitterHashTag}}</p>
+          <label for="organizer-list">Organizer: </label>
+          <ul id="organizer-list">
+            <li name="organizer-list-entry" *ngFor="let gop of conference.organizerList">
+              <p>{{gop.name}}</p>
+            </li>
+          </ul>
+          <label for="sponsors-list">Sponsors: </label>
+          <ul id="sponsors-list">
+            <li name="sponsor-list-entry" *ngFor="let gop of conference.sponsorsList">
+              <p>{{gop.name}}</p>
+            </li>
+          </ul>
+          <br></li>
+      </ul>
+    </div>
+    <div *ngIf="tweets.length > 0">
+      <h5>Twitter Results</h5>
+      <ul id="twitter-results">
+        <li name="list-entry" *ngFor="let tweet of tweets">
+          <p>{{tweet}}</p>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

@@ -39,5 +39,4 @@ public class ConferenceTweetsController {
 		conferenceTweetsList.add(conferenceTweets);
 		return new ResponseEntity<List<ConferenceTweets>>(conferenceTweetsList, HttpStatus.OK);
 	}
-
 }

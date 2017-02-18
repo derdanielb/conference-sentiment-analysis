@@ -25,15 +25,15 @@ public class ConferenceController {
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/add", method = RequestMethod.POST)
-	public ResponseEntity<Void> add(@RequestBody Conference conference) {
+	public ResponseEntity<String> add(@RequestBody Conference conference) {
 		log.info("POST Request /conference/add");
 		int result = conferenceRepositoryService.add(conference);
 		if(result == 1) {
-			return new ResponseEntity<Void>(HttpStatus.OK);
+			return new ResponseEntity<String>("Konferenz " + conference.getConferenceName() + " erfolgreich gespeichert.", HttpStatus.OK);
 		} else if(result == 0) {
-			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Es ist ein Fehler beim Speichern der Konferenz aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>("Es ist ein Fehler beim Speichern der Konferenz aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@CrossOrigin(origins = "*")
@@ -62,58 +62,58 @@ public class ConferenceController {
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/update", method = RequestMethod.POST)
-	public ResponseEntity<Void> updateConference(@RequestBody Conference conference) {
+	public ResponseEntity<String> updateConference(@RequestBody Conference conference) {
 		log.info("POST Request /conference/update");
 		int result = conferenceRepositoryService.update(conference);
 		if(result == 1) {
-			return new ResponseEntity<Void>(HttpStatus.OK);
+			return new ResponseEntity<String>("Konferenz " + conference.getConferenceName() + " erfolgreich gespeichert.", HttpStatus.OK);
 		} else if(result == 0) {
-			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Ein Fehler ist beim Speichern aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 		} else if(result == -1) {
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Konferenz " + conference.getConferenceName() + " wurde nicht gefunden.", HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>("Ein Fehler ist beim Speichern aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/delete", method = RequestMethod.POST)
-	public ResponseEntity<Void> delete(@RequestBody Conference conference) {
+	public ResponseEntity<String> delete(@RequestBody Conference conference) {
 		log.info("DELETE Request /conference/delete");
 		int result = conferenceRepositoryService.delete(conference);
 		if(result == 1) {
-			return new ResponseEntity<Void>(HttpStatus.OK);
+			return new ResponseEntity<String>("Konferenz " + conference.getConferenceName() + " wurde erfolgreich gelöscht.", HttpStatus.OK);
 		} else if(result == 0) {
-			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Ein Fehler ist beim Speichern aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 		} else if(result == -1) {
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>("Konferenz " + conference.getConferenceName() + " wurde nicht gefunden.", HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>("Ein Fehler ist beim Speichern aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/deleteAll", method = RequestMethod.POST)
-	public ResponseEntity<Void> deleteAll() {
+	public ResponseEntity<String> deleteAll() {
 		log.info("DELETE Request /conference/deleteAll");
 		int result = conferenceRepositoryService.deleteAll();
 		if(result == 1) {
-			return new ResponseEntity<Void>(HttpStatus.OK);
+			return new ResponseEntity<String>("Alle Konferenzen wurden erfolgreich gelöscht.", HttpStatus.OK);
 		} else if(result == 0) {
-			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Ein Fehler ist beim Löschen aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>("Ein Fehler ist beim Löschen aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@CrossOrigin(origins = "*")
 	@RequestMapping(path = "/createTestdata/{count}", method = RequestMethod.POST)
-	public ResponseEntity<Void> createTestdata(@PathVariable String count) {
+	public ResponseEntity<String> createTestdata(@PathVariable String count) {
 		log.info("POST Request /conference/createTestdata");
 		int result = conferenceRepositoryService.createTestdata(Integer.parseInt(count));
 		if(result == 1) {
-			return new ResponseEntity<Void>(HttpStatus.OK);
+			return new ResponseEntity<String>("Es wurden " + count + " Testdaten erfolgreich gespeichert.", HttpStatus.OK);
 		} else if(result == 0) {
-			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>("Ein Fehler ist beim Speichern aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>("Ein Fehler ist beim Speichern aufgetreten.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

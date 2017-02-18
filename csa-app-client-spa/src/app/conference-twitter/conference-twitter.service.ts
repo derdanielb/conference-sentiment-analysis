@@ -22,21 +22,21 @@ export class ConferenceTwitterService {
       .catch(this.handleError);
   }
 
-  saveConference(conference: Conference): Promise<Conference> {
+  saveConference(conference: Conference): Promise<string> {
     let headers = new Headers({ 'Content-Type': 'application/json', 'Accept': 'application/json' });
     let options = new RequestOptions({ headers: headers });
     return this.http.post(this.conferenceBaseURL + "add", JSON.stringify(conference), options)
       .toPromise()
-      .then(this.extractData)
+      .then(this.extractMessage)
       .catch(this.handleError);
   }
 
-  updateConference(conference: Conference): Promise<Conference> {
+  updateConference(conference: Conference): Promise<string> {
     let headers = new Headers({ 'Content-Type': 'application/json', 'Accept': 'application/json' });
     let options = new RequestOptions({ headers: headers });
     return this.http.post(this.conferenceBaseURL + "update", JSON.stringify(conference), options)
       .toPromise()
-      .then(this.extractData)
+      .then(this.extractMessage)
       .catch(this.handleError);
   }
 
@@ -45,7 +45,7 @@ export class ConferenceTwitterService {
     let options = new RequestOptions({ headers: headers });
     return this.http.post(this.conferenceBaseURL + "delete", JSON.stringify(conference), options)
       .toPromise()
-      .then(this.extractData)
+      .then(this.extractMessage)
       .catch(this.handleError);
   }
 
@@ -54,7 +54,7 @@ export class ConferenceTwitterService {
     let options = new RequestOptions({ headers: headers });
     return this.http.post(this.conferenceBaseURL + "deleteAll", options)
       .toPromise()
-      .then(this.extractData)
+      .then(this.extractMessage)
       .catch(this.handleError);
   }
 
@@ -63,7 +63,7 @@ export class ConferenceTwitterService {
     let options = new RequestOptions({ headers: headers });
     return this.http.post(this.conferenceBaseURL + "createTestdata/" + count, options)
       .toPromise()
-      .then(this.extractData)
+      .then(this.extractMessage)
       .catch(this.handleError);
   }
 
@@ -88,6 +88,11 @@ export class ConferenceTwitterService {
   private extractData(res: Response) {
     let body = res.json();
     return body;
+  }
+
+  private extractMessage(res: Response) {
+    let responseMessage = res.text();
+    return responseMessage;
   }
 
   private handleError (error: Response | any) {
