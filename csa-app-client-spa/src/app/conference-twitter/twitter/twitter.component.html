@@ -2,14 +2,14 @@
 <p>Mit #HashTag suchen</p>
 <input type="text" name="hashTag" [(ngModel)]="hashTag">
 <button (click)="search()">Suchen</button>
-<div class="message-div" *ngIf="messageList.length > 0">
+<div class="messages" *ngIf="messageList.length > 0">
   <ul class="message-list">
     <li *ngFor="let message of messageList">
       <p>{{message}}</p>
     </li>
   </ul>
 </div>
-<div class="message-div" *ngIf="searched && tweets.length == 0 && messageList.length == 0">
+<div class="messages" *ngIf="searched && tweets.length == 0 && messageList.length == 0">
   <ul class="message-list">
     <li><p>Keine Twitter-Suchergebnisse.</p></li>
   </ul>

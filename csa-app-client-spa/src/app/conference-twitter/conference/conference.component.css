@@ -1,21 +1,21 @@
-.content-div {
+.conference-app {
   display: inline-block;
 }
 
-.newConference, .search-div {
+.nav, .content {
   border: 1px solid grey;
   margin: 5px;
   padding: 10px;
 }
 
-.newConference {
+.nav {
   float: left;
-  margin-right: 150px;
+  width: 200px;
 }
 
-.search-div {
+.content {
   float: right;
-  width: 400px;
+  width: 1170px;
 }
 
 fieldset > div {
@@ -30,17 +30,18 @@ div > label:first-child {
   vertical-align: top;
 }
 
-.button-div {
-  margin-bottom: 3px;
-}
-
 .message-list {
   list-style: circle;
 }
 
-.message-div {
+.messages {
   display: inline-block;
   border-style: solid;
   border-color: yellow;
+}
+
+.menu-list {
+  list-style: none;
+  list-style-type: none;
 }
 

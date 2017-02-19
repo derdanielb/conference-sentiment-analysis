@@ -2,7 +2,7 @@
   list-style: circle;
 }
 
-.message-div {
+.messages {
   display: inline-block;
   border-style: solid;
   border-color: yellow;

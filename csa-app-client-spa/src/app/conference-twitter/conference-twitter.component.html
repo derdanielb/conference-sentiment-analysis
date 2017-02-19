@@ -1,4 +1,4 @@
-<div class="selection-div">
+<div class="app-nav">
   <h1>Conference Sentiment Analysis SPA</h1>
   <input id="conference-radio" type="radio" name="group1" [(ngModel)]="select" value="conference">
   <label for="conference-radio">Konferenz-App</label>
@@ -7,12 +7,12 @@
   <input id="conference-tweets-radio" type="radio" name="group1" [(ngModel)]="select" value="conferenceTweets">
   <label for="conference-tweets-radio">Twitter-Konferenz-App</label>
 </div>
-<div name="conference-div" class="app-content" *ngIf="select=='conference'">
+<div name="conference-app" class="app-content" *ngIf="select=='conference'">
   <app-conference>Loading Konferenz-App ...</app-conference>
 </div>
-<div name="twitter-div" class="app-content" *ngIf="select=='twitter'">
+<div name="twitter-app" class="app-content" *ngIf="select=='twitter'">
   <app-twitter>Loading Twitter-App ...</app-twitter>
 </div>
-<div name="conferenceTweets-div" class="app-content" *ngIf="select=='conferenceTweets'">
+<div name="conferenceTweets-app" class="app-content" *ngIf="select=='conferenceTweets'">
   <app-conference-tweets>Loading Twitter-Konferenz-App ...</app-conference-tweets>
 </div>

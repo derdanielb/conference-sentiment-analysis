@@ -13,7 +13,7 @@ export class ConferenceTwitterComponent implements OnInit {
   'twitter': Tiwtter-App is displayed.
   'conferenceTweets': ConferenceTweets-App is displayed.
    */
-  select: string;
+  select: string = "conference";
 
   constructor() { }
 

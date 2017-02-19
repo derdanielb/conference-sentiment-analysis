@@ -12,32 +12,27 @@ import {Organisation} from "../organisation";
 })
 export class ConferenceComponent implements OnInit {
 
-  messageListFormular: string[] = [];
-  messageListSearch: string[] = [];
+  //Nav
+  menu: string = "newConference";
 
-  //SearchResults Conferences
+  //Content
+  messageListContent: string[] = [];
+
+  //searchConference
   resultConferences: Conference[] = [];
   searched: boolean = false;
-
+  //NgModel searchFilter
+  filter: string = "getByConferenceName";
   //NgModel searchString
   search: string = "";
-
   //Last submitted searchString
   currentSearch: string = "";
 
-  //NgModel searchFilter
-  filter: string = "";
-
-  //Controls the TestDataFormular-View
-  createTestDataVisible: boolean = false;
-
+  //createTestData
   //NgModel count for the amount of TestData to be created
   count: string = "";
 
-  //Controls the newConferenceFormular-View
-  newConferenceVisible: boolean = false;
-
-  //Empty new Conference
+  //newConference
   organizerSelection: string = "";
   firstNameOrganizer: string = "";
   lastNameOrganizer: string = "";
@@ -56,10 +51,41 @@ export class ConferenceComponent implements OnInit {
   ngOnInit() {
   }
 
+  //Button-methods to change the displayed Content
+
+  searchConferenceForm() {
+    this.messageListContent = [];
+    this.menu = "searchConference"
+  }
+
+  createConferenceForm() {
+    this.messageListContent = [];
+    this.menu = "newConference";
+    this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], []);
+  }
+
+  createTestDataForm() {
+    this.messageListContent = [];
+    this.menu = "createTestData";
+  }
+
+  deleteAllConferencesForm() {
+    this.messageListContent = [];
+    this.menu = "deleteAll"
+  }
+
+  //Loads the ResultEntry into the newConferenceFormular
+  clickResultEntry(conference: Conference) {
+    this.messageListContent = [];
+    this.menu = "newConference";
+    this.newConference = conference;
+  }
+
+  //searchConference-methods
   getResults() {
-    this.messageListSearch = [];
+    this.messageListContent = [];
     if(this.search == "") {
-      this.messageListSearch.push("Bitte geben Sie ein Suchkriterium ein.");
+      this.messageListContent.push("Bitte geben Sie ein Suchkriterium ein.");
       return;
     }
     //If '#' is at the beginning of the searchString, it will be removed
@@ -75,29 +101,27 @@ export class ConferenceComponent implements OnInit {
     this.searched = true;
   }
 
-  //Loads the ResultEntry into the newConferenceFormular
-  clickResultEntry(conference: Conference) {
-    this.messageListFormular = [];
-    this.conferenceClicked = true;
-    this.createTestDataVisible = false;
-    this.newConferenceVisible = true;
-    this.newConference = conference;
+  deleteConference(conference: Conference) {
+    this.messageListContent  = [];
+    let conferenceToDelete: Conference = conference;
+    this.conferenceTwitterService.deleteConference(conferenceToDelete).then(response=> {
+      this.messageListContent.push(response);
+    });
+    this.resultConferences = [];
+    this.conferenceTwitterService.getConferenceResults(this.currentSearch, this.filter).then(conferences=> {
+      this.resultConferences = conferences;
+    });
+    if(this.resultConferences.length == 0) {
+      this.messageListContent.push("Keine Suchergebnisse.")
+    }
   }
 
-  //Displays the newConferenceFormular
-  newConferenceFormular() {
-    this.messageListFormular = [];
-    this.conferenceClicked = false;
-    this.createTestDataVisible = false;
-    this.newConferenceVisible = true;
-    this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], []);
-  }
-
+  //newConference-methods
   addOrganizer() {
-    this.messageListFormular = [];
+    this.messageListContent = [];
     if(this.organizerSelection == "person") {
       if(this.firstNameOrganizer == "" || this.lastNameOrganizer == "") {
-        this.messageListFormular.push("Geben Sie Vor- und Nachname an.");
+        this.messageListContent.push("Geben Sie Vor- und Nachname an.");
         return;
       }
       let person = new Person(this.firstNameOrganizer, this.lastNameOrganizer);
@@ -106,7 +130,7 @@ export class ConferenceComponent implements OnInit {
 
     } else if(this.organizerSelection == "group") {
       if(this.groupOrganisationNameOrganizer == "") {
-        this.messageListFormular.push("Geben Sie einen Gruppennamen an.");
+        this.messageListContent.push("Geben Sie einen Gruppennamen an.");
         return;
       }
       let group = new Group(this.groupOrganisationNameOrganizer);
@@ -115,7 +139,7 @@ export class ConferenceComponent implements OnInit {
 
     } else if(this.organizerSelection == "organisation") {
       if(this.groupOrganisationNameOrganizer == "") {
-        this.messageListFormular.push("Geben Sie einen Organisationsnamen an.");
+        this.messageListContent.push("Geben Sie einen Organisationsnamen an.");
         return;
       }
       let organisation = new Organisation(this.groupOrganisationNameOrganizer);
@@ -130,10 +154,10 @@ export class ConferenceComponent implements OnInit {
   }
 
   addSponsor() {
-    this.messageListFormular = [];
+    this.messageListContent = [];
     if(this.sponsorSelection == "person") {
       if(this.firstNameSponsor == "" || this.lastNameSponsor == "") {
-        this.messageListFormular.push("Geben Sie Vor- und Nachname an.");
+        this.messageListContent.push("Geben Sie Vor- und Nachname an.");
         return;
       }
       let person = new Person(this.firstNameSponsor, this.lastNameSponsor);
@@ -142,7 +166,7 @@ export class ConferenceComponent implements OnInit {
 
     } else if(this.sponsorSelection == "group") {
       if(this.groupOrganisationNameSponsor == "") {
-        this.messageListFormular.push("Geben Sie einen Gruppennamen an.");
+        this.messageListContent.push("Geben Sie einen Gruppennamen an.");
         return;
       }
       let group = new Group(this.groupOrganisationNameSponsor);
@@ -151,7 +175,7 @@ export class ConferenceComponent implements OnInit {
 
     } else if(this.sponsorSelection == "organisation") {
       if(this.groupOrganisationNameSponsor == "") {
-        this.messageListFormular.push("Geben Sie einen Organisationsnamen an.");
+        this.messageListContent.push("Geben Sie einen Organisationsnamen an.");
         return;
       }
       let organisation = new Organisation(this.groupOrganisationNameSponsor);
@@ -166,11 +190,11 @@ export class ConferenceComponent implements OnInit {
   }
 
   saveConference() {
-    this.messageListFormular = [];
+    this.messageListContent = [];
     if (this.newConference.conferenceName == "" || this.newConference.from == "" || this.newConference.to == "" || this.newConference.locationName == "" ||
       this.newConference.street == "" || this.newConference.houseNumber == "" || this.newConference.postcode == "" || this.newConference.city == "" ||
       this.newConference.country == "" || this.newConference.twitterHashTag == "" || this.newConference.organizerList == null || this.newConference.sponsorsList == null) {
-      this.messageListFormular.push("Bitte füllen Sie alle Felder aus.");
+      this.messageListContent.push("Bitte füllen Sie alle Felder aus.");
       return;
     }
     //If '#' is at the beginning of the twitterHashTag, it will be removed
@@ -179,17 +203,17 @@ export class ConferenceComponent implements OnInit {
       this.newConference.twitterHashTag = split[1];
     }
     this.conferenceTwitterService.saveConference(this.newConference).then(response=> {
-      this.messageListFormular.push(response);
+      this.messageListContent.push(response);
     });
     this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], []);
   }
 
   updateConference() {
-    this.messageListFormular = [];
+    this.messageListContent = [];
     if (this.newConference.conferenceName == "" || this.newConference.from == "" || this.newConference.to == "" || this.newConference.locationName == "" ||
       this.newConference.street == "" || this.newConference.houseNumber == "" || this.newConference.postcode == "" || this.newConference.city == "" ||
       this.newConference.country == "" || this.newConference.twitterHashTag == "" || this.newConference.organizerList == null || this.newConference.sponsorsList == null) {
-      this.messageListFormular.push("Bitte füllen Sie alle Felder aus.");
+      this.messageListContent.push("Bitte füllen Sie alle Felder aus.");
       return;
     }
     //If '#' is at the beginning of the twitterHashTag, it will be removed
@@ -198,48 +222,32 @@ export class ConferenceComponent implements OnInit {
       this.newConference.twitterHashTag = split[1];
     }
     this.conferenceTwitterService.updateConference(this.newConference).then(response=> {
-      this.messageListFormular.push(response);
+      this.messageListContent.push(response);
     });
     this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], []);
   }
 
-  deleteConference(conference: Conference) {
-    this.messageListSearch  = [];
-    let conferenceToDelete: Conference = conference;
-    this.conferenceTwitterService.deleteConference(conferenceToDelete).then(response=> {
-      this.messageListSearch.push(response);
-    });
-    this.resultConferences = [];
-    this.conferenceTwitterService.getConferenceResults(this.currentSearch, this.filter).then(conferences=> {
-      this.resultConferences = conferences;
-    });
-    if(this.resultConferences.length == 0) {
-      this.messageListSearch.push("Keine Suchergebnisse.")
-    }
-  }
-
-  deleteAllConferences() {
-    this.messageListFormular = [];
+  //deleteAll-methods
+  deleteAll() {
     this.conferenceTwitterService.deleteAllConferences().then(response=> {
-      this.messageListFormular.push(response);
+      this.messageListContent.push(response);
     });
+    this.menu = "newConference";
   }
 
-  //Displays the TestDataFormular
-  createTestDataFormular() {
-    this.messageListFormular = [];
-    this.newConferenceVisible = false;
-    this.createTestDataVisible = true;
+  cancelDeleteAll() {
+    this.menu = "newConference";
   }
 
+  //createTestData-method
   createTestData() {
-    this.messageListFormular = [];
+    this.messageListContent = [];
     if(this.count == "") {
-      this.messageListFormular.push("Bitte geben Sie eine Zahl ein.");
+      this.messageListContent.push("Bitte geben Sie eine Zahl ein.");
       return;
     }
     this.conferenceTwitterService.createTestData(this.count).then(response=>{
-      this.messageListFormular.push(response);
+      this.messageListContent.push(response);
   });
     this.count = "";
   }
