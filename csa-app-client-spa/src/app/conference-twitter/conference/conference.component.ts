@@ -17,6 +17,7 @@ export class ConferenceComponent implements OnInit {
 
   //SearchResults Conferences
   resultConferences: Conference[] = [];
+  searched: boolean = false;
 
   //NgModel searchString
   search: string = "";
@@ -56,6 +57,7 @@ export class ConferenceComponent implements OnInit {
   }
 
   getResults() {
+    this.messageListSearch = [];
     if(this.search == "") {
       this.messageListSearch.push("Bitte geben Sie ein Suchkriterium ein.");
       return;
@@ -70,13 +72,12 @@ export class ConferenceComponent implements OnInit {
     this.conferenceTwitterService.getConferenceResults(this.search, this.filter).then(conferences=> {
       this.resultConferences = conferences;
     });
-    if(this.resultConferences.length == 0) {
-      this.messageListSearch.push("Keine Suchergebnisse.");
-    }
+    this.searched = true;
   }
 
   //Loads the ResultEntry into the newConferenceFormular
   clickResultEntry(conference: Conference) {
+    this.messageListFormular = [];
     this.conferenceClicked = true;
     this.createTestDataVisible = false;
     this.newConferenceVisible = true;
@@ -89,6 +90,7 @@ export class ConferenceComponent implements OnInit {
     this.conferenceClicked = false;
     this.createTestDataVisible = false;
     this.newConferenceVisible = true;
+    this.newConference = new Conference(null, "", "", "", "", "", "", "", "", "", null, "", [], []);
   }
 
   addOrganizer() {

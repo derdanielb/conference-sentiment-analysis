@@ -1,17 +1,21 @@
 <h3>Twitter-App</h3>
-<p>Search with #HashTag</p>
+<p>Mit #HashTag suchen</p>
 <input type="text" name="hashTag" [(ngModel)]="hashTag">
-<button (click)="search()">Search</button>
-<p *ngIf="searched && tweets.length==0">Keine Twitter-Suchergebnisse.</p>
-<div class="message-div">
+<button (click)="search()">Suchen</button>
+<div class="message-div" *ngIf="messageList.length > 0">
   <ul class="message-list">
-    <li style="list-style: circle" *ngFor="let message of messageList">
+    <li *ngFor="let message of messageList">
       <p>{{message}}</p>
     </li>
   </ul>
 </div>
+<div class="message-div" *ngIf="searched && tweets.length == 0 && messageList.length == 0">
+  <ul class="message-list">
+    <li><p>Keine Twitter-Suchergebnisse.</p></li>
+  </ul>
+</div>
 <div *ngIf="tweets.length > 0">
-  <h4>Results</h4>
+  <h4>Suchergebnisse</h4>
   <ul>
     <li name="list-entry" *ngFor="let tweet of tweets">
       <p>{{tweet}}</p>

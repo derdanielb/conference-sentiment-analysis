@@ -1,0 +1,46 @@
+.content-div {
+  display: inline-block;
+}
+
+.newConference, .search-div {
+  border: 1px solid grey;
+  margin: 5px;
+  padding: 10px;
+}
+
+.newConference {
+  float: left;
+  margin-right: 150px;
+}
+
+.search-div {
+  float: right;
+  width: 400px;
+}
+
+fieldset > div {
+  margin: 5px;
+  padding: 10px;
+}
+
+div > label:first-child {
+  padding-top: 0.3em;
+  width: 10em;
+  text-align: left;
+  vertical-align: top;
+}
+
+.button-div {
+  margin-bottom: 3px;
+}
+
+.message-list {
+  list-style: circle;
+}
+
+.message-div {
+  display: inline-block;
+  border-style: solid;
+  border-color: yellow;
+}
+

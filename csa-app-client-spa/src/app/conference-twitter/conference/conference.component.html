@@ -1,153 +1,196 @@
-<h3>Conference-App</h3>
-<div name="newConference">
-  <button (click)="newConferenceFormular()">New Conference</button>
-  <button (click)="createTestDataFormular()">Create TestData</button>
-  <button (click)="deleteAllConferences()">Delete All</button>
-  <div class="message-div">
-    <ul class="message-list">
-      <li style="list-style: circle" *ngFor="let message of messageListFormular">
-        <p>{{message}}</p>
-      </li>
-    </ul>
+<div class="content-div">
+  <h3>Konferenz-App</h3>
+  <div class="newConference">
+    <div class="button-div">
+      <button (click)="newConferenceFormular()">Neue Konferenz</button>
+      <button (click)="createTestDataFormular()">Erstelle Testdaten</button>
+      <button (click)="deleteAllConferences()">Alle löschen</button>
+    </div>
+    <div class="message-div" *ngIf="messageListFormular.length > 0">
+      <ul class="message-list">
+        <li *ngFor="let message of messageListFormular">
+          <p>{{message}}</p>
+        </li>
+      </ul>
+    </div>
+    <div *ngIf="createTestDataVisible" class="testdata-div">
+      <label for="count">Es wird keine Geolocation für Testdaten angefordert.</label>
+      <input id="count" type="text" name="testDataCountInput" placeholder="Anzahl" [(ngModel)]="count">
+      <button (click)="createTestData()">Erstellen</button>
+    </div>
+    <div *ngIf="newConferenceVisible" class="newConference-form-div">
+      <form>
+        <fieldset>
+          <div>
+            <label for="newConferenceName">Konferenzname: </label>
+            <input id="newConferenceName" typ="text" name="newConferenceNameInput"
+                   [(ngModel)]="newConference.conferenceName">
+          </div>
+          <div>
+            <label for="newFrom">Von (Datum): </label>
+            <input id="newFrom" type="text" name="newConferenceFromInput" [(ngModel)]="newConference.from">
+            <label for="newTo">Bis (Datum): </label>
+            <input id="newTo" type="text" name="newConferenceToInput" [(ngModel)]="newConference.to">
+          </div>
+          <div>
+            <label for="newLocationName">Veranstaltungsort: </label>
+            <input id="newLocationName" type="text" name="newConferenceLocationNameInput"
+                   [(ngModel)]="newConference.locationName">
+          </div>
+          <div>
+            <label for="newStreet">Straße: </label>
+            <input id="newStreet" type="text" name="newConferenceStreetInput" [(ngModel)]="newConference.street">
+            <label for="newHouseNumber">Hausnummer: </label>
+            <input id="newHouseNumber" type="text" name="newConferenceHouseNumberInput"
+                   [(ngModel)]="newConference.houseNumber">
+          </div>
+          <div>
+            <label for="newPostcode">PLZ: </label>
+            <input id="newPostcode" type="text" name="newConferencePostcodeInput" [(ngModel)]="newConference.postcode">
+            <label for="newCity">Stadt: </label>
+            <input id="newCity" type="text" name="newConferenceCityInput" [(ngModel)]="newConference.city">
+          </div>
+          <div>
+            <label for="newCountry">Land: </label>
+            <input id="newCountry" type="text" name="newConferenceCountryInput" [(ngModel)]="newConference.country">
+          </div>
+          <div>
+            <label for="newHashTag">Twitter-HashTag: </label>
+            <input id="newHashTag" type="text" name="newConferenceHashTagInput"
+                   [(ngModel)]="newConference.twitterHashTag">
+          </div>
+          <div>
+            <label for="organizer-div">Organisierer</label>
+            <div id="organizer-div">
+              <select name="organizerSelect" [(ngModel)]="organizerSelection">
+                <option value="person">Person</option>
+                <option value="group">Group</option>
+                <option value="organisation">Organisation</option>
+              </select>
+              <div *ngIf="organizerSelection=='person'">
+                <input type="text" name="firstName" [(ngModel)]="firstNameOrganizer" placeholder="Vorname">
+                <input type="text" name="lastName" [(ngModel)]="lastNameOrganizer" placeholder="Nachname">
+              </div>
+              <div *ngIf="organizerSelection=='group' || organizerSelection=='organisation'">
+                <input type="text" name="name" [(ngModel)]="groupOrganisationNameOrganizer" placeholder="Name">
+              </div>
+              <button *ngIf="organizerSelection!=''" (click)="addOrganizer()">Hinzufügen</button>
+              <ul name="organizer-list">
+                <li name="organizer-list-entry" *ngFor="let element of newConference.organizerList; let i = index">
+                  <p name="organizer">{{i+1}}. Organizer: {{element.name}}</p>
+                  <button (click)="deleteOrganizer(i)">Löschen</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <label for="sponsor-div">Sponsoren</label>
+            <div id="sponsor-div">
+              <select name="sponsorSelect" [(ngModel)]="sponsorSelection">
+                <option value="person">Person</option>
+                <option value="group">Group</option>
+                <option value="organisation">Organisation</option>
+              </select>
+              <div *ngIf="sponsorSelection=='person'">
+                <input type="text" name="firstName" [(ngModel)]="firstNameSponsor" placeholder="Vorname">
+                <input type="text" name="lastName" [(ngModel)]="lastNameSponsor" placeholder="Nachname">
+              </div>
+              <div *ngIf="sponsorSelection=='group' || sponsorSelection=='organisation'">
+                <input type="text" name="name" [(ngModel)]="groupOrganisationNameSponsor" placeholder="Name">
+              </div>
+              <button *ngIf="sponsorSelection!=''" (click)="addSponsor()">Hinzufügen</button>
+              <ul name="sponsor-list">
+                <li name="sponsor-list-entry" *ngFor="let element of newConference.sponsorsList; let i = index">
+                  <p name="sponsor">{{i+1}}. Sponsor: {{element.name}}</p>
+                  <button (click)="deleteSponsor(i)">Löschen</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <button *ngIf="!conferenceClicked" type="submit" (click)="saveConference()">Speichern</button>
+          <button *ngIf="conferenceClicked" type="submit" (click)="updateConference()">Bearbeiten</button>
+        </fieldset>
+      </form>
+    </div>
   </div>
-  <div *ngIf="createTestDataVisible">
-    <label for="count">No GeoLocation is requested for TestData.</label>
-    <input id="count" type="text" name="testDataCountInput" placeholder="count" [(ngModel)]="count">
-    <button (click)="createTestData()">Create</button>
-  </div>
-  <div *ngIf="newConferenceVisible">
-    <form>
-      <label for="newConferenceName">ConferenceName: </label>
-      <input id="newConferenceName" typ="text" name="newConferenceNameInput" [(ngModel)]="newConference.conferenceName">
-      <br>
-      <label for="newFrom">From (Date): </label>
-      <input id="newFrom" type="text" name="newConferenceFromInput" [(ngModel)]="newConference.from">
-      <br>
-      <label for="newTo">To (Date): </label>
-      <input id="newTo" type="text" name="newConferenceToInput" [(ngModel)]="newConference.to">
-      <br>
-      <label for="newLocationName">LocationName: </label>
-      <input id="newLocationName" type="text" name="newConferenceLocationNameInput"
-             [(ngModel)]="newConference.locationName">
-      <br>
-      <label for="newStreet">Street: </label>
-      <input id="newStreet" type="text" name="newConferenceStreetInput" [(ngModel)]="newConference.street">
-      <label for="newHouseNumber">HouseNumber: </label>
-      <input id="newHouseNumber" type="text" name="newConferenceHouseNumberInput"
-             [(ngModel)]="newConference.houseNumber">
-      <label for="newPostcode">Postcode: </label>
-      <input id="newPostcode" type="text" name="newConferencePostcodeInput" [(ngModel)]="newConference.postcode">
-      <label for="newCity">City: </label>
-      <input id="newCity" type="text" name="newConferenceCityInput" [(ngModel)]="newConference.city">
-      <label for="newCountry">Country: </label>
-      <input id="newCountry" type="text" name="newConferenceCountryInput" [(ngModel)]="newConference.country">
-      <br>
-      <label for="newHashTag">Twitter-HashTag: </label>
-      <input id="newHashTag" type="text" name="newConferenceHashTagInput" [(ngModel)]="newConference.twitterHashTag">
-      <br>
-      <label for="organizer-div">Organizer</label>
-      <div id="organizer-div">
-        <select name="organizerSelect" [(ngModel)]="organizerSelection">
-          <option value="person">Person</option>
-          <option value="group">Group</option>
-          <option value="organisation">Organisation</option>
-        </select>
-        <div *ngIf="organizerSelection=='person'">
-          <input type="text" name="firstName" [(ngModel)]="firstNameOrganizer" placeholder="First Name">
-          <input type="text" name="lastName" [(ngModel)]="lastNameOrganizer" placeholder="Last Name">
-        </div>
-        <div *ngIf="organizerSelection=='group' || organizerSelection=='organisation'">
-          <input type="text" name="name" [(ngModel)]="groupOrganisationNameOrganizer" placeholder="Name">
-        </div>
-        <button *ngIf="organizerSelection!=''" (click)="addOrganizer()">Add Organizer</button>
-        <ul name="organizer-list">
-          <li name="organizer-list-entry" *ngFor="let element of newConference.organizerList; let i = index">
-            <p name="organizer">{{i+1}}. Organizer: {{element.name}}</p>
-            <button (click)="deleteOrganizer(i)">Delete</button>
+  <div class="search-div">
+    <div name="filter">
+      <h3>Konferenzsuche</h3>
+      <input id="conferenceNameFilter" type="radio" name="group2" [(ngModel)]="filter" value="getByConferenceName">
+      <label for="conferenceNameFilter">Konferenzname</label>
+      <input id="hashtagFilter" type="radio" name="group2" [(ngModel)]="filter" value="getByTwitterHashtag">
+      <label for="hashtagFilter">Konferenz-HashTag</label>
+    </div>
+    <div name="search" *ngIf="filter">
+      <input type="text" name="search-q" [(ngModel)]="search">
+      <button (click)="getResults()">Suchen</button>
+      <div class="message-div" *ngIf="messageListSearch.length > 0" style="border-style: solid; border-color: yellow">
+        <ul class="message-list">
+          <li *ngFor="let message of messageListSearch">
+            <p>{{message}}</p>
           </li>
         </ul>
       </div>
-      <label for="sponsor-div">Sponsors</label>
-      <div id="sponsor-div">
-        <select name="sponsorSelect" [(ngModel)]="sponsorSelection">
-          <option value="person">Person</option>
-          <option value="group">Group</option>
-          <option value="organisation">Organisation</option>
-        </select>
-        <div *ngIf="sponsorSelection=='person'">
-          <input type="text" name="firstName" [(ngModel)]="firstNameSponsor" placeholder="First Name">
-          <input type="text" name="lastName" [(ngModel)]="lastNameSponsor" placeholder="Last Name">
-        </div>
-        <div *ngIf="sponsorSelection=='group' || sponsorSelection=='organisation'">
-          <input type="text" name="name" [(ngModel)]="groupOrganisationNameSponsor" placeholder="Name">
-        </div>
-        <button *ngIf="sponsorSelection!=''" (click)="addSponsor()">Add Sponsor</button>
-        <ul name="sponsor-list">
-          <li name="sponsor-list-entry" *ngFor="let element of newConference.sponsorsList; let i = index">
-            <p name="sponsor">{{i+1}}. Sponsor: {{element.name}}</p>
-            <button (click)="deleteSponsor(i)">Delete</button>
-          </li>
+      <div class="message-div" *ngIf="searched && resultConferences.length == 0 && messageListSearch.length == 0">
+        <ul>
+          <li><p>Keine Suchergebnisse.</p></li>
         </ul>
       </div>
-      <button *ngIf="!conferenceClicked" type="submit" (click)="saveConference()">Save</button>
-      <button *ngIf="conferenceClicked" type="submit" (click)="updateConference()">Change</button>
-    </form>
-  </div>
-</div>
-<div name="filter">
-  <h3>Filter Selection</h3>
-  <p>Search with:</p>
-  <input id="conferenceNameFilter" type="radio" name="group2" [(ngModel)]="filter" value="getByConferenceName">
-  <label for="conferenceNameFilter">Conference Name</label>
-  <input id="hashtagFilter" type="radio" name="group2" [(ngModel)]="filter" value="getByTwitterHashtag">
-  <label for="hashtagFilter">Conference HashTag</label>
-</div>
-<div name="search" *ngIf="filter">
-  <input type="text" name="search-q" [(ngModel)]="search">
-  <button (click)="getResults()">Search</button>
-  <div class="message-div">
-    <ul class="message-list">
-      <li style="list-style: circle" *ngFor="let message of messageListSearch">
-        <p>{{message}}</p>
-      </li>
-    </ul>
-  </div>
-</div>
-<div name="results" *ngIf="resultConferences.length > 0">
-  <h4>Results</h4>
-  <ul>
-    <li name="conference-list-entry" *ngFor="let conference of resultConferences">
-      <label for="conferenceName">ConferenceName: </label>
-      <p id="conferenceName">{{conference.conferenceName}}</p>
-      <label for="from">From (Date): </label>
-      <p id="from">{{conference.from}}</p>
-      <label for="to">To (Date): </label>
-      <p id="to">{{conference.to}}</p>
-      <label for="locationName">LocationName: </label>
-      <p id="locationName">{{conference.locationName}}</p>
-      <label for="address">Address: </label>
-      <p id="address">{{conference.street}} {{conference.houseNumber}}, {{conference.postcode}} {{conference.city}},
-        {{conference.country}}</p>
-      <label for="long-lat" *ngIf="conference.geoLocation.longitude">Longitude x Latitude: </label>
-      <p id="long-lat" *ngIf="conference.geoLocation.longitude">{{conference.geoLocation.longitude}} x
-        {{conference.geoLocation.latitude}}</p>
-      <label for="hashTag">Twitter-HashTag: </label>
-      <p id="hashTag">{{conference.twitterHashTag}}</p>
-      <label for="organizer-list">Organizer: </label>
-      <ul id="organizer-list">
-        <li name="organizer-list-entry" *ngFor="let organizer of conference.organizerList">
-          <p>{{organizer.name}}</p>
+    </div>
+    <div name="results" *ngIf="resultConferences.length > 0">
+      <h4>Suchergebnisse</h4>
+      <ul>
+        <li name="conference-list-entry" *ngFor="let conference of resultConferences">
+          <div>
+            <label for="conferenceName">Konferenzname: </label>
+            <p id="conferenceName">{{conference.conferenceName}}</p>
+          </div>
+          <div>
+            <label for="from">Von: </label>
+            <p id="from">{{conference.from}}</p>
+            <label for="to">Bis: </label>
+            <p id="to">{{conference.to}}</p>
+          </div>
+          <div>
+            <label for="locationName">Veranstaltungsort: </label>
+            <p id="locationName">{{conference.locationName}}</p>
+          </div>
+          <div>
+            <label for="address">Adresse: </label>
+            <p id="address">{{conference.street}} {{conference.houseNumber}}, {{conference.postcode}}
+              {{conference.city}},
+              {{conference.country}}</p>
+          </div>
+          <div>
+            <label for="long-lat" *ngIf="conference.geoLocation.longitude">Längengrad x Breitengrad: </label>
+            <p id="long-lat" *ngIf="conference.geoLocation.longitude">{{conference.geoLocation.longitude}} x
+              {{conference.geoLocation.latitude}}</p>
+          </div>
+          <div>
+            <label for="hashTag">Twitter-HashTag: </label>
+            <p id="hashTag">{{conference.twitterHashTag}}</p>
+          </div>
+          <div>
+            <label for="organizer-list">Organisierer: </label>
+            <ul id="organizer-list">
+              <li name="organizer-list-entry" *ngFor="let organizer of conference.organizerList">
+                <p>{{organizer.name}}</p>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <label for="sponsors-list">Sponsoren: </label>
+            <ul id="sponsors-list">
+              <li name="sponsor-list-entry" *ngFor="let sponsor of conference.sponsorsList">
+                <p>{{sponsor.name}}</p>
+              </li>
+            </ul>
+          </div>
+          <button (click)="clickResultEntry(conference)">Change</button>
+          <button (click)="deleteConference(conference)">Delete</button>
+          <br>
         </li>
       </ul>
-      <label for="sponsors-list">Sponsors: </label>
-      <ul id="sponsors-list">
-        <li name="sponsor-list-entry" *ngFor="let sponsor of conference.sponsorsList">
-          <p>{{sponsor.name}}</p>
-        </li>
-      </ul>
-      <button (click)="clickResultEntry(conference)">Change</button>
-      <button (click)="deleteConference(conference)">Delete</button>
-      <br>
-    </li>
-  </ul>
+    </div>
+  </div>
 </div>

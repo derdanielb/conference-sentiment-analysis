@@ -7,3 +7,17 @@
   width:70%;
   float: left;
 }
+
+.content-div {
+  display: inline-block;
+}
+
+.message-list {
+  list-style: circle;
+}
+
+.message-div {
+  display: inline-block;
+  border-style: solid;
+  border-color: yellow;
+}

@@ -1,0 +1,9 @@
+.message-list {
+  list-style: circle;
+}
+
+.message-div {
+  display: inline-block;
+  border-style: solid;
+  border-color: yellow;
+}
