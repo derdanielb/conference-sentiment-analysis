@@ -49,31 +49,29 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
     ListenableFuture deleteAll();
 
     @Query("{" +
-            "   location: {" +
-            "       name: ?0" +
+            "   \"location.name\": ?0" +
+            "}")
+    Stream<Conference> findAllByEventLocationName(String name);
+
+    @Query("{" +
+            "   \"timeSpan.begin\": {$lte: ?0}," +
+            "   \"timeSpan.end\": {$gte: ?0}" +
+            "}")
+    Stream<Conference> findByTimeSpan(Date date);
+
+    /*@Query("{" +
+            "   timeSpan: { " +
+            "       begin: {$ge: ?0}," +
+            "       end: {$le: ?0}" +
             "   }" +
             "}")
-    Stream<Conference> findAllByEventLocationNameContaining(String name);
-
-    @Query("{ timeSpan: { " +
-            "begin: {$ge: ?0}, " +
-            "end: {$le: ?0}" +
-            "}}")
-    Stream<Conference> findByTimeSpan(Date date);
+    Stream<Conference> findByLocation(Date date);*/
 
     @Query("{" +
             "   $or: [" +
-            "       {" +
-            "           organisers: {" +
-            "               name: ?0" +
-            "           }" +
-            "       }," +
-            "       {" +
-            "           sponsors: {" +
-            "               name: ?0" +
-            "           }" +
-            "       }" +
-            "   ]"+
+            "           { \"organisers.name\": ?0 }," +
+            "           { \"sponsors.name\": ?0 }" +
+            "        ]"+
             "}")
     Stream<Conference> findByPersonaName(String name);
 }
