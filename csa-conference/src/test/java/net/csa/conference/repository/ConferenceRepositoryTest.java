@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings("deprecation")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class ConferenceRepositoryTest {
