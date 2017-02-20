@@ -260,6 +260,33 @@ public class ConferenceRepositoryTest {
     }
 
     @Test
+    public void testFindByLocation() {
+        try {
+            Conference koblenz = createConference();
+            koblenz.getLocation().setGeoLocation(new Location(50.36473675564971, 7.606658935546875));
+            repository.save(koblenz).get();
+            Conference hbrs = createConference();
+            hbrs.getLocation().setGeoLocation(new Location(50.77967489020413, 7.182826995849609));
+            repository.save(hbrs).get();
+
+            try (Stream<Conference> stream = repository.findByLocation(
+                    50.79692991613739, 7.1500396728515625,
+                    50.75079375029074, 7.2241973876953125
+            )
+            ) {
+                streamTestCounter = 0;
+                stream.forEach(conference -> {
+                    assertEquals(hbrs, conference);
+                    streamTestCounter++;
+                });
+                assertEquals(1, streamTestCounter);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void testFindByPersonaName() {
         try {
             Conference c1 = createConference();

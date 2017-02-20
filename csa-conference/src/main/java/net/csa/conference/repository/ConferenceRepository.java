@@ -1,8 +1,10 @@
 package net.csa.conference.repository;
 
 import net.csa.conference.model.Conference;
+import net.csa.conference.model.Location;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.concurrent.ListenableFuture;
 
@@ -59,13 +61,15 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
             "}")
     Stream<Conference> findByTimeSpan(Date date);
 
-    /*@Query("{" +
-            "   timeSpan: { " +
-            "       begin: {$ge: ?0}," +
-            "       end: {$le: ?0}" +
-            "   }" +
+    @Query("{" +
+            "   $and: [" +
+            "       { \"location.geoLocation.latitude\": { $lte: ?0}}," +
+            "       { \"location.geoLocation.longitude\": { $gte: ?1}}," +
+            "       { \"location.geoLocation.latitude\": { $gte: ?2}}," +
+            "       { \"location.geoLocation.longitude\": { $lte: ?3}}" +
+            "   ]" +
             "}")
-    Stream<Conference> findByLocation(Date date);*/
+    Stream<Conference> findByLocation(double topLeftLat, double topLeftLon, double bottomRightLat, double bottomRightLon);
 
     @Query("{" +
             "   $or: [" +
