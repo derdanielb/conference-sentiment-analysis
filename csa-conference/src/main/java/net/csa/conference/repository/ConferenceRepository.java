@@ -1,17 +1,13 @@
 package net.csa.conference.repository;
 
 import net.csa.conference.model.Conference;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import java.util.List;
+import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 /**
@@ -58,6 +54,12 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
             "   }" +
             "}")
     Stream<Conference> findAllByEventLocationNameContaining(String name);
+
+    @Query("{ timeSpan: { " +
+            "begin: {$ge: ?0}, " +
+            "end: {$le: ?0}" +
+            "}}")
+    Stream<Conference> findByTimeSpan(Date date);
 
     @Query("{" +
             "   $or: [" +
