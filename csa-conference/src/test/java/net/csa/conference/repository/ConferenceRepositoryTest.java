@@ -208,7 +208,7 @@ public class ConferenceRepositoryTest {
     }
 
     @Test
-    public void testFindAllByEventLocationNameContaining() {
+    public void testFindAllByEventLocationName() {
         try {
             Conference c1 = createConference();
             c1.getLocation().setName("Baum");
@@ -217,14 +217,13 @@ public class ConferenceRepositoryTest {
             c2.getLocation().setName("42");
             repository.save(c2).get();
             Conference c3 = createConference();
-            c3.getLocation().setName("Baum42");
+            c3.getLocation().setName("Baum");
             repository.save(c3).get();
 
-            try (Stream<Conference> stream = repository.findAllByEventLocationNameContaining("Baum")) {
-                //assertEquals(2, stream.count());
+            try (Stream<Conference> stream = repository.findAllByEventLocationName("Baum")) {
                 streamTestCounter = 0;
                 stream.forEach(conference -> {
-                    assertThat(Arrays.asList(c1, c3), contains(conference));
+                    assertTrue(Arrays.asList(c1, c3).contains(conference));
                     streamTestCounter++;
                 });
             }
@@ -248,10 +247,12 @@ public class ConferenceRepositoryTest {
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findByTimeSpan(new Date(2017, 2, 2))) {
-                assertEquals(1, stream.count());
+                streamTestCounter = 0;
                 stream.forEach(conference -> {
                     assertEquals(c2, conference);
+                    streamTestCounter++;
                 });
+                assertEquals(1, streamTestCounter);
             }
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
@@ -271,8 +272,12 @@ public class ConferenceRepositoryTest {
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findByPersonaName("OrgaMaster")) {
-                assertEquals(2, stream.count());
-                stream.forEach(conference -> assertThat(Arrays.asList(c1, c2), contains(conference)));
+                streamTestCounter = 0;
+                stream.forEach(conference -> {
+                    assertThat(Arrays.asList(c1, c2), contains(conference));
+                    streamTestCounter++;
+                });
+                assertEquals(2, streamTestCounter);
             }
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
