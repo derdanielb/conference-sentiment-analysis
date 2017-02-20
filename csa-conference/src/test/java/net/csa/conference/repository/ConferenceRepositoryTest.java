@@ -2,6 +2,7 @@ package net.csa.conference.repository;
 
 import net.csa.conference.model.*;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
 
@@ -15,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -196,6 +198,30 @@ public class ConferenceRepositoryTest {
 
             list = repository.findByNameContaining("Baum").get();
             assertThat(Arrays.asList(c1, c2), containsInAnyOrder(IterableUtil.toArray(list)));
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testFindAllByEventLocationNameContaining() {
+        try {
+            Conference c1 = createConference();
+            c1.getLocation().setName("Baum");
+            repository.save(c1).get();
+            Conference c2 = createConference();
+            c2.getLocation().setName("42");
+            repository.save(c2).get();
+            Conference c3 = createConference();
+            c3.getLocation().setName("Baum42");
+            repository.save(c3).get();
+
+            try (Stream<Conference> stream = repository.findAllByEventLocationNameContaining("Baum")) {
+                stream.forEach(conference -> {
+                    assertThat(Arrays.asList(c1, c3), contains(conference));
+                    assertNotEquals(c2, conference);
+                });
+            }
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }
