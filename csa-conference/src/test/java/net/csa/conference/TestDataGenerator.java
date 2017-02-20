@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by sky on 20.02.17.
- */
 public class TestDataGenerator {
     public static Conference createConference() {
         Conference c = new Conference();
