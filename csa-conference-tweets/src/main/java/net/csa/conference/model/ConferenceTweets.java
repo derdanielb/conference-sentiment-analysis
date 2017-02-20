@@ -1,5 +1,6 @@
-package net.csa.conference_tweets.model;
+package net.csa.conference.model;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,7 +9,7 @@ public class ConferenceTweets extends Conference {
 
     public ConferenceTweets() {}
 
-    public ConferenceTweets(Conference c, List<String> tweets) {
+    public ConferenceTweets(Conference c, String[] tweets) {
         setUuid(c.getUuid());
         setName(c.getName());
         setTimeSpan(c.getTimeSpan());
@@ -16,7 +17,7 @@ public class ConferenceTweets extends Conference {
         setHashTag(c.getHashTag());
         setOrganisers(c.getOrganisers());
         setSponsors(c.getSponsors());
-        this.tweets = tweets;
+        this.tweets = Arrays.asList(tweets);
     }
 
     public List<String> getTweets() {

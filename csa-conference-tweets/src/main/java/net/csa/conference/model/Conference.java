@@ -1,4 +1,4 @@
-package net.csa.conference_tweets.model;
+package net.csa.conference.model;
 
 import java.util.List;
 import java.util.Objects;

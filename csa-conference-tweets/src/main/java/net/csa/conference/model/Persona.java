@@ -1,8 +1,7 @@
-package net.csa.conference_tweets.model;
+package net.csa.conference.model;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**

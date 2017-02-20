@@ -1,10 +1,7 @@
-package net.csa.conference_tweets.rest;
+package net.csa.conference.rest;
 
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Objects;
 
 /**
  * Created by zelle on 13.12.2016.

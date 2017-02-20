@@ -1,5 +1,5 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-    <logger name="net.csa.conference_tweets" level="debug"/>
+    <logger name="net.csa.conference" level="debug"/>
 </configuration>

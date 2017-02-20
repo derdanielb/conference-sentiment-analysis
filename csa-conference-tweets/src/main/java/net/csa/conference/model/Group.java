@@ -1,6 +1,4 @@
-package net.csa.conference_tweets.model;
-
-import java.util.Objects;
+package net.csa.conference.model;
 
 /**
  * Created by mike on 30.11.16.

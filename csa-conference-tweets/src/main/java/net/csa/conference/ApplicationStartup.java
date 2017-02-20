@@ -1,4 +1,4 @@
-package net.csa.conference_tweets;
+package net.csa.conference;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
