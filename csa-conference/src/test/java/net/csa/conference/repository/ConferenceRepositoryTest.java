@@ -227,6 +227,29 @@ public class ConferenceRepositoryTest {
         }
     }
 
+    @Test
+    public void testFindByPersonaName() {
+        try {
+            Conference c1 = createConference();
+            c1.getSponsors().add(new Group("OrgaMaster"));
+            repository.save(c1).get();
+            Conference c2 = createConference();
+            c1.getOrganisers().add(new Group("OrgaMaster"));
+            repository.save(c2).get();
+            Conference c3 = createConference();
+            repository.save(c3).get();
+
+            try (Stream<Conference> stream = repository.findByPersonaName("OrgaMaster")) {
+                stream.forEach(conference -> {
+                    assertThat(Arrays.asList(c1, c2), contains(conference));
+                    assertNotEquals(c3, conference);
+                });
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
     private static Conference createConference() {
         Conference c = new Conference();
         c.generateUUID();

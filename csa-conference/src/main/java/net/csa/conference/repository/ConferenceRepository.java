@@ -52,6 +52,26 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
     @Async
     ListenableFuture deleteAll();
 
-    @Query("{ eventLocation: { name: ?0} }")
+    @Query("{" +
+            "   eventLocation: {" +
+            "       name: ?0" +
+            "   }" +
+            "}")
     Stream<Conference> findAllByEventLocationNameContaining(String name);
+
+    @Query("{" +
+            "   $or: [" +
+            "       {" +
+            "           organisers: {" +
+            "               name: ?0" +
+            "           }" +
+            "       }," +
+            "       {" +
+            "           sponsors: {" +
+            "               name: ?0" +
+            "           }" +
+            "       }" +
+            "   ]"+
+            "}")
+    Stream<Conference> findByPersonaName(String name);
 }
