@@ -83,6 +83,19 @@ services:
      - "4201/tcp:8080/tcp"
     volumes:
       - csa_twitter_search_01_data:/var/lib/csa_twitter_search/data
+  csa_conference_tweets:
+    container_name: csa_conference_tweets_01
+    image: csa/csa-conference-tweets
+    ports:
+     - "4202/tcp:8080/tcp"
+    depends_on:
+      - csa_conference
+      - csa_twitter_search
+    environment:
+      conference.host: csa_conference:8080
+      search.host: csa_twitter_search:8080
+    volumes:
+      - csa_conference_tweets_01_data:/var/lib/csa_conference_tweets/data
 volumes:
   csa_mongodb_01_data:
   csa_zookeeper4kafka_01_data:
@@ -91,3 +104,4 @@ volumes:
   csa_kafka_manager_01_data:
   csa_conference_01_data:
   csa_twitter_search_01_data:
+  csa_conference_tweets_01_data:

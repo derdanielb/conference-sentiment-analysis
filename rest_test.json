@@ -1,0 +1,87 @@
+{
+	"_type": "export",
+	"__export_format": 3,
+	"__export_date": "2017-02-20T17:04:00.431Z",
+	"__export_source": "insomnia.desktop.app:v4.2.14",
+	"resources": [
+		{
+			"_id": "wrk_047f8bef676c468c99732b1a3c7ffee6",
+			"parentId": null,
+			"modified": 1487604933460,
+			"created": 1487604933460,
+			"name": "csa",
+			"description": "",
+			"certificates": [],
+			"_type": "workspace"
+		},
+		{
+			"_id": "env_53d246dbe2c147ec898c2a8034f253b2",
+			"parentId": "wrk_047f8bef676c468c99732b1a3c7ffee6",
+			"modified": 1487604975940,
+			"created": 1487604975940,
+			"name": "Base Environment",
+			"data": {},
+			"_type": "environment"
+		},
+		{
+			"_id": "jar_38ecffa252864e9597bc44ce4972004f",
+			"parentId": "wrk_047f8bef676c468c99732b1a3c7ffee6",
+			"modified": 1487604975928,
+			"created": 1487604975928,
+			"name": "Default Jar",
+			"cookies": [],
+			"_type": "cookie_jar"
+		},
+		{
+			"_id": "req_df86b53f34494a35a3c9083429a0c878",
+			"parentId": "wrk_047f8bef676c468c99732b1a3c7ffee6",
+			"modified": 1487605290920,
+			"created": 1487604958511,
+			"url": "http://localhost:4200/csa/v1/conferences",
+			"name": "getConferences",
+			"method": "GET",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1487604958511,
+			"_type": "request"
+		},
+		{
+			"_id": "req_c9d8bf81161445a7b58dc6d1aa3228aa",
+			"parentId": "wrk_047f8bef676c468c99732b1a3c7ffee6",
+			"modified": 1487605318713,
+			"created": 1487605256439,
+			"url": "http://localhost:4201/twitter/search/trump",
+			"name": "getTrump",
+			"method": "GET",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1487605256439,
+			"_type": "request"
+		},
+		{
+			"_id": "req_0141fa7b8aa6455ab38fcce063330f2d",
+			"parentId": "wrk_047f8bef676c468c99732b1a3c7ffee6",
+			"modified": 1487610096935,
+			"created": 1487609151733,
+			"url": "http://localhost:4202/csa/v1/conferences?name=Baum",
+			"name": "getConferenceTweets",
+			"method": "GET",
+			"body": {
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1487609151733,
+			"_type": "request"
+		}
+	]
+}
