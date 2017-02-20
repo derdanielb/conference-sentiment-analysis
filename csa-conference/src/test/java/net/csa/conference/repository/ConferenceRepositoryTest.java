@@ -26,6 +26,8 @@ public class ConferenceRepositoryTest {
     @Autowired
     private ConferenceRepository repository;
 
+    private int streamTestCounter = 0;
+
     @Before
     public void clearDatabase() throws ExecutionException, InterruptedException {
         repository.deleteAll().get();
@@ -219,8 +221,14 @@ public class ConferenceRepositoryTest {
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findAllByEventLocationNameContaining("Baum")) {
-                stream.forEach(conference -> assertThat(Arrays.asList(c1, c3), contains(conference)));
+                //assertEquals(2, stream.count());
+                streamTestCounter = 0;
+                stream.forEach(conference -> {
+                    assertThat(Arrays.asList(c1, c3), contains(conference));
+                    streamTestCounter++;
+                });
             }
+            assertEquals(2, streamTestCounter);
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }
@@ -240,6 +248,7 @@ public class ConferenceRepositoryTest {
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findByTimeSpan(new Date(2017, 2, 2))) {
+                assertEquals(1, stream.count());
                 stream.forEach(conference -> {
                     assertEquals(c2, conference);
                 });
@@ -249,6 +258,7 @@ public class ConferenceRepositoryTest {
         }
     }
 
+    @Test
     public void testFindByPersonaName() {
         try {
             Conference c1 = createConference();
@@ -261,6 +271,7 @@ public class ConferenceRepositoryTest {
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findByPersonaName("OrgaMaster")) {
+                assertEquals(2, stream.count());
                 stream.forEach(conference -> assertThat(Arrays.asList(c1, c2), contains(conference)));
             }
         } catch (InterruptedException | ExecutionException e) {
