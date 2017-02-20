@@ -217,10 +217,7 @@ public class ConferenceRepositoryTest {
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findAllByEventLocationNameContaining("Baum")) {
-                stream.forEach(conference -> {
-                    assertThat(Arrays.asList(c1, c3), contains(conference));
-                    assertNotEquals(c2, conference);
-                });
+                stream.forEach(conference -> assertThat(Arrays.asList(c1, c3), contains(conference)));
             }
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
@@ -240,10 +237,7 @@ public class ConferenceRepositoryTest {
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findByPersonaName("OrgaMaster")) {
-                stream.forEach(conference -> {
-                    assertThat(Arrays.asList(c1, c2), contains(conference));
-                    assertNotEquals(c3, conference);
-                });
+                stream.forEach(conference -> assertThat(Arrays.asList(c1, c2), contains(conference)));
             }
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
