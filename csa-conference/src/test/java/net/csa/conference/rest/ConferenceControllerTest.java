@@ -7,7 +7,6 @@ import net.csa.conference.ConferenceMicroservice;
 import net.csa.conference.model.Conference;
 import net.csa.conference.repository.ConferenceRepository;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,21 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static net.csa.conference.TestDataGenerator.createConference;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -80,10 +75,10 @@ public class ConferenceControllerTest {
                 list.add(repository.save(createConference()).get());
 
             when()
-                    .get("/csa/v1/conferences/" + list.get(0).getUuid().toString())
-                    .then()
-                    .statusCode(HttpStatus.SC_OK)
-                    .body("uuid", equalTo(list.get(0).getUuid().toString()));
+                .get("/csa/v1/conferences/" + list.get(0).getUuid().toString())
+            .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("uuid", equalTo(list.get(0).getUuid().toString()));
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
         }
@@ -113,14 +108,14 @@ public class ConferenceControllerTest {
     public void testPost() {
         try {
             given()
-                    .body("{\"name\":\"SuperBaum\"}")
-                    .contentType(ContentType.JSON)
-                    .when()
-                    .post("/csa/v1/conferences")
-                    .then()
-                    .statusCode(HttpStatus.SC_CREATED)
-                    .body("name", equalTo("SuperBaum"))
-                    .body("uuid", equalTo(findUUID("SuperBaum")));
+                .body("{\"name\":\"SuperBaum\"}")
+                .contentType(ContentType.JSON)
+            .when()
+                .post("/csa/v1/conferences")
+            .then()
+                .statusCode(HttpStatus.SC_CREATED)
+                .body("name", equalTo("SuperBaum"))
+                .body("uuid", equalTo(findUUID("SuperBaum")));
 
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
