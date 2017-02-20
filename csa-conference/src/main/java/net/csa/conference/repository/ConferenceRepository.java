@@ -48,6 +48,9 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
     @Async
     ListenableFuture deleteAll();
 
+    @Query("{ eventLocation: { name: ?0} }")
+    Stream<Conference> findAllByEventLocationNameContaining(String name);
+
     @Query("{ timeSpan: { " +
                 "begin: {$gt: ?0}, " +
                 "end: {$lt: ?0}" +
