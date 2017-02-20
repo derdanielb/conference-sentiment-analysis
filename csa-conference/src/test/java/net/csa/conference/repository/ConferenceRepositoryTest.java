@@ -2,6 +2,7 @@ package net.csa.conference.repository;
 
 import net.csa.conference.model.*;
 
+import static net.csa.conference.TestDataGenerator.createConference;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
@@ -18,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
+@SuppressWarnings("ALL")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class ConferenceRepositoryTest {
@@ -217,10 +219,7 @@ public class ConferenceRepositoryTest {
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findAllByEventLocationNameContaining("Baum")) {
-                stream.forEach(conference -> {
-                    assertThat(Arrays.asList(c1, c3), contains(conference));
-                    assertNotEquals(c2, conference);
-                });
+                stream.forEach(conference -> assertThat(Arrays.asList(c1, c3), contains(conference)));
             }
         } catch (InterruptedException | ExecutionException e) {
             fail(e.getMessage());
@@ -228,7 +227,7 @@ public class ConferenceRepositoryTest {
     }
 
     @Test
-    public void testFindByTimeSpan(){
+    public void testFindByTimeSpan() {
         try {
             Conference c1 = createConference();
             c1.setTimeSpan(new TimeSpan(new Date(2017, 1, 1), new Date(2017, 1, 3)));
@@ -250,34 +249,22 @@ public class ConferenceRepositoryTest {
         }
     }
 
-    private static Conference createConference() {
-        Conference c = new Conference();
-        c.generateUUID();
-        c.setHashTag("baum");
-        c.setName("Baum");
-        List<Persona> orcs = new ArrayList<>();
-        orcs.add(new Organisation("o1"));
-        orcs.add(new Group("g1"));
-        orcs.add(new Person("Ralf", "Baum"));
-        c.setOrganisers(orcs);
-        List<Persona> spon = new ArrayList<>();
-        spon.add(new Organisation("o2"));
-        spon.add(new Group("g2"));
-        spon.add(new Person("Rolf", "B42"));
-        c.setSponsors(spon);
-        c.setTimeSpan(new TimeSpan(new Date(2016, 1, 1),
-                new Date(2016, 1, 2)));
-        EventLocation el = new EventLocation();
-        el.setName("Loc");
-        el.setGeoLocation(new Location(42, 42));
-        Address a = new Address();
-        a.setCountry("DE");
-        a.setNumber(42);
-        a.setStreet("BaumStreet");
-        a.setTown("BaumCity");
-        a.setZipCode(424242);
-        el.setAddress(a);
-        c.setLocation(el);
-        return c;
+    public void testFindByPersonaName() {
+        try {
+            Conference c1 = createConference();
+            c1.getSponsors().add(new Group("OrgaMaster"));
+            repository.save(c1).get();
+            Conference c2 = createConference();
+            c1.getOrganisers().add(new Group("OrgaMaster"));
+            repository.save(c2).get();
+            Conference c3 = createConference();
+            repository.save(c3).get();
+
+            try (Stream<Conference> stream = repository.findByPersonaName("OrgaMaster")) {
+                stream.forEach(conference -> assertThat(Arrays.asList(c1, c2), contains(conference)));
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
     }
 }

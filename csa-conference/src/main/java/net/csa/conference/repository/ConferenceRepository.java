@@ -48,7 +48,11 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
     @Async
     ListenableFuture deleteAll();
 
-    @Query("{ eventLocation: { name: ?0} }")
+    @Query("{" +
+            "   eventLocation: {" +
+            "       name: ?0" +
+            "   }" +
+            "}")
     Stream<Conference> findAllByEventLocationNameContaining(String name);
 
     @Query("{ timeSpan: { " +
@@ -56,4 +60,20 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
             "end: {$le: ?0}" +
             "}}")
     Stream<Conference> findByTimeSpan(Date date);
+
+    @Query("{" +
+            "   $or: [" +
+            "       {" +
+            "           organisers: {" +
+            "               name: ?0" +
+            "           }" +
+            "       }," +
+            "       {" +
+            "           sponsors: {" +
+            "               name: ?0" +
+            "           }" +
+            "       }" +
+            "   ]"+
+            "}")
+    Stream<Conference> findByPersonaName(String name);
 }
