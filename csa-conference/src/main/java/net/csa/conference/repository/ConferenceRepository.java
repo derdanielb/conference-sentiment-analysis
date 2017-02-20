@@ -69,17 +69,9 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
 
     @Query("{" +
             "   $or: [" +
-            "       {" +
-            "           organisers: {" +
-            "               name: ?0" +
-            "           }" +
-            "       }," +
-            "       {" +
-            "           sponsors: {" +
-            "               name: ?0" +
-            "           }" +
-            "       }" +
-            "   ]"+
+            "           { \"organisers.name\": ?0 }," +
+            "           { \"sponsors.name\": ?0 }" +
+            "        ]"+
             "}")
     Stream<Conference> findByPersonaName(String name);
 }

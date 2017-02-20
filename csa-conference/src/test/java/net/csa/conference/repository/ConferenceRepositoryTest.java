@@ -266,15 +266,16 @@ public class ConferenceRepositoryTest {
             c1.getSponsors().add(new Group("OrgaMaster"));
             repository.save(c1).get();
             Conference c2 = createConference();
-            c1.getOrganisers().add(new Group("OrgaMaster"));
+            c2.getOrganisers().add(new Group("OrgaMaster"));
             repository.save(c2).get();
             Conference c3 = createConference();
+            c3.getOrganisers().add(new Group("SomeoneElse"));
             repository.save(c3).get();
 
             try (Stream<Conference> stream = repository.findByPersonaName("OrgaMaster")) {
                 streamTestCounter = 0;
                 stream.forEach(conference -> {
-                    assertThat(Arrays.asList(c1, c2), contains(conference));
+                    assertTrue(Arrays.asList(c1, c2).contains(conference));
                     streamTestCounter++;
                 });
                 assertEquals(2, streamTestCounter);
