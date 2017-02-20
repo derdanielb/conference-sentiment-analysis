@@ -65,9 +65,29 @@ services:
       ZK_HOSTS: csa_zookeeper4kafka_01:19336
     volumes:
       - csa_kafka_manager_01_data:/var/lib/kafka_manager/data
+  csa_conference:
+    container_name: csa_conference_01
+    image: csa/csa-conference
+    ports:
+     - "4200/tcp:8080/tcp"
+    depends_on:
+      - csa_mongodb_01
+    environment:
+      spring.data.mongodb.uri: mongodb://csa_mongodb_01:27017/database
+    volumes:
+      - csa_twitter_search_01_data:/var/lib/csa_conference/data
+  csa_twitter_search:
+    container_name: csa_twitter_search_01
+    image: csa/csa-twitter-search
+    ports:
+     - "4201/tcp:8080/tcp"
+    volumes:
+      - csa_twitter_search_01_data:/var/lib/csa_twitter_search/data
 volumes:
   csa_mongodb_01_data:
   csa_zookeeper4kafka_01_data:
   csa_zookeeper4kafka_01_log:
   csa_kafka_01_data:
   csa_kafka_manager_01_data:
+  csa_conference_01_data:
+  csa_twitter_search_01_data:
