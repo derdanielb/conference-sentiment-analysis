@@ -49,7 +49,7 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
     ListenableFuture deleteAll();
 
     @Query("{" +
-            "   eventLocation: {" +
+            "   location: {" +
             "       name: ?0" +
             "   }" +
             "}")
