@@ -61,8 +61,9 @@ class TwitterSearchController {
         //"?f=tweets&vertical=default&q=%23" + hashtag + "+since:2016-06-13+until:2016-06-18&language=en&result_type=recent");
 
         //SearchParameters searchParameters = new SearchParameters("#" + hashtag + "+since:2016-06-13+until:2016-06-18")
-        SearchParameters searchParameters = new SearchParameters(hashtag)
+        SearchParameters searchParameters = new SearchParameters("#" + hashtag)
                 .includeEntities(false)
+                .lang("en")
                 .count(MAX_RESULTS)
                 .resultType(SearchParameters.ResultType.MIXED);
         //.since(new SimpleDateFormat("yyyy-MM-dd").parse("2016-06-13"))
