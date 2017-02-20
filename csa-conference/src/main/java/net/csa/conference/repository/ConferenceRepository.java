@@ -52,8 +52,8 @@ public interface ConferenceRepository extends Repository<Conference, UUID> {
     Stream<Conference> findAllByEventLocationNameContaining(String name);
 
     @Query("{ timeSpan: { " +
-                "begin: {$gt: ?0}, " +
-                "end: {$lt: ?0}" +
-            "}")
+            "begin: {$ge: ?0}, " +
+            "end: {$le: ?0}" +
+            "}}")
     Stream<Conference> findByTimeSpan(Date date);
 }

@@ -227,6 +227,29 @@ public class ConferenceRepositoryTest {
         }
     }
 
+    @Test
+    public void testFindByTimeSpan(){
+        try {
+            Conference c1 = createConference();
+            c1.setTimeSpan(new TimeSpan(new Date(2017, 1, 1), new Date(2017, 1, 3)));
+            repository.save(c1).get();
+            Conference c2 = createConference();
+            c2.setTimeSpan(new TimeSpan(new Date(2017, 2, 1), new Date(2017, 2, 3)));
+            repository.save(c2).get();
+            Conference c3 = createConference();
+            c3.setTimeSpan(new TimeSpan(new Date(2017, 3, 1), new Date(2017, 3, 3)));
+            repository.save(c3).get();
+
+            try (Stream<Conference> stream = repository.findByTimeSpan(new Date(2017, 2, 2))) {
+                stream.forEach(conference -> {
+                    assertEquals(c2, conference);
+                });
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            fail(e.getMessage());
+        }
+    }
+
     private static Conference createConference() {
         Conference c = new Conference();
         c.generateUUID();
