@@ -9,6 +9,7 @@ import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.japi.Pair;
 import akka.japi.function.Function;
+import akka.kafka.ProducerSettings;
 import akka.stream.ActorMaterializer;
 import akka.stream.ActorMaterializerSettings;
 import akka.stream.ClosedShape;
@@ -29,6 +30,10 @@ import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.stream.javadsl.ZipWith;
 import akka.util.ByteString;
+import com.google.gson.Gson;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.util.Try;
@@ -115,12 +120,12 @@ public class TweetCollector {
 					= Flow.fromFunction(p -> {
 				Future<HttpEntity.Strict> responseEntity = p.first().get().entity().toStrict(3, materializer).toCompletableFuture();
 				String tweetsString = responseEntity.get().getData().utf8String();
-				if(!tweetsString.equals("[]")) {
+				if (!tweetsString.equals("[]")) {
 					tweetsString = tweetsString.substring(2, tweetsString.length() - 2);
 				}
 				String[] tweetsStringArray = tweetsString.split("\",\"");
 				List<Tweet> tweets = new ArrayList<>();
-				for(String tweetString : tweetsStringArray) {
+				for (String tweetString : tweetsStringArray) {
 					Tweet tweet = new Tweet(tweetString);
 					tweets.add(tweet);
 				}
@@ -129,9 +134,23 @@ public class TweetCollector {
 			httpResponseDataExtractorFlow = flow.log("csa-tweet-collector-httpResponseDataExtractorFlow");
 		}
 
+		final ProducerSettings<String, String> producerSettings = ProducerSettings.create(system,
+				new StringSerializer(),
+				new StringSerializer())
+				.withBootstrapServers("192.168.1.24:19092");
+
 		// TODO stream the tweets to Kafka instead of just logging status code of response
-		Sink<Pair<List<Tweet>, Integer>, CompletionStage<Done>> sink
-				= Sink.foreach(p -> {for(Tweet tweet : p.first()){log.info(p.second() + ". HashTag: " + tweet.getText());}});
+		final Sink<Pair<List<Tweet>, Integer>, CompletionStage<Done>> sink
+				= Sink.foreach(p -> {
+			String json = new Gson().toJson(p.first());
+			ProducerRecord<String, String> producerRecord = new ProducerRecord<String, String>("tweet-topic" + p.second().toString(), json);
+			KafkaProducer<String, String> producer = producerSettings.createKafkaProducer();
+			producer.send(producerRecord);
+
+//			for (Tweet tweet : p.first()) {
+//				log.info(p.second() + ". HashTag: " + tweet.getText());
+//			}
+		});
 
 
 		// ----- construct the processing graph as required using shapes obtained for stages -----

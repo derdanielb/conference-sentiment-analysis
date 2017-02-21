@@ -53,15 +53,19 @@ Use the command described at https://docs.docker.com/engine/reference/commandlin
 
 ##### List Topics
 
-`docker exec -ti codecamp-akka-streams-java-kafka-01-c /usr/bin/kafka-topics --list --zookeeper codecamp-akka-streams-java-zookeeper4kafka-01-s:44776`
+`docker exec -ti csa_kafka_01 /usr/bin/kafka-topics --list --zookeeper csa_zookeeper4kafka_01:19336`
 
 ##### Describe a Topic
 
-`docker exec -ti codecamp-akka-streams-java-kafka-01-c /usr/bin/kafka-topics --describe --zookeeper codecamp-akka-streams-java-zookeeper4kafka-01-s:44776 -topic kata06-topic`
+`docker exec -ti csa_kafka_01 /usr/bin/kafka-topics --describe --zookeeper csa_zookeeper4kafka_01:19336 -topic tweet-topic`
 
 ##### Create a Topic
 
-`docker exec -ti codecamp-akka-streams-java-kafka-01-c /usr/bin/kafka-topics --create --zookeeper codecamp-akka-streams-java-zookeeper4kafka-01-s:44776 --topic kata06-topic --partitions 1 --replication-factor 1`
+`docker exec -ti csa_kafka_01 /usr/bin/kafka-topics --create --zookeeper csa_zookeeper4kafka_01:19336 --topic tweet-topic --partitions 1 --replication-factor 1`
+
+##### List Content in a topic
+
+`docker exec -ti csa_kafka_01 /usr/bin/kafka-console-consumer --zookeeper csa_zookeeper4kafka_01:19336 --topic tweet-topic`
 
 ##### Stop Kafka and remove all Docker volumes and thus wipe all data
 
