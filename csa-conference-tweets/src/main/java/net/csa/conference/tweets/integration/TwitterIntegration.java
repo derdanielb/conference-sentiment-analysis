@@ -17,10 +17,13 @@ public class TwitterIntegration {
 
 	public List<String> getTweets(String hashtag) {
 		RestTemplate restTemplate = new RestTemplate();
-//		Deactivate for local test / Activate for Docker ->
-		String getConferencesByTwitterHashtagURL = "http://csa_twitter_search_01:8080/twitter/search/" + hashtag;
-//		Activate for local Test / Deactivate for Docker ->
-//		String getConferencesByTwitterHashtagURL = "http://localhost:8070/twitter/search/" + hashtag;
+		String getConferencesByTwitterHashtagURL = "";
+		if(System.getProperty("env") == null) {
+			getConferencesByTwitterHashtagURL = "http://csa_twitter_search_01:8080/twitter/search/" + hashtag;
+
+		} else if(System.getProperty("env").equals("test")) {
+			getConferencesByTwitterHashtagURL = "http://localhost:8070/twitter/search/" + hashtag;
+		}
 		ResponseEntity responseEntity = restTemplate.getForEntity(getConferencesByTwitterHashtagURL, List.class);
 		return (List<String>) responseEntity.getBody();
 	}

@@ -20,10 +20,12 @@ public class ConferenceIntegration {
 
 	public List<HashMap> getConferences(String hashtag) {
 		RestTemplate restTemplate = new RestTemplate();
-//		Deactivate for local test / Activate for Docker ->
-		String getConferencesByTwitterHashtagURL = "http://csa_conference_01:8080/conference/getByTwitterHashtag/" + hashtag;
-//		Activate for local Test / Deactivate for Docker ->
-//		String getConferencesByTwitterHashtagURL = "http://localhost:8080/conference/getByTwitterHashtag/" + hashtag;
+		String getConferencesByTwitterHashtagURL = "";
+		if (System.getProperty("env") == null) {
+			getConferencesByTwitterHashtagURL = "http://csa_conference_01:8080/conference/getByTwitterHashtag/" + hashtag;
+		} else if (System.getProperty("env").equals("test")) {
+			getConferencesByTwitterHashtagURL = "http://localhost:8080/conference/getByTwitterHashtag/" + hashtag;
+		}
 		try {
 			ResponseEntity responseEntity = restTemplate.getForEntity(getConferencesByTwitterHashtagURL, List.class);
 			return (List<HashMap>) responseEntity.getBody();

@@ -18,6 +18,8 @@ import java.util.List;
 @SpringBootTest
 public class IntegrationTest {
 
+	// mvn test -Denv=test
+
 	@Autowired
 	private ConferenceIntegration conferenceIntegration;
 

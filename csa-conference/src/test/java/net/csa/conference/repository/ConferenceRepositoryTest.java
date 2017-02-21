@@ -21,6 +21,8 @@ import java.util.concurrent.Future;
 @SpringBootTest
 public class ConferenceRepositoryTest {
 
+	//mvn test -Dspring.profiles.default=test
+
 	@Autowired
 	private ConferenceRepositoryService conferenceRepositoryService;
 
