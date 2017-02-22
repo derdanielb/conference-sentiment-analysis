@@ -1,13 +1,18 @@
-package net.csa.twitter.search;
+package net.csa.conference.tweets;
+
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TwitterSearchMicroservice {
+public class ConferenceTweetsMicroservice {
 
     public static void main(String[] args) {
-        SpringApplication.run(TwitterSearchMicroservice.class, args);
+
+        SpringApplication.run(ConferenceTweetsMicroservice.class, args);
+
+
+
     }
 
 }

@@ -7,8 +7,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.social.twitter.api.Twitter;
 
 @Configuration
-@PropertySource("file:///tmp/my_twitter_consumer_key.txt")
-@PropertySource("file:///tmp/my_twitter_consumer_secret.txt")
+//@PropertySource("file:///twitterkeys/my_twitter_consumer_key.txt")
+//@PropertySource("file:///twitterkeys/my_twitter_consumer_secret.txt")
 class TwitterSearchConfiguration {
 
     @Value("${key}")

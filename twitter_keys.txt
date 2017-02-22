@@ -1,2 +1,0 @@
-Consumer Key (API Key) tnEq43HgYIEY3e14aURF2SY2M
-Consumer Secret (API Secret) xfGzBJyWdARG11DRXubTuJW7NyICWS9t9esMlToPrzyJPGYqYk
