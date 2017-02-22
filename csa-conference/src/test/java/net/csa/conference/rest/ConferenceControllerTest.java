@@ -7,6 +7,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -62,16 +63,16 @@ public class ConferenceControllerTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/conference/add").content(gson.toJson(testConference)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
 		MvcResult result = this.mockMvc.perform(requestBuilder).andReturn();
-		String c = result.getResponse().getContentAsString();
-		Assert.assertTrue(c != null);
+		int status = result.getResponse().getStatus();
+		Assert.assertTrue(status == 200);
 	}
 
 	@Test
 	public void testCreateConference() throws Exception {
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/conference/add").content(gson.toJson(testConference)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
 		MvcResult result = this.mockMvc.perform(requestBuilder).andReturn();
-		String conference = result.getResponse().getContentAsString();
-		Assert.assertTrue(conference.contains(testConference.getConferenceName()));
+		int status = result.getResponse().getStatus();
+		Assert.assertTrue(status == 200);
 		List<Conference> c = conferenceRepositoryService.findByConferenceName(testConference.getConferenceName());
 		Assert.assertTrue(!c.isEmpty());
 	}
@@ -91,8 +92,8 @@ public class ConferenceControllerTest {
 		conferences.get(0).setConferenceName("UpdateTestConferenceName");
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/conference/update").content(gson.toJson(conferences.get(0))).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
 		MvcResult result = this.mockMvc.perform(requestBuilder).andReturn();
-		String conference = result.getResponse().getContentAsString();
-		Assert.assertTrue(conference.contains("UpdateTestConferenceName"));
+		int status = result.getResponse().getStatus();
+		Assert.assertTrue(status == 200);
 		List<Conference> c = conferenceRepositoryService.findByConferenceName("UpdateTestConferenceName");
 		Assert.assertTrue(!c.isEmpty());
 	}
@@ -102,8 +103,8 @@ public class ConferenceControllerTest {
 		List<Conference> conferences = conferenceRepositoryService.findByConferenceName(testConference.getConferenceName());
 		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/conference/delete").content(gson.toJson(conferences.get(0))).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON);
 		MvcResult result  = this.mockMvc.perform(requestBuilder).andReturn();
-		String returnString = result.getResponse().getContentAsString();
-		Assert.assertTrue(returnString.equals("1"));
+		int status = result.getResponse().getStatus();
+		Assert.assertTrue(status == 200);
 		List<Conference> conference = conferenceRepositoryService.findByConferenceName(testConference.getConferenceName());
 		Assert.assertTrue(conference.isEmpty());
 	}
