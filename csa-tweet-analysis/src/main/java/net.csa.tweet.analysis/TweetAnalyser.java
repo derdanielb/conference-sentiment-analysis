@@ -45,42 +45,22 @@ public class TweetAnalyser {
 				.withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
 				.withProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
 
-		final Source<Pair<ConsumerMessage.CommittableMessage<String, String>, String>, Consumer.Control> tweetSource;
+		final Source<String, Consumer.Control> tweetSource;
 		{
-//			Source<ConsumerMessage.CommittableMessage<String, String>, Consumer.Control> cm = Consumer.committableSource(consumerSettings, Subscriptions.topics("tweet-topic0"));
-
-			// each line is used as a hastag thus split by line separator
-//			final Flow<ByteString, String, NotUsed> framingFlow
-//					= Framing.delimiter(ByteString.fromString(System.lineSeparator()), 1000, FramingTruncation.ALLOW)
-//					.map(ByteString::utf8String)
-//					.log("csa-tweet-collector-framingFlow");
-
-			tweetSource = Consumer.committableSource(consumerSettings, Subscriptions.topics("tweet-topic1")).map(cm -> Pair.create(cm, cm.record().value()))
+			tweetSource = Consumer.committableSource(consumerSettings, Subscriptions.topics("tweet-topic")).map(cm -> cm.record().value())
 					.log("csa-tweet-analyser-tweetSource");
 		}
 
-		final Flow<Pair<ConsumerMessage.CommittableMessage<String, String>, String>, String, NotUsed> extractorFlow;
-		{
-			Flow<Pair<ConsumerMessage.CommittableMessage<String, String>, String>, String, NotUsed> flow =
-					Flow.fromFunction(p -> {
-						return p.second();
-					});
-			extractorFlow = flow.log("extractor-flow");
-		}
-
 		final Sink<String, CompletionStage<Done>> sink = Sink.foreach(p -> {
-			log.info(p);
+			log.info("Sink: " + p);
 		});
 
 		final Graph<ClosedShape, CompletionStage<Done>> g = GraphDSL.create(sink, (b, s) -> {
 
 			// source shape for hashtags
-			final SourceShape<Pair<ConsumerMessage.CommittableMessage<String, String>, String>> tweetSourceShape = b.add(tweetSource);
+			final SourceShape<String> tweetSourceShape = b.add(tweetSource);
 
-			// flow shape to create an HttpRequest for every hashtag
-			final FlowShape<Pair<ConsumerMessage.CommittableMessage<String, String>, String>, String> extractorFlowShape = b.add(extractorFlow);
-
-			b.from(tweetSourceShape).via(extractorFlowShape).to(s);
+			b.from(tweetSourceShape).to(s);
 
 			return ClosedShape.getInstance();
 		});

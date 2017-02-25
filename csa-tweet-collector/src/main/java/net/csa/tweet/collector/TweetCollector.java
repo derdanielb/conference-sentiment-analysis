@@ -31,6 +31,8 @@ import akka.stream.javadsl.Source;
 import akka.stream.javadsl.ZipWith;
 import akka.util.ByteString;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -142,8 +144,14 @@ public class TweetCollector {
 		// TODO stream the tweets to Kafka instead of just logging status code of response
 		final Sink<Pair<List<Tweet>, Integer>, CompletionStage<Done>> sink
 				= Sink.foreach(p -> {
-			String json = new Gson().toJson(p.first());
-			ProducerRecord<String, String> producerRecord = new ProducerRecord<String, String>("tweet-topic" + p.second().toString(), json);
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("id", p.second());
+			int tweetCount = 0;
+			for(Tweet tweet : p.first()) {
+				jsonObject.addProperty("tweet" + tweetCount, tweet.getText());
+				tweetCount++;
+			}
+			ProducerRecord<String, String> producerRecord = new ProducerRecord<String, String>("tweet-topic", jsonObject.toString());
 			KafkaProducer<String, String> producer = producerSettings.createKafkaProducer();
 			producer.send(producerRecord);
 
