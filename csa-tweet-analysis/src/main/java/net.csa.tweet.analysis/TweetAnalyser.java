@@ -5,18 +5,20 @@ import akka.NotUsed;
 import akka.actor.ActorSystem;
 import akka.japi.Pair;
 import akka.japi.function.Function;
-import akka.kafka.ConsumerMessage;
 import akka.kafka.ConsumerSettings;
 import akka.kafka.Subscriptions;
 import akka.kafka.javadsl.Consumer;
 import akka.stream.*;
 import akka.stream.javadsl.*;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -47,27 +49,60 @@ public class TweetAnalyser {
 
 		final Source<String, Consumer.Control> tweetSource;
 		{
-			tweetSource = Consumer.committableSource(consumerSettings, Subscriptions.topics("tweet-topic")).map(cm -> cm.record().value())
-					.log("csa-tweet-analyser-tweetSource");
+			tweetSource = Consumer.committableSource(consumerSettings, Subscriptions.topics("tweet-topic")).map(cm -> cm.record().value());
 		}
 
-		final Sink<String, CompletionStage<Done>> sink = Sink.foreach(p -> {
-			log.info("Sink: " + p);
+		final Flow<String, Pair<List<Tweet>, Integer>, NotUsed> tweetMappingFlow;
+		{
+			Flow<String,Pair<List<Tweet>, Integer>, NotUsed> flow =
+					Flow.fromFunction(p -> {
+						JsonParser jsonParser = new JsonParser();
+						JsonObject jsonObject = (JsonObject) jsonParser.parse(p);
+						int id = jsonObject.get("id").getAsInt();
+						List<Tweet> tweetList = new ArrayList<>();
+						String tweet = "";
+						int i = 0;
+						while(tweet != null) {
+							try {
+								tweet = jsonObject.get("tweet" + i).getAsString();
+								tweetList.add(new Tweet(tweet));
+								i++;
+							} catch (NullPointerException e) {
+								tweet = null;
+							}
+						}
+						return Pair.create(tweetList, id);
+					});
+			tweetMappingFlow = flow.log("csa-tweet-analyser-tweetMappingFlow");
+		}
+
+		final Flow<Pair<List<Tweet>, Integer>, Pair<List<Tweet>, Integer>, NotUsed> tweetAnalysisFlow;
+		{
+			//MeaningCloud API-Key: 8119eeaf0a690d4e3ea55125810249bf
+		}
+
+		final Sink<Pair<List<Tweet>, Integer>, CompletionStage<Done>> sink = Sink.foreach(p -> {
+			log.info("ID: " + p.second());
+			for(Tweet tweet: p.first()) {
+				log.info("Tweet: " + tweet.getText());
+			}
 		});
 
 		final Graph<ClosedShape, CompletionStage<Done>> g = GraphDSL.create(sink, (b, s) -> {
 
 			// source shape for hashtags
 			final SourceShape<String> tweetSourceShape = b.add(tweetSource);
+			final FlowShape<String, Pair<List<Tweet>, Integer>> tweetMappingFlowShape = b.add(tweetMappingFlow);
 
-			b.from(tweetSourceShape).to(s);
+			b.from(tweetSourceShape)
+					.via(tweetMappingFlowShape)
+					.to(s);
 
 			return ClosedShape.getInstance();
 		});
 
 		CompletionStage<Done> completionStage = RunnableGraph.fromGraph(g).run(materializer);
 		CompletableFuture<Done> completableFuture = completionStage.toCompletableFuture();
-		// TODO if you process a lot remove this waiting for the result and instead loop and sleep until completed
 		while (!completableFuture.isDone()) {
 
 		}

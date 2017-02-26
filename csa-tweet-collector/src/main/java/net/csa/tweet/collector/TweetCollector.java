@@ -30,8 +30,6 @@ import akka.stream.javadsl.Sink;
 import akka.stream.javadsl.Source;
 import akka.stream.javadsl.ZipWith;
 import akka.util.ByteString;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -50,8 +48,6 @@ public class TweetCollector {
 	private static final Logger log = LoggerFactory.getLogger(TweetCollector.class);
 
 	public static void main(String args[]) throws InterruptedException, TimeoutException, ExecutionException {
-
-		// TODO this is just a rough sketch to provide a basis, please change and develop further
 
 		// this decider applies the default supervision strategy, but it adds some logging in case of an error
 		final Function<Throwable, Supervision.Directive> decider = ex -> {
@@ -94,7 +90,6 @@ public class TweetCollector {
 		// flow to create a http request to our twitter search
 		final Flow<Pair<String, Integer>, Pair<HttpRequest, Integer>, NotUsed> createRequestFlow;
 		{
-			// TODO this does not yet query for tweets with respect to a period of time (from and to date)
 			Flow<Pair<String, Integer>, Pair<HttpRequest, Integer>, NotUsed> flow
 					= Flow.fromFunction(p -> new Pair<>(HttpRequest
 					.create("http://localhost:8070//twitter/search/" + p.first()),
@@ -131,7 +126,7 @@ public class TweetCollector {
 					Tweet tweet = new Tweet(tweetString);
 					tweets.add(tweet);
 				}
-				return new Pair<>(tweets, p.second());
+				return Pair.create(tweets, p.second());
 			});
 			httpResponseDataExtractorFlow = flow.log("csa-tweet-collector-httpResponseDataExtractorFlow");
 		}
@@ -141,7 +136,6 @@ public class TweetCollector {
 				new StringSerializer())
 				.withBootstrapServers("192.168.1.24:19092");
 
-		// TODO stream the tweets to Kafka instead of just logging status code of response
 		final Sink<Pair<List<Tweet>, Integer>, CompletionStage<Done>> sink
 				= Sink.foreach(p -> {
 			JsonObject jsonObject = new JsonObject();
@@ -155,9 +149,6 @@ public class TweetCollector {
 			KafkaProducer<String, String> producer = producerSettings.createKafkaProducer();
 			producer.send(producerRecord);
 
-//			for (Tweet tweet : p.first()) {
-//				log.info(p.second() + ". HashTag: " + tweet.getText());
-//			}
 		});
 
 
@@ -189,8 +180,6 @@ public class TweetCollector {
 					.via(createRequestFlowShape)
 					.via(httpClientFlowShape)
 					.via(httpResponseDataExtractorFlowShape)
-					// TODO here missing is the parsing of the obtained HttpResponse to extract the Tweets
-					// TODO thereafter missing is the sink to stream the tweets to Kafka
 					.to(s);
 
 			return ClosedShape.getInstance();
@@ -199,7 +188,6 @@ public class TweetCollector {
 		// run it and check the status
 		CompletionStage<Done> completionStage = RunnableGraph.fromGraph(g).run(materializer);
 		CompletableFuture<Done> completableFuture = completionStage.toCompletableFuture();
-		// TODO if you process a lot remove this waiting for the result and instead loop and sleep until completed
 		while (!completableFuture.isDone()) {
 
 		}
