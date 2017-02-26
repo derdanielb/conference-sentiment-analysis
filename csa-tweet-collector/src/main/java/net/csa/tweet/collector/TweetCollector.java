@@ -67,7 +67,7 @@ public class TweetCollector {
 		{
 			// source for streaming the input file
 			// TODO adjust to use your file and possibly make the path to the file an input variable
-			final Source<ByteString, CompletionStage<IOResult>> fileSource = FileIO.fromFile(new File("/Users/philippamkreutz/Documents/HBRS/OOKA/Uebungen/Uebung7/hashtags.txt"))
+			final Source<ByteString, CompletionStage<IOResult>> fileSource = FileIO.fromFile(new File("/Users/philippamkreutz/Documents/HBRS/OOKA/Uebungen/Uebung7/hashtags2.txt"))
 					.log("csa-tweet-collector-fileSource");
 
 			// each line is used as a hastag thus split by line separator

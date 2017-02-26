@@ -17,6 +17,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -24,9 +25,11 @@ import java.util.concurrent.*;
 /**
  * @author philipp.amkreutz
  */
-public class TweetAnalyser {
+public class TweetAnalyzer {
 
-	private static final Logger log = LoggerFactory.getLogger(TweetAnalyser.class);
+	private static final Logger log = LoggerFactory.getLogger(TweetAnalyzer.class);
+
+	private static TweetAnalyzerResult result;
 
 	public static void main(String args[]) throws InterruptedException, TimeoutException, ExecutionException {
 
@@ -73,19 +76,49 @@ public class TweetAnalyser {
 						}
 						return Pair.create(tweetList, id);
 					});
-			tweetMappingFlow = flow.log("csa-tweet-analyser-tweetMappingFlow");
+			tweetMappingFlow = flow.log("csa-tweet-analyzer-tweetMappingFlow");
 		}
 
-		final Flow<Pair<List<Tweet>, Integer>, Pair<List<Tweet>, Integer>, NotUsed> tweetAnalysisFlow;
+		final Flow<Pair<List<Tweet>, Integer>, TweetAnalysis, NotUsed> tweetAnalysisFlow;
 		{
-			//MeaningCloud API-Key: 8119eeaf0a690d4e3ea55125810249bf
+			Flow<Pair<List<Tweet>, Integer>, TweetAnalysis, NotUsed> flow =
+					Flow.fromFunction(p -> {
+						TweetAnalysis tweetAnalysis = new TweetAnalysis(p.second());
+						SentimentAnalysis sentimentAnalysis = new MeaningCloudSentimentAnalysis();
+						for(Tweet tweet : p.first()){
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							tweet = sentimentAnalysis.analyzeTweet(tweet);
+							tweetAnalysis.addTweet(tweet);
+						}
+						return tweetAnalysis;
+					});
+			tweetAnalysisFlow = flow.log("csa-tweet-analyzer-tweetAnalysisFlow");
+
 		}
 
-		final Sink<Pair<List<Tweet>, Integer>, CompletionStage<Done>> sink = Sink.foreach(p -> {
-			log.info("ID: " + p.second());
-			for(Tweet tweet: p.first()) {
-				log.info("Tweet: " + tweet.getText());
-			}
+		final Flow<TweetAnalysis, NotUsed, NotUsed> tweetAnalyserResultFlow;
+		{
+			Flow<TweetAnalysis, NotUsed, NotUsed> flow =
+					Flow.fromFunction(p -> {
+						if(result == null) {
+							result = new TweetAnalyzerResult();
+						}
+						result.addTweetAnalysis(p);
+						return NotUsed.getInstance();
+					});
+			tweetAnalyserResultFlow = flow.log("csa-tweet-analyzer-tweetAnalyzerResultFlow");
+
+		}
+
+		final Sink<NotUsed, CompletionStage<Done>> sink = Sink.foreach(p -> {
+			System.out.println("---------------------------------------------------");
+			System.out.println("RESULT");
+			result.printResult();
+			System.out.println("---------------------------------------------------");
 		});
 
 		final Graph<ClosedShape, CompletionStage<Done>> g = GraphDSL.create(sink, (b, s) -> {
@@ -93,9 +126,13 @@ public class TweetAnalyser {
 			// source shape for hashtags
 			final SourceShape<String> tweetSourceShape = b.add(tweetSource);
 			final FlowShape<String, Pair<List<Tweet>, Integer>> tweetMappingFlowShape = b.add(tweetMappingFlow);
+			final FlowShape<Pair<List<Tweet>, Integer>, TweetAnalysis> tweetAnalysisFlowShape = b.add(tweetAnalysisFlow);
+			final FlowShape<TweetAnalysis, NotUsed> tweetAnalyserResultFlowShape = b.add(tweetAnalyserResultFlow);
 
 			b.from(tweetSourceShape)
 					.via(tweetMappingFlowShape)
+					.via(tweetAnalysisFlowShape)
+					.via(tweetAnalyserResultFlowShape)
 					.to(s);
 
 			return ClosedShape.getInstance();
