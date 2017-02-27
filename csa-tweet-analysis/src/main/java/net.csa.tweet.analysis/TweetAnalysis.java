@@ -24,6 +24,8 @@ public class TweetAnalysis {
 		System.out.println("ID: " + id);
 		System.out.println("TweetCount: " + getTweetCount());
 		System.out.println("PositiveTweetCount: " + getPositiveTweetCount());
+		System.out.println("NegativeTweetCount: " + getNegativeTweetCount());
+		System.out.println("NeutralTweetCount: " + getNeutralTweetCount());
 		System.out.println("WordCount: " + getWordCount());
 		for(Tweet tweet : tweetList) {
 			System.out.println("TWEET");
@@ -45,6 +47,26 @@ public class TweetAnalysis {
 			}
 		}
 		return positiveCount;
+	}
+
+	public int getNegativeTweetCount() {
+		int negativeCount = 0;
+		for(Tweet tweet : tweetList) {
+			if(tweet.getScore() == -1) {
+				negativeCount++;
+			}
+		}
+		return negativeCount;
+	}
+
+	public int getNeutralTweetCount() {
+		int neutralCount = 0;
+		for(Tweet tweet : tweetList) {
+			if(tweet.getScore() == 0) {
+				neutralCount++;
+			}
+		}
+		return neutralCount;
 	}
 
 	public int getWordCount() {

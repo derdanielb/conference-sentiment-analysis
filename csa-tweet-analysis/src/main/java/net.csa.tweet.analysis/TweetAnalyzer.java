@@ -45,7 +45,7 @@ public class TweetAnalyzer {
 				.withSupervisionStrategy(decider), system);
 
 		final ConsumerSettings<String, String> consumerSettings = ConsumerSettings.create(system, new StringDeserializer(), new StringDeserializer())
-				.withBootstrapServers("192.168.1.24:19092")
+				.withBootstrapServers(args[0] + ":19092")
 				.withGroupId("analyser1")
 				.withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
 				.withProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
