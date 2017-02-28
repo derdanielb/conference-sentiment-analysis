@@ -24,11 +24,15 @@ public class TweetAnalyzerResult {
 				return o2.getTweetCount() - o1.getTweetCount();
 			}
 		});
-		System.out.println("TweetCount Ranking:");
+		System.out.println("---------------------------------------------------");
+		System.out.println("RESULT");
+		System.out.println("---------------------------------------------------");
+		System.out.println("RANKING FOR TWEET-COUNT:");
 		int i = 1;
 		for (TweetAnalysis tweetAnalysis : analysisList) {
-			System.out.println(i + ". Hashtag");
+			System.out.println(i + ". Place");
 			tweetAnalysis.printList();
+			System.out.println("------------------------");
 			i++;
 		}
 
@@ -39,11 +43,12 @@ public class TweetAnalyzerResult {
 			}
 		});
 		System.out.println("---------------------------------------------------");
-		System.out.println("PositiveTweetCount Ranking:");
+		System.out.println("RANKING FOR POSITIVE-TWEET-COUNT:");
 		i = 1;
 		for (TweetAnalysis tweetAnalysis : analysisList) {
-			System.out.println(i + ". Hashtag");
+			System.out.println(i + ". Place");
 			tweetAnalysis.printList();
+			System.out.println("------------------------");
 			i++;
 		}
 

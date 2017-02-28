@@ -21,17 +21,21 @@ public class TweetAnalysis {
 	}
 
 	public void printList() {
-		System.out.println("ID: " + id);
+		System.out.println("Hashtag-ID: " + id);
 		System.out.println("TweetCount: " + getTweetCount());
 		System.out.println("PositiveTweetCount: " + getPositiveTweetCount());
 		System.out.println("NegativeTweetCount: " + getNegativeTweetCount());
 		System.out.println("NeutralTweetCount: " + getNeutralTweetCount());
 		System.out.println("WordCount: " + getWordCount());
+		System.out.println("------------------------");
+		int i = 1;
 		for(Tweet tweet : tweetList) {
-			System.out.println("TWEET");
-			System.out.println("Score: " + tweet.getScore());
+			System.out.println("Tweet " + i);
+			System.out.println("Score: " + tweet.getScore() + ((tweet.getScore() == 1) ? " (positive)" : (tweet.getScore() == -1) ? " (negative)" : " (neutral)"));
 			System.out.println("Words: " + tweet.getWordCount());
-			System.out.println("TEXT: " + tweet.getText());
+			System.out.println("Text: " + tweet.getText());
+			System.out.println("------------------------");
+			i++;
 		}
 	}
 

@@ -45,6 +45,7 @@ public class TweetAnalyzer {
 				.withSupervisionStrategy(decider), system);
 
 		final ConsumerSettings<String, String> consumerSettings = ConsumerSettings.create(system, new StringDeserializer(), new StringDeserializer())
+//				.withBootstrapServers("192.168.1.24:19092")
 				.withBootstrapServers(args[0] + ":19092")
 				.withGroupId("analyser1")
 				.withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
@@ -86,6 +87,7 @@ public class TweetAnalyzer {
 						TweetAnalysis tweetAnalysis = new TweetAnalysis(p.second());
 						SentimentAnalysis sentimentAnalysis = new MeaningCloudSentimentAnalysis();
 						for(Tweet tweet : p.first()){
+							//Only 2 Requests per Second to MeaningCloud
 							try {
 								Thread.sleep(500);
 							} catch (InterruptedException e) {
@@ -115,10 +117,7 @@ public class TweetAnalyzer {
 		}
 
 		final Sink<NotUsed, CompletionStage<Done>> sink = Sink.foreach(p -> {
-			System.out.println("---------------------------------------------------");
-			System.out.println("RESULT");
 			result.printResult();
-			System.out.println("---------------------------------------------------");
 		});
 
 		final Graph<ClosedShape, CompletionStage<Done>> g = GraphDSL.create(sink, (b, s) -> {

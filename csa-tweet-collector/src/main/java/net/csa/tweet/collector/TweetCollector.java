@@ -67,6 +67,7 @@ public class TweetCollector {
 		{
 			// source for streaming the input file
 			// TODO adjust to use your file and possibly make the path to the file an input variable
+//			final Source<ByteString, CompletionStage<IOResult>> fileSource = FileIO.fromFile("/Users/philippamkreutz/Documents/HBRS/OOKA/Uebungen/Uebung7/hashtags2.txt")
 			final Source<ByteString, CompletionStage<IOResult>> fileSource = FileIO.fromFile(new File(args[1]))
 					.log("csa-tweet-collector-fileSource");
 
@@ -134,6 +135,7 @@ public class TweetCollector {
 		final ProducerSettings<String, String> producerSettings = ProducerSettings.create(system,
 				new StringSerializer(),
 				new StringSerializer())
+//				.withBootstrapServers("192.168.1.24:19092")
 				.withBootstrapServers(args[0] + ":19092");
 
 		final Sink<Pair<List<Tweet>, Integer>, CompletionStage<Done>> sink
