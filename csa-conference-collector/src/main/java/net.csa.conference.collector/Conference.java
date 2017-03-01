@@ -1,15 +1,11 @@
-package net.csa.conference.model;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+package net.csa.conference.collector;
 
 import java.util.List;
 
-@Document
+/**
+ * @author philipp.amkreutz
+ */
 public class Conference {
-
-	@Id
-	private String uuid;
 
 	private String conferenceName;
 	private String from;
@@ -20,7 +16,6 @@ public class Conference {
 	private String postcode;
 	private String city;
 	private String country;
-	private GeoLocation geoLocation;
 	private String twitterHashTag;
 	private List<Organizer> organizerList;
 	private List<Sponsor> sponsorsList;
@@ -39,18 +34,8 @@ public class Conference {
 		this.city = city;
 		this.country = country;
 		this.twitterHashTag = twitterHashTag;
-		this.geoLocation = new GeoLocation();
-		this.geoLocation.setAddress(this.street + " " + this.houseNumber + ", " + this.postcode + " " + this.city + " " + this.country);
 		this.organizerList = organizerList;
 		this.sponsorsList = sponsorList;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getConferenceName() {
@@ -59,18 +44,6 @@ public class Conference {
 
 	public String getLocationName() {
 		return this.locationName;
-	}
-
-	public void initGeoLocation() {
-		if (this.geoLocation == null) {
-			this.geoLocation = new GeoLocation();
-		}
-		this.geoLocation.setAddress(this.street + " " + this.houseNumber + ", " + this.postcode + " " + this.city + " " + this.country);
-		this.geoLocation.requestGeoLocaion();
-	}
-
-	public GeoLocation getGeoLocation() {
-		return this.geoLocation;
 	}
 
 	public String getFrom() {
@@ -161,8 +134,5 @@ public class Conference {
 		this.sponsorsList = sponsorsList;
 	}
 
-	@Override
-	public String toString() {
-		return "Name: " + getConferenceName() + " Address: " + this.street + " " + this.houseNumber + ", " + this.postcode + " " + this.city + " " + this.country + " LocationName: " + getLocationName();
-	}
+
 }
