@@ -1,4 +1,3 @@
-import {UUID} from "angular2-uuid";
 import {EventLocation} from "./event-location";
 import {Persona} from "./persona";
 import {TimeSpan} from "./time-span";
@@ -7,7 +6,7 @@ import {Group} from "./group";
 import {Organisation} from "./organisation";
 
 export class Conference {
-  public uuid : string = UUID.UUID();
+  public uuid : string;
   public name : string;
   public timeSpan : TimeSpan;
   public location : EventLocation;

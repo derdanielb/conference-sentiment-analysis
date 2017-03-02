@@ -17,12 +17,47 @@ export class ConferenceService {
     return this.http.get("/csa-conference/v1/conferences", options)
       .toPromise()
       .then(response => {
-        return this.extractGetReply(response);
+        return this.extractList(response);
       })
       .catch(this.handleError);
   }
 
-  private extractGetReply(res: Response): Conference[] {
+  public updateConference(conf : Conference) : Promise<Conference> {
+    let headers = new Headers({
+      "Content-Type":"application/json"
+    });
+    let options = new RequestOptions({headers: headers});
+    return this.http.put("/csa-conference/v1/conferences/" + conf.uuid, conf, options)
+      .toPromise()
+      .then(response => {
+        return this.extractSingle(response);
+      })
+      .catch(this.handleError);
+  }
+
+  public deleteConference(conf : Conference) : Promise<void> {
+    let headers = new Headers({
+      "Content-Type":"application/json"
+    });
+    let options = new RequestOptions({headers: headers});
+    return this.http.delete("/csa-conference/v1/conferences/" + conf.uuid, options)
+      .toPromise()
+      .then(() => {
+        return;
+      })
+      .catch(this.handleError);
+  }
+
+  private extractSingle(res: Response): Conference {
+    let body = res.json();
+    try {
+      return new Conference(body);
+    } catch (any) {
+      return null;
+    }
+  }
+
+  private extractList(res: Response): Conference[] {
     let body = res.json();
     try {
       let rArray = [];
@@ -34,6 +69,7 @@ export class ConferenceService {
       return [];
     }
   }
+
   private handleError (error: Response | any) {
     // In a real world app, we might use a remote logging infrastructure
     let errMsg: string;

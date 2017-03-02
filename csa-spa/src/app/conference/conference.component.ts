@@ -11,6 +11,7 @@ import {Conference} from "../conference";
 export class ConferenceComponent extends OnInit {
 
   private conferences : Conference[] = [];
+  private currentConference : Conference = new Conference();
 
   constructor(private chatService: ConferenceService) {
     super();
@@ -18,9 +19,31 @@ export class ConferenceComponent extends OnInit {
 
   ngOnInit(): void {
     this.chatService.listConferences().then(confs => {
-      console.log("here");
       this.conferences = confs;
     });
   }
 
+  public setCurrent(conf : Conference) : void {
+    this.currentConference = new Conference(conf);
+    window.scrollTo(0, 0);
+  }
+
+  public reset() : void {
+    this.currentConference = new Conference();
+  }
+
+  public update() : void {
+    this.chatService.updateConference(this.currentConference).then(conf => {
+      let index = this.conferences.findIndex(c => c.uuid == conf.uuid);
+      this.conferences[index] = conf;
+      this.reset();
+    });
+  }
+
+  public delete() : void {
+    this.chatService.deleteConference(this.currentConference).then(() => {
+      this.conferences = this.conferences.filter(c => c.uuid != this.currentConference.uuid);
+      this.reset();
+    });
+  }
 }
