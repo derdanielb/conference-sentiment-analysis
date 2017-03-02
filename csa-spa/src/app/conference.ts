@@ -12,14 +12,16 @@ export class Conference {
   public organisers : Persona[];
   public sponsors : Persona[];
 
-  public constructor(obj) {
-    this.uuid = obj.uuid;
-    this.name = obj.name;
-    //this.timeSpan = new TimeSpan(obj.timeSpan);
-    this.location = new EventLocation(obj.location);
-    this.hashTag = obj.hashTag;
-    //this.organisers = Persona.fromList(obj.organisers);
-    //this.sponsors = Persona.fromList(obj.sponsors);
+  public constructor(obj = null) {
+    if(obj != null) {
+      this.uuid = obj.uuid;
+      this.name = obj.name;
+      //this.timeSpan = new TimeSpan(obj.timeSpan);
+      this.location = new EventLocation(obj.location);
+      this.hashTag = obj.hashTag;
+      //this.organisers = Persona.fromList(obj.organisers);
+      //this.sponsors = Persona.fromList(obj.sponsors);
+    }
   }
 
   public toString() : string {
