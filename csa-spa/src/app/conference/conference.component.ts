@@ -10,6 +10,7 @@ import {Conference} from "../conference";
 })
 export class ConferenceComponent extends OnInit {
 
+  private searchQuery : string = "";
   private conferences : Conference[] = [];
   private currentConference : Conference = new Conference();
 
@@ -18,14 +19,24 @@ export class ConferenceComponent extends OnInit {
   }
 
   ngOnInit(): void {
-    this.chatService.listConferences().then(confs => {
+    this.search();
+  }
+
+  public search() : void {
+    let rep;
+    if(this.searchQuery == "")
+      rep = this.chatService.listConferences();
+    else
+      rep = this.chatService.searchConferences(this.searchQuery);
+
+    rep.then(confs => {
       this.conferences = confs;
     });
   }
 
   public setCurrent(conf : Conference) : void {
     this.currentConference = new Conference(conf);
-    window.scrollTo(0, 0);
+    window.scrollTo(0, document.body.scrollHeight);
   }
 
   public reset() : void {

@@ -22,6 +22,19 @@ export class ConferenceService {
       .catch(this.handleError);
   }
 
+  public searchConferences(query : string) : Promise<Conference[]> {
+    let headers = new Headers({
+      "Content-Type":"application/json"
+    });
+    let options = new RequestOptions({headers: headers});
+    return this.http.get("/csa-conference/v1/conferences?name=" + query, options)
+      .toPromise()
+      .then(response => {
+        return this.extractList(response);
+      })
+      .catch(this.handleError);
+  }
+
   public updateConference(conf : Conference) : Promise<Conference> {
     let headers = new Headers({
       "Content-Type":"application/json"
