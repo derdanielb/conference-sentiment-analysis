@@ -13,6 +13,6 @@ export class EventLocation {
   }
 
   public toString() : string {
-    return this.name + ": " + this.address + " " + this.geoLocation;
+    return this.name + " at " + this.address + " " + this.geoLocation;
   }
 }

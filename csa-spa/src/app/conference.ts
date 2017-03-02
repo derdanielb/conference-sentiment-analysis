@@ -21,4 +21,13 @@ export class Conference {
     //this.organisers = Persona.fromList(obj.organisers);
     //this.sponsors = Persona.fromList(obj.sponsors);
   }
+
+  public toString() : string {
+    return "Name: " + this.name +
+      "\nTimeSpan: " + this.timeSpan +
+      "\nLocation: " + this.location +
+      "\nHashTag: " + this.hashTag +
+      "\nOrganisers: " + this.organisers +
+      "\nSponsors: " + this.sponsors;
+  }
 }
