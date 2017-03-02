@@ -1,0 +1,36 @@
+server {
+	listen 8082;
+	listen [::]:8082;
+	server_name csa-conference.net;
+	index index.html index.htm;
+
+	root /var/www/csa;
+	location / {
+		proxy_pass http://127.0.0.1:4711/;
+		proxy_http_version 1.1;
+		proxy_set_header Host $host;
+		proxy_read_timeout 300s;
+	}
+	location /csa-conference/ {
+		proxy_pass http://127.0.0.1:4200/csa/;
+		proxy_http_version 1.1;
+		proxy_set_header Host $host;
+		proxy_read_timeout 300s;
+	}
+	location /csa-twitter-search/v1/ {
+		proxy_pass http://127.0.0.1:4201/twitter/;
+		proxy_http_version 1.1;
+		proxy_set_header Host $host;
+		proxy_read_timeout 300s;
+	}
+	location /csa-conference-tweets/ {
+		proxy_pass http://127.0.0.1:4202/csa/;
+		proxy_http_version 1.1;
+		proxy_set_header Host $host;
+		proxy_read_timeout 300s;
+	}
+
+	location ~ /\.ht {
+	deny all;
+	}
+}
