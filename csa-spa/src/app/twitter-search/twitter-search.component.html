@@ -1,3 +1,18 @@
-<p>
-  twitter-search works!
-</p>
+<div style="padding: 10px">
+  <form class="form-inline" style="padding: 10px" (submit)="search()">
+    <div class="form-group">
+      <label for="searchName">Hashtag:</label>
+      <input name="searchName"
+             type="text"
+             class="form-control"
+             id="searchName"
+             placeholder="Enter search query"
+             [(ngModel)]="hashtag">
+    </div>
+    <button type="submit" class="btn btn-default">Search</button>
+  </form>
+
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let tweet of tweets">{{tweet}}</li>
+  </ul>
+</div>

@@ -14,7 +14,7 @@ export class ConferenceComponent extends OnInit {
   private conferences : Conference[] = [];
   private currentConference : Conference = new Conference();
 
-  constructor(private chatService: ConferenceService) {
+  constructor(private confService: ConferenceService) {
     super();
   }
 
@@ -25,9 +25,9 @@ export class ConferenceComponent extends OnInit {
   public search() : void {
     let rep;
     if(this.searchQuery == "")
-      rep = this.chatService.listConferences();
+      rep = this.confService.listConferences();
     else
-      rep = this.chatService.searchConferences(this.searchQuery);
+      rep = this.confService.searchConferences(this.searchQuery);
 
     rep.then(confs => {
       this.conferences = confs;
@@ -44,7 +44,7 @@ export class ConferenceComponent extends OnInit {
   }
 
   public update() : void {
-    this.chatService.updateConference(this.currentConference).then(conf => {
+    this.confService.updateConference(this.currentConference).then(conf => {
       let index = this.conferences.findIndex(c => c.uuid == conf.uuid);
       this.conferences[index] = conf;
       this.reset();
@@ -52,7 +52,7 @@ export class ConferenceComponent extends OnInit {
   }
 
   public delete() : void {
-    this.chatService.deleteConference(this.currentConference).then(() => {
+    this.confService.deleteConference(this.currentConference).then(() => {
       this.conferences = this.conferences.filter(c => c.uuid != this.currentConference.uuid);
       this.reset();
     });
