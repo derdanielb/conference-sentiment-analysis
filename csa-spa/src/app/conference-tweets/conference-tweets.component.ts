@@ -21,7 +21,6 @@ export class ConferenceTweetsComponent implements OnInit {
   public search(){
     let rep = this.conferenceTweetsService.getTweets(this.searchQuery);
     rep.then(cts => {
-      console.log(cts);
       this.conferenceTweets = cts;
     });
   }
