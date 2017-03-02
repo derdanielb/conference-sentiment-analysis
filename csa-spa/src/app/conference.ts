@@ -15,11 +15,11 @@ export class Conference {
   public constructor(obj) {
     this.uuid = obj.uuid;
     this.name = obj.name;
-    //this.timeSpan = new TimeSpan(obj.timeSpan);
+    this.timeSpan = new TimeSpan(obj.timeSpan);
     this.location = new EventLocation(obj.location);
     this.hashTag = obj.hashTag;
-    //this.organisers = Persona.fromList(obj.organisers);
-    //this.sponsors = Persona.fromList(obj.sponsors);
+    this.organisers = Persona.fromList(obj.organisers);
+    this.sponsors = Persona.fromList(obj.sponsors);
   }
 
   public toString() : string {
