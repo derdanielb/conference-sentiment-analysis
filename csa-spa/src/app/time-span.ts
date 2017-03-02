@@ -8,6 +8,6 @@ export class TimeSpan {
   }
 
   public toString() : string {
-    return "[" + this.begin + "->" + this.end + "]";
+    return "[" + new Intl.DateTimeFormat().format(this.begin) + " -> " + new Intl.DateTimeFormat().format(this.end) + "]";
   }
 }
