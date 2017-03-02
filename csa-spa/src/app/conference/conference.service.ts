@@ -3,6 +3,16 @@ import {Http, Headers, RequestOptions, Response} from "@angular/http";
 import {Conference} from "../conference";
 import "rxjs/add/operator/toPromise"
 
+class TempConf {
+  public name : string;
+  public hashTag : string;
+
+  public constructor(conf : Conference) {
+    this.name = conf.name;
+    this.hashTag = conf.hashTag;
+  }
+}
+
 @Injectable()
 export class ConferenceService {
 
