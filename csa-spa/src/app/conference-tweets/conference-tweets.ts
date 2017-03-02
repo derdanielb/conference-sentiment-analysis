@@ -5,12 +5,6 @@ export class ConferenceTweets extends Conference{
 
   public constructor(obj) {
     super(obj);
-    JSON.parse(obj.text()).forEach(item => {
-      this.tweets.push(item);
-    });
-  }
-
-  public toString() : string {
-    return this.tweets.toString();
+    this.tweets = obj.tweets;
   }
 }

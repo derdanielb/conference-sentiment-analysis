@@ -28,6 +28,7 @@ export class ConferenceTweetsService {
       body.forEach(value => {
         ctArray.push(new ConferenceTweets(value));
       });
+      console.log("BAUM");
       return ctArray;
     } catch (any) {
       return [];
