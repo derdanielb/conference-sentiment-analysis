@@ -12,7 +12,7 @@ export class Conference {
   public organisers : Persona[];
   public sponsors : Persona[];
 
-  public constructor(obj : any) {
+  public constructor(obj) {
     this.uuid = obj.uuid;
     this.name = obj.name;
     //this.timeSpan = new TimeSpan(obj.timeSpan);

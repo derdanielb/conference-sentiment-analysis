@@ -5,7 +5,7 @@ export class Address {
   public zipCode : number;
   public country : string;
 
-  public constructor(obj : any) {
+  public constructor(obj) {
     this.street = obj.street;
     this.number = obj.number;
     this.town = obj.town;

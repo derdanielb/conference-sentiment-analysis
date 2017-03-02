@@ -6,7 +6,7 @@ export class EventLocation {
   public address : Address;
   public geoLocation : Location;
 
-  public constructor(obj : any) {
+  public constructor(obj) {
     this.name = obj.name;
     this.address = new Address(obj.address);
     this.geoLocation = new Location(obj.geoLocation);
