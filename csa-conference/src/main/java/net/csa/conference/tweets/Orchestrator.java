@@ -33,7 +33,7 @@ public class Orchestrator {
         ResponseEntity<Collection> twitter_response = null;
         RestTemplate restTemplate = new RestTemplate();
         String twitter_fooRessourceurl = null;
-        twitter_fooRessourceurl = "http://localhost:8080/twitter/search/" + hashtag;
+        twitter_fooRessourceurl = "http://csa-twitter:9020/twitter/search/" + hashtag;
         //System.out.println(twitter_fooRessourceurl);
         twitter_response = restTemplate.getForEntity(twitter_fooRessourceurl, Collection.class);
         //System.out.println(twitter_response.getBody());
@@ -45,7 +45,7 @@ public class Orchestrator {
         String mogodb_fooResourceUrl = null;
         ResponseEntity<Konferenz> mogodb_response = null;
 
-        mogodb_fooResourceUrl = "http://localhost:8090/conference/search/findbyname/" + hashtag;
+        mogodb_fooResourceUrl = "http://csa-conference:8090/conference/search/findbyname/" + hashtag;
         //System.out.println(mogodb_fooResourceUrl);
         mogodb_response = restTemplate.getForEntity(mogodb_fooResourceUrl, Konferenz.class);
         return mogodb_response.getBody();
