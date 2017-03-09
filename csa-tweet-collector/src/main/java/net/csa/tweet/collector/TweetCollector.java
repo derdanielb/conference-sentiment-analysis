@@ -95,7 +95,7 @@ public class TweetCollector {
         {
             Flow<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>, NotUsed> flow
                     = Flow.fromFunction(p -> new Pair<>(HttpRequest
-                    .create("http://localhost:4201//twitter/search/" + p.first()), p));
+                    .GET("http://localhost:8082/csa-twitter-search/v1/search/" + p.first()), p));
             createRequestFlow = flow.log("csa-tweet-collector-createRequestFlow");
         }
 

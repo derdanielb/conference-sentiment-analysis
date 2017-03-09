@@ -4,24 +4,21 @@ import akka.Done;
 import akka.NotUsed;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.Http;
-import akka.http.javadsl.model.HttpEntity;
+import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.model.HttpResponse;
 import akka.japi.Pair;
 import akka.japi.function.Function;
-import akka.kafka.ProducerSettings;
-import akka.kafka.javadsl.Producer;
 import akka.stream.*;
 import akka.stream.javadsl.*;
 import akka.util.ByteString;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
+import net.csa.conference.model.Conference;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.util.Try;
 
 import java.io.File;
-import java.time.Instant;
 import java.util.concurrent.*;
 
 public class ConferenceCollector {
@@ -42,111 +39,86 @@ public class ConferenceCollector {
 
         // ----- construct the stages for the processing graph -----
 
-        // source for hashtags
-        final Source<String, CompletionStage<IOResult>> hashtagSource;
+        // source for conferences
+        final Source<String, CompletionStage<IOResult>> conferenceSource;
         {
             // source for streaming the input file
             final Source<ByteString, CompletionStage<IOResult>> fileSource = FileIO.fromFile(new File(args[0]))
-                    .log("csa-tweet-collector-fileSource");
+                    .log("csa-conference-collector-fileSource");
 
-            // each line is used as a hastag thus split by line separator
+            // each line is used as a conference thus split by line separator
             final Flow<ByteString, String, NotUsed> framingFlow
                     = Framing.delimiter(ByteString.fromString(System.lineSeparator()), 1000, FramingTruncation.ALLOW)
                     .map(ByteString::utf8String)
-                    .log("csa-tweet-collector-framingFlow");
+                    .log("csa-conference-collector-framingFlow");
 
-            hashtagSource = fileSource.via(framingFlow)
-                    .log("csa-tweet-collector-hashtagSource");
+            conferenceSource = fileSource.via(framingFlow)
+                    .log("csa-conference-collector-conferenceSource");
         }
 
-        // source for numbering elements in the stream
-        final Source<Integer, NotUsed> integerSource = Source.range(0, Integer.MAX_VALUE - 1)
-                .log("csa-tweet-collector-numberSource");
-
-        // fan in to assign an integer to each hashtag
-        final Graph<FanInShape2<String, Integer, Pair<String, Integer>>, NotUsed> zip = ZipWith.create(Pair::new);
+        final Flow<String, Conference, NotUsed> conferenceConversionFlow;
+        {
+            conferenceConversionFlow = Flow.fromFunction(s -> new Conference());
+        }
 
         // flow to create a http request to our twitter search
-        final Flow<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>, NotUsed> createRequestFlow;
+        final Flow<Conference, Pair<HttpRequest, String>, NotUsed> createRequestFlow;
         {
-            Flow<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>, NotUsed> flow
-                    = Flow.fromFunction(p -> new Pair<>(HttpRequest
-                    .create("http://localhost:4201//twitter/search/" + p.first()), p));
-            createRequestFlow = flow.log("csa-tweet-collector-createRequestFlow");
+            Flow<Conference, String, NotUsed> jsonFlow = Flow.fromFunction(conference -> {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.writeValueAsString(conference);
+            });
+
+            Flow<String, Pair<HttpRequest, String>, NotUsed> httpFlow  = Flow.fromFunction(
+                    str -> Pair.create(HttpRequest
+                            .POST("http://localhost:8082/csa-conference/v1/conferences")
+                            .withEntity(ContentTypes.APPLICATION_JSON, str),
+                            str));
+
+            createRequestFlow = jsonFlow
+                    .via(httpFlow)
+                    .log("csa-conference-collector-createRequestFlow");
         }
 
         // flow to actually execute each http request to the twitter flow using Akka HTTP client-side
-        final Flow<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>, NotUsed> httpClientFlow;
+        final Flow<Pair<HttpRequest, String>, Try<HttpResponse>, NotUsed> httpClientFlow;
         {
-            Flow<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>, NotUsed> flow
+            Flow<Pair<HttpRequest, String>, Pair<Try<HttpResponse>, String>, NotUsed> flow
                     = Http.get(system).superPool(materializer);
-            flow = flow
-                    .map(p -> {
-                        log.info("Status Code " + p.first().get().status());
-                        return p;
-                    });
-            httpClientFlow = flow.log("csa-tweet-collector-httpClientFlow");
+            httpClientFlow = flow
+                    .map(Pair::first)
+                    .log("csa-conference-collector-httpClientFlow");
         }
 
-        final Flow<Pair<Try<HttpResponse>, Pair<String, Integer>>, Pair<String, Pair<String, Integer>>, NotUsed> conversionFlow;
-        {
-            conversionFlow = Flow.fromFunction(pair -> {
-                CompletableFuture<HttpEntity.Strict> rep = pair
-                        .first()
-                        .get()
-                        .entity()
-                        .toStrict(42, materializer)
-                        .toCompletableFuture();
-                return Pair.create(rep.get().getData().utf8String(), pair.second());
-            });
-        }
-
-        Flow<Pair<String, Pair<String, Integer>>, ProducerRecord<String, String>, NotUsed> kafkaFlow =
-                Flow.<Pair<String, Pair<String, Integer>>>create()
-                        .map(p -> Pair.create(p.first(), Pair.create(p.second().first(), "tc-topic-" + p.second().second())))
-                        .map(p -> new ProducerRecord<>(p.second().second(),
-                                0,
-                                Instant.now().toEpochMilli(),
-                                p.second().first(),
-                                p.first()));
-
-        ProducerSettings<String, String> settings = ProducerSettings.create(system,
-                new StringSerializer(),
-                new StringSerializer())
-                .withBootstrapServers("localhost:19092");
-        Sink<ProducerRecord<String, String>, CompletionStage<Done>> sink = Producer.plainSink(settings);
+        Sink<Try<HttpResponse>, CompletionStage<Done>> sink = Sink.foreach(reply -> {
+            HttpResponse httpResponse = reply.get();
+            log.info("Status Code " + httpResponse.status());
+            httpResponse.entity()
+                    .toStrict(42, materializer)
+                    .toCompletableFuture()
+                    .get();
+        });
 
         // ----- construct the processing graph as required using shapes obtained for stages -----
 
         final Graph<ClosedShape, CompletionStage<Done>> g = GraphDSL.create(sink, (b, s) -> {
 
-            // source shape for hashtags
-            final SourceShape<String> hashtagSourceShape = b.add(hashtagSource);
+            // source shape for conferences
+            final SourceShape<String> conferenceSourceShape = b.add(conferenceSource);
 
-            // source shape for integers
-            final SourceShape<Integer> integerSourceShape = b.add(integerSource);
+            //convert
+            final FlowShape<String, Conference> conferenceFlowShape = b.add(conferenceConversionFlow);
 
-            // fan in shape to assign an integer to each hashtag
-            final FanInShape2<String, Integer, Pair<String, Integer>> zipShape = b.add(zip);
+            // flow shape to create an HttpRequest for every conference
+            final FlowShape<Conference, Pair<HttpRequest, String>> createRequestFlowShape = b.add(createRequestFlow);
 
-            // flow shape to create an HttpRequest for every hashtag
-            final FlowShape<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>> createRequestFlowShape = b.add(createRequestFlow);
+            // flow shape to apply Akka HTTP client-side in the processing graph to call csa-conference for each conference
+            final FlowShape<Pair<HttpRequest, String>, Try<HttpResponse>> httpClientFlowShape = b.add(httpClientFlow);
 
-            // flow shape to apply Akka HTTP client-side in the processing graph to call csa-twitter-search for each hashtag
-            final FlowShape<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>> httpClientFlowShape = b.add(httpClientFlow);
-
-            final FlowShape<Pair<Try<HttpResponse>, Pair<String, Integer>>, Pair<String, Pair<String, Integer>>> conversionFlowShape = b.add(conversionFlow);
-
-            final FlowShape<Pair<String, Pair<String, Integer>>, ProducerRecord<String, String>> kafkaFlowShape = b.add(kafkaFlow);
-
-            b.from(hashtagSourceShape).toInlet(zipShape.in0());
-            b.from(integerSourceShape).toInlet(zipShape.in1());
-
-            b.from(zipShape.out())
+            b.from(conferenceSourceShape)
+                    .via(conferenceFlowShape)
                     .via(createRequestFlowShape)
                     .via(httpClientFlowShape)
-                    .via(conversionFlowShape)
-                    .via(kafkaFlowShape)
                     .to(s);
 
             return ClosedShape.getInstance();
