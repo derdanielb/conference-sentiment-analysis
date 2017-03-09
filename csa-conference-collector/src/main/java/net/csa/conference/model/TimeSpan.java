@@ -28,7 +28,7 @@ public class TimeSpan {
     }
 
     public static TimeSpan fromCSVString(String csv) throws Exception {
-        String[] split = csv.split("|");
+        String[] split = csv.split(",");
         if(split.length != 2)
             throw new Exception("TimeSpan csv length must be 2");
 
