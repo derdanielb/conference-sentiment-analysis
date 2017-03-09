@@ -7,10 +7,7 @@ import akka.japi.function.Function;
 import akka.stream.*;
 import akka.stream.javadsl.*;
 import akka.util.ByteString;
-import com.google.gson.Gson;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.ServerAddress;
+import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
@@ -18,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +27,70 @@ import java.util.concurrent.TimeoutException;
 public class ConferenceCollector {
 
 	private static final Logger log = LoggerFactory.getLogger(ConferenceCollector.class);
+
+	private static Document mapConferenceStringToDocument(String conference) {
+		Document document = new Document();
+
+		String[] mainSplit = conference.split(";");
+		String conferenceMainData = mainSplit[0];
+		String[] dataSplit = conferenceMainData.split(",");
+		document.put("conferenceName", dataSplit[0]);
+		document.put("from", dataSplit[1]);
+		document.put("to", dataSplit[2]);
+		document.put("locationName", dataSplit[3]);
+		document.put("street", dataSplit[4]);
+		document.put("houseNumber", dataSplit[5]);
+		document.put("postCode", dataSplit[6]);
+		document.put("city", dataSplit[7]);
+		document.put("country", dataSplit[8]);
+		document.put("twitterHashTag", dataSplit[9]);
+		if (mainSplit.length > 1 && !mainSplit[1].equals("")) {
+			List<BasicDBObject> organizerList = mapConferenceListStringDBObjectList(mainSplit[1]);
+			document.put("organizerList", organizerList);
+		}
+		if (mainSplit.length > 2 && !mainSplit[2].equals("")) {
+			List<BasicDBObject> sponsorsList = mapConferenceListStringDBObjectList(mainSplit[2]);
+			document.put("sponsorsList", sponsorsList);
+		}
+		return document;
+	}
+
+	private static List<BasicDBObject> mapConferenceListStringDBObjectList(String listString) {
+		String organizerString = listString;
+		String[] dataSplit = organizerString.split(",");
+		List<String> dataSplitList = new LinkedList<>(Arrays.asList(dataSplit));
+		List<BasicDBObject> objects = new ArrayList<>();
+		while (dataSplitList.size() > 0) {
+			if (dataSplitList.get(0).equals("person")) {
+				BasicDBObject object = new BasicDBObject();
+				object.put("firstName", dataSplitList.get(1));
+				object.put("lastName", dataSplitList.get(2));
+				object.put("type", "person");
+				objects.add(object);
+				dataSplitList.remove(0);
+				dataSplitList.remove(0);
+				dataSplitList.remove(0);
+			} else if (dataSplitList.get(0).equals("group")) {
+				BasicDBObject object = new BasicDBObject();
+				object.put("name", dataSplitList.get(1));
+				object.put("type", "group");
+				objects.add(object);
+				dataSplitList.remove(0);
+				dataSplitList.remove(0);
+			} else if (dataSplitList.get(0).equals("organisation")) {
+				BasicDBObject object = new BasicDBObject();
+				object.put("name", dataSplitList.get(1));
+				object.put("type", "organisation");
+				objects.add(object);
+				dataSplitList.remove(0);
+				dataSplitList.remove(0);
+			} else {
+				dataSplitList.remove(0);
+			}
+		}
+		return objects;
+
+	}
 
 	public static void main(String args[]) throws InterruptedException, TimeoutException, ExecutionException {
 
@@ -65,96 +123,30 @@ public class ConferenceCollector {
 					.log("csa-conference-collector-conferenceSource");
 		}
 
-		final Flow<String, Conference, NotUsed> conferenceMappingFlow;
+		final Flow<String, Document, NotUsed> conferenceMappingFlow;
 		{
-			Flow<String, Conference, NotUsed> flow =
+			Flow<String, Document, NotUsed> flow =
 					Flow.fromFunction(p -> {
-						Conference conference = new Conference();
-						String[] mainSplit = p.split(";");
-						String conferenceMainData = mainSplit[0];
-						String[] dataSplit = conferenceMainData.split(",");
-						conference.setConferenceName(dataSplit[0]);
-						conference.setFrom(dataSplit[1]);
-						conference.setTo(dataSplit[2]);
-						conference.setLocationName(dataSplit[3]);
-						conference.setStreet(dataSplit[4]);
-						conference.setHouseNumber(dataSplit[5]);
-						conference.setPostcode(dataSplit[6]);
-						conference.setCity(dataSplit[7]);
-						conference.setCountry(dataSplit[8]);
-						conference.setTwitterHashTag(dataSplit[9]);
-						if (mainSplit.length > 1 && !mainSplit[1].equals("")) {
-							List<Organizer> organizerList = new ArrayList<>();
-							String organizerString = mainSplit[1];
-							dataSplit = organizerString.split(",");
-							List<String> dataSplitList = new LinkedList<>(Arrays.asList(dataSplit));
-							while (dataSplitList.size() > 0) {
-								if (dataSplitList.get(0).equals("person")) {
-									organizerList.add(new Person(dataSplitList.get(1), dataSplitList.get(2)));
-									dataSplitList.remove(0);
-									dataSplitList.remove(0);
-									dataSplitList.remove(0);
-								} else if (dataSplit[0].equals("group")) {
-									organizerList.add(new Group(dataSplitList.get(1)));
-									dataSplitList.remove(0);
-									dataSplitList.remove(0);
-								} else if (dataSplit[0].equals("organisation")) {
-									organizerList.add(new Organisation(dataSplitList.get(1)));
-									dataSplitList.remove(0);
-									dataSplitList.remove(0);
-								} else {
-									dataSplitList.remove(0);
-								}
-							}
-							conference.setOrganizerList(organizerList);
-						}
-						if (mainSplit.length > 2 && !mainSplit[2].equals("")) {
-							List<Sponsor> sponsorList = new ArrayList<>();
-							String sponsorString = mainSplit[2];
-							dataSplit = sponsorString.split(",");
-							List<String> dataSplitList = new LinkedList<>(Arrays.asList(dataSplit));
-							while (dataSplitList.size() > 0) {
-								if (dataSplitList.get(0).equals("person")) {
-									sponsorList.add(new Person(dataSplitList.get(1), dataSplitList.get(2)));
-									dataSplitList.remove(0);
-									dataSplitList.remove(0);
-									dataSplitList.remove(0);
-								} else if (dataSplit[0].equals("group")) {
-									sponsorList.add(new Group(dataSplitList.get(1)));
-									dataSplitList.remove(0);
-									dataSplitList.remove(0);
-								} else if (dataSplit[0].equals("organisation")) {
-									sponsorList.add(new Organisation(dataSplitList.get(1)));
-									dataSplitList.remove(0);
-									dataSplitList.remove(0);
-								} else {
-									dataSplitList.remove(0);
-								}
-							}
-							conference.setSponsorsList(sponsorList);
-						}
-						return conference;
+						Document document = mapConferenceStringToDocument(p);
+						return document;
 					});
 			conferenceMappingFlow = flow.log("csa-conference-collector-conferenceMappingFlow");
 		}
 
-		MongoClientOptions settings = MongoClientOptions.builder().codecRegistry(MongoClient.getDefaultCodecRegistry()).build();
-		MongoClient mongo = new MongoClient(new ServerAddress("localhost", 19017), settings);
+		MongoClient mongo = new MongoClient("localhost", 19017);
 		MongoDatabase db = mongo.getDatabase("ConferenceDB");
-		MongoCollection conferenceDB = db.getCollection("Conferences");
+		MongoCollection conferenceDB = db.getCollection("conference");
 
-		final Sink<Conference, CompletionStage<Done>> sink =
+		final Sink<Document, CompletionStage<Done>> sink =
 				Sink.foreach(p -> {
-					Document doc = new Document();
-					doc.put("confernece", new Gson().toJson(p));
-					conferenceDB.insertOne(doc);
+					conferenceDB.insertOne(p);
 				});
 
 		final Graph<ClosedShape, CompletionStage<Done>> g = GraphDSL.create(sink, (b, s) -> {
 
 			// source shape for hashtags
 			final SourceShape<String> conferenceSourceShape = b.add(conferenceSource);
-			final FlowShape<String, Conference> conferenceMappingFlowShape = b.add(conferenceMappingFlow);
+			final FlowShape<String, Document> conferenceMappingFlowShape = b.add(conferenceMappingFlow);
 
 			b.from(conferenceSourceShape)
 					.via(conferenceMappingFlowShape)
