@@ -1,6 +1,7 @@
 package net.csa.conference.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -11,9 +12,11 @@ import java.util.UUID;
 public class Conference {
     @Id
     private UUID uuid;
+    @Indexed
     private String name;
     private TimeSpan timeSpan;
     private EventLocation location;
+    @Indexed
     private String hashTag;
     private List<Persona> organisers;
     private List<Persona> sponsors;
