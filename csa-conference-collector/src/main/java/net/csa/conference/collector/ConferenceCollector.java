@@ -58,7 +58,7 @@ public class ConferenceCollector {
 
         final Flow<String, Conference, NotUsed> conferenceConversionFlow;
         {
-            conferenceConversionFlow = Flow.fromFunction(s -> new Conference());
+            conferenceConversionFlow = Flow.fromFunction(Conference::fromCSVString);
         }
 
         // flow to create a http request to our twitter search
