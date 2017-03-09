@@ -34,6 +34,14 @@ public class EventLocation {
         this.geoLocation = geoLocation;
     }
 
+    public static EventLocation fromCSVString(String name, String address, String location){
+        EventLocation el = new EventLocation();
+        el.setName(name.trim());
+        el.setAddress(Address.fromCSVString(address));
+        el.setGeoLocation(net.csa.conference.model.Location.fromCSVString(location));
+        return el;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(!EventLocation.class.isAssignableFrom(obj.getClass()))

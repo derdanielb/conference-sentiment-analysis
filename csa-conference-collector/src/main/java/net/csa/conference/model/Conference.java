@@ -73,6 +73,22 @@ public class Conference {
         this.sponsors = sponsors;
     }
 
+    public static Conference fromCSVString(String csvLine){
+        Conference c = new Conference();
+        c.generateUUID();
+
+        String[] split = csvLine.split(";");
+        if(split.length != 6)
+            return c;
+
+        c.setName(split[0].trim());
+        c.setTimeSpan(TimeSpan.fromCSVString(split[1]));
+        c.setLocation(EventLocation.fromCSVString(split[2], split[3], split[4]));
+        c.setHashTag(split[5].trim());
+
+        return c;
+    }
+
     @Override
     public String toString() {
         return uuid.toString();

@@ -25,6 +25,14 @@ public class TimeSpan {
         return end;
     }
 
+    public static TimeSpan fromCSVString(String csv){
+        String[] split = csv.split("|");
+        if(split.length != 2)
+            return new TimeSpan();
+
+        return new TimeSpan(new Date(split[0].trim()), new Date(split[1].trim()));
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(!TimeSpan.class.isAssignableFrom(obj.getClass()))

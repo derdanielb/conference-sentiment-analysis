@@ -52,6 +52,22 @@ public class Address {
         this.country = country;
     }
 
+    public static Address fromCSVString(String address){
+        Address a = new Address();
+
+        String[] split = address.split(",");
+        if(split.length != 5)
+            return a;
+
+        a.setStreet(split[0].trim());
+        a.setNumber(Integer.parseInt(split[1].trim()));
+        a.setTown(split[2].trim());
+        a.setZipCode(Integer.parseInt(split[3].trim()));
+        a.setCountry(split[4].trim());
+
+        return a;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(!Address.class.isAssignableFrom(obj.getClass()))

@@ -32,6 +32,14 @@ public class Location {
         this.longitude = longitude;
     }
 
+    public static Location fromCSVString(String csv){
+        String[] split = csv.split(",");
+        if(split.length != 2)
+            return new Location();
+
+        return new Location(Double.parseDouble(split[0].trim()), Double.parseDouble(split[1].trim()));
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(!Location.class.isAssignableFrom(obj.getClass()))
