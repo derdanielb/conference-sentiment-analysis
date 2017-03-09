@@ -34,7 +34,7 @@ public class EventLocation {
         this.geoLocation = geoLocation;
     }
 
-    public static EventLocation fromCSVString(String name, String address, String location){
+    public static EventLocation fromCSVString(String name, String address, String location) throws Exception {
         EventLocation el = new EventLocation();
         el.setName(name.trim());
         el.setAddress(Address.fromCSVString(address));

@@ -1,5 +1,7 @@
 package net.csa.conference.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
@@ -25,12 +27,13 @@ public class TimeSpan {
         return end;
     }
 
-    public static TimeSpan fromCSVString(String csv){
+    public static TimeSpan fromCSVString(String csv) throws Exception {
         String[] split = csv.split("|");
         if(split.length != 2)
-            return new TimeSpan();
+            throw new Exception("TimeSpan csv length must be 2");
 
-        return new TimeSpan(new Date(split[0].trim()), new Date(split[1].trim()));
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return new TimeSpan(format.parse(split[0].trim()), format.parse(split[1].trim()));
     }
 
     @Override

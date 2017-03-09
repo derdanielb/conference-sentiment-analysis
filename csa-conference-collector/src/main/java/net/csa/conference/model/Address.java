@@ -52,12 +52,12 @@ public class Address {
         this.country = country;
     }
 
-    public static Address fromCSVString(String address){
+    public static Address fromCSVString(String address) throws Exception {
         Address a = new Address();
 
         String[] split = address.split(",");
         if(split.length != 5)
-            return a;
+            throw new Exception("Address csv length must be 5");
 
         a.setStreet(split[0].trim());
         a.setNumber(Integer.parseInt(split[1].trim()));

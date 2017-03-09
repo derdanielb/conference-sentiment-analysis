@@ -32,10 +32,10 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public static Location fromCSVString(String csv){
+    public static Location fromCSVString(String csv) throws Exception {
         String[] split = csv.split(",");
         if(split.length != 2)
-            return new Location();
+            throw new Exception("Location csv length must be 2");
 
         return new Location(Double.parseDouble(split[0].trim()), Double.parseDouble(split[1].trim()));
     }

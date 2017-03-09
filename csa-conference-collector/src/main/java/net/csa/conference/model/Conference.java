@@ -1,5 +1,6 @@
 package net.csa.conference.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -73,18 +74,20 @@ public class Conference {
         this.sponsors = sponsors;
     }
 
-    public static Conference fromCSVString(String csvLine){
+    public static Conference fromCSVString(String csvLine) throws Exception {
         Conference c = new Conference();
         c.generateUUID();
 
         String[] split = csvLine.split(";");
         if(split.length != 6)
-            return c;
+            throw new Exception("Conference csv length must be 6");
 
         c.setName(split[0].trim());
         c.setTimeSpan(TimeSpan.fromCSVString(split[1]));
         c.setLocation(EventLocation.fromCSVString(split[2], split[3], split[4]));
         c.setHashTag(split[5].trim());
+        c.setOrganisers(new ArrayList<>());
+        c.setSponsors(new ArrayList<>());
 
         return c;
     }
