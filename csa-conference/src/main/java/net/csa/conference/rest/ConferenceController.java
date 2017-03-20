@@ -1,16 +1,19 @@
 package net.csa.conference.rest;
 
-import net.csa.conference.model.Konferenz;
+import net.csa.conference.model.*;
 import net.csa.conference.repository.CRUD_operationen.KonferenzRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
 
@@ -26,39 +29,64 @@ public class ConferenceController implements KonferenzRepository {
         this.mongoOps = mongoOps;
     }
 
-    @RequestMapping(path = "/findbyid/uuid/{id}", produces = "application/json")
+    @CrossOrigin(origins = "*")
+    @RequestMapping(path = "/findbyid/uuid/{id}", method = RequestMethod.GET, produces = "application/json" )
     @ResponseBody
-    public Konferenz findById(@PathVariable String id) {
-        Konferenz k_search;
-        k_search = mongoOps.findById(id, Konferenz.class);
-        //System.out.println("k_search id: "+k_search.getUuid()+"\n"+"k_search name: "+k_search.getName()+"\n"+"k_search Zeitinterval: "+k_search.getZeitinterval()+"\n");
-        return k_search;
+    public ResponseEntity<Konferenz> findById(@PathVariable String id) {
+        //System.out.println("k_search id: "+k_search.getUuid()+"\n"+"k_search name: "+k_search.getKonferenz_name()+"\n"+"k_search Zeitinterval: "+k_search.getZeitinterval()+"\n");
+        return new ResponseEntity<Konferenz>( mongoOps.findById( id, Konferenz.class ), HttpStatus.OK );
+        //mongoOps.findById(id, Konferenz.class)
+        //return new ResponseEntity<List<Conference>>(conferences, HttpStatus.OK);
     }
 
-    @Override
-    @RequestMapping(path = "/insertonebyparameter/{id}/{name}/{timeinterval}")
-    public void insertentity(@PathVariable String id, @PathVariable String name, @PathVariable Integer timeinterval) {
-        Konferenz k = new Konferenz();
-        k.setUuid(id);
-        k.setName(name);
-        k.setZeitinterval(timeinterval);
-        mongoOps.insert(k);
+
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(path = "/insertonebyparameter/{id}/{name}/{timeinterval}/{strasse}/{hausnummer}/{stadt}/{zipcode}/{land}/{ort_name}/{geolocation}/{twitterhashtag}/{vorname}/{nachname}/{organisatoren_name}/{sponsoren_name}", method = RequestMethod.POST)
+    public void insertentity(@PathVariable String id, @PathVariable String name, @PathVariable Integer timeinterval, @PathVariable String strasse, @PathVariable Integer hausnummer, @PathVariable String stadt, @PathVariable String zipcode, @PathVariable String land, @PathVariable String ort_name, @PathVariable String geolocation, @PathVariable String twitterhashtag, @PathVariable String organisatoren_name, @PathVariable String sponsoren_name, @PathVariable String vorname, @PathVariable String nachname) {
+        //Konferenz k = new Konferenz();
+        Konferenz konferenz;
+        Adresse adresse;
+        Veranstaltungsort veranstaltungsort;
+        Person person;
+        Sponsor sponsor;
+        GeoLocation geoloc;
+        Twitterhashtag twitterhash;
+        Organisator organisator;
+        adresse = new Adresse(strasse, hausnummer, stadt, zipcode, land);
+        veranstaltungsort = new Veranstaltungsort(ort_name, adresse);
+        person = new Person(vorname, nachname);
+        sponsor = new Sponsor(person, sponsoren_name);
+        geoloc = new GeoLocation( geolocation);
+        twitterhash = new Twitterhashtag(twitterhashtag);
+        organisator = new Organisator( person, name );
+
+
+        konferenz = new Konferenz( id, name, timeinterval, veranstaltungsort, geoloc, sponsor, person, twitterhash, organisator);
+        /*k.setUuid(id);
+        k.setKonferenz_name(name);
+        k.setZeitinterval(timeinterval);*/
+        mongoOps.insert(konferenz);
     }
 
-    @RequestMapping(path = "/findbyname/{input_name}")
+    @CrossOrigin(origins = "*")
+    @RequestMapping(path = "/findbyname/{twitterhash}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Konferenz findByName(@PathVariable String input_name) {
-        List<Konferenz> ve_ko;
+    public ResponseEntity<Konferenz> findByName(@PathVariable String twitterhash) {
+        //List<Konferenz> ve_ko;
         //Konferenz k_search_n;
         //ve_ko = new Vector<Konferenz>();
         //ve_ko = mongoOps.find(org.springframework.data.mongodb.core.query.Query.query(Criteria.where("name").is(input_name)), Konferenz.class);
         //k_search_n = mongoOps.findOne(org.springframework.data.mongodb.core.query.Query.query(Criteria.where("name").is(name)), Konferenz.class);
-        //System.out.println("k_search: "+k_search_n.getUuid()+"\n"+"name: "+k_search_n.getName()+"\n"+"Zeitinterval: "+k_search_n.getZeitinterval()+"\n");
+        //System.out.println("k_search: "+k_search_n.getUuid()+"\n"+"name: "+k_search_n.getKonferenz_name()+"\n"+"Zeitinterval: "+k_search_n.getZeitinterval()+"\n");
         /*for (Konferenz aVe_ko : ve_ko) {
-            System.out.println("ve_ko id: " + aVe_ko.getUuid() + "\n" + "ve_ko name: " + aVe_ko.getName() + "\n" + "ve_ko Zeitinterval: " + aVe_ko.getZeitinterval() + "\n");
+            System.out.println("ve_ko id: " + aVe_ko.getUuid() + "\n" + "ve_ko name: " + aVe_ko.getKonferenz_name() + "\n" + "ve_ko Zeitinterval: " + aVe_ko.getZeitinterval() + "\n");
         }*/
 
-        return mongoOps.findOne(Query.query(where("name").is(input_name)), Konferenz.class);
+        return new ResponseEntity<Konferenz>(mongoOps.findOne(Query.query(where("twitterhash.hashtag").is(twitterhash)), Konferenz.class), HttpStatus.OK);
+
+        //return new ResponseEntity<List<Conference>>(conferences, HttpStatus.OK);
+        //mongoOps.findOne(Query.query(where("twitterhash.hashtag").is(twitterhash)), Konferenz.class)
     }
 
 

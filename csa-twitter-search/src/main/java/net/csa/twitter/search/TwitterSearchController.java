@@ -7,10 +7,7 @@ import org.springframework.social.twitter.api.SearchParameters;
 import org.springframework.social.twitter.api.SearchResults;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.text.ParseException;
@@ -29,7 +26,7 @@ class TwitterSearchController {
     /**
      * The Twitter Search API returns a maximum number of 100 tweets in response to a synchronous search request.
      */
-    private static final int MAX_RESULTS = 100;
+    private static final int MAX_RESULTS = 10;
 
     private Twitter twitter;
 
@@ -38,7 +35,8 @@ class TwitterSearchController {
         this.twitter = twitter;
     }
 
-    @RequestMapping(path = "/{hashtag}", method = RequestMethod.GET)
+    @CrossOrigin(origins = "*")
+    @RequestMapping(path = "/{hashtag}", method = RequestMethod.GET, produces = "application/json")
     public List<String> helloTwitter(@PathVariable String hashtag) throws ParseException {
 
 

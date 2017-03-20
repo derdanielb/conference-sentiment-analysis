@@ -1,10 +1,17 @@
 package net.csa.conference.model;
 
-import java.util.ArrayList;
-
 public class GeoLocation {
-	String geokoordinate;
-	String twitterhashtag;
-	ArrayList<Person> person;
-	ArrayList<Sponsor> organisator;
+	String geolocation;
+
+	public GeoLocation(String geolocation) {
+		this.geolocation = geolocation;
+	}
+
+    public String getGeolocation() {
+        return geolocation;
+    }
+
+    public void setGeolocation(String geolocation) {
+        this.geolocation = geolocation;
+    }
 }

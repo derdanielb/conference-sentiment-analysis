@@ -14,7 +14,7 @@ public class ConferenceMicroservice {
         /*
         Konferenz K = new Konferenz();
         K.setUuid("t1");
-        K.setName("Jan");
+        K.setKonferenz_name("Jan");
         K.setZeitinterval(5);
 
         /*
