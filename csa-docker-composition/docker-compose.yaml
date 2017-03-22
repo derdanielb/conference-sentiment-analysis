@@ -57,27 +57,27 @@ services:
     volumes:
       - csa_kafka_01_data:/var/lib/kafka/data
 
-  csa-conference:
-      container_name: csa-conference
-      image: springio/csa-conference
-      ports:
-      - "8080:8090"
-      #publish-all: true
-#      networks:
-#        csadockercomposition_default:
-#          ipv4_address: 0.0.0.0
-      depends_on:
-        - csa_kafka_01
-        - csa_zookeeper4kafka_01
-        - csa_mongodb_01
-
-  csa-twitter-search:
-      container_name: csa-twitter
-      image: springio/csa-twitter-search
-      ports:
-        - "9010:9020"
-      depends_on:
-        - csa-conference
+#  csa-conference:
+#      container_name: csa-conference
+#      image: springio/csa-conference
+#      ports:
+#      - "8080:8090"
+#      #publish-all: true
+##      networks:
+##        csadockercomposition_default:
+##          ipv4_address: 0.0.0.0
+#      depends_on:
+#        - csa_kafka_01
+#        - csa_zookeeper4kafka_01
+#        - csa_mongodb_01
+#
+#  csa-twitter-search:
+#      container_name: csa-twitter
+#      image: springio/csa-twitter-search
+#      ports:
+#        - "9010:9020"
+#      depends_on:
+#        - csa-conference
 
 
 volumes:
@@ -85,8 +85,8 @@ volumes:
   csa_zookeeper4kafka_01_data:
   csa_zookeeper4kafka_01_log:
   csa_kafka_01_data:
-  csa-conference:
-  csa-twitter-search:
+#  csa-conference:
+#  csa-twitter-search:
 
 #networks:
 #  csadockercomposition_default:

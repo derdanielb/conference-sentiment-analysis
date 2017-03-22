@@ -28,6 +28,8 @@ public class Konferenz {
         this.organisator = organisator;
     }
 
+
+
     public Veranstaltungsort getOrt() {
         return ort;
     }

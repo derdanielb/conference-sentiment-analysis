@@ -5,8 +5,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.Vector;
 
 
 public class CRUD_operationen {
@@ -43,8 +43,9 @@ public class CRUD_operationen {
 //        void insertentity(@PathVariable String id, @PathVariable String name, @PathVariable Integer timeinterval, @PathVariable String strasse, @PathVariable Integer hausnummer, @PathVariable String stadt, @PathVariable String zipcode, @PathVariable String land, @PathVariable String ort_name, @PathVariable String geolocation, @PathVariable String twitterhashtag, @PathVariable String organisatoren, @PathVariable String sponsoren);
 
 		//@RequestMapping(path = "/insertonebyparameter/{id}/{name}/{timeinterval/{strasse}/{hausnummer}/{stadt}/{zipcode}/{land}/{ort_name}/{geo_location}/{twitterhashtag}/{vorname}/{nachname}/{organisatoren_name}/{sponsoren_name}", method = RequestMethod.POST)
-		void insertentity(@PathVariable String id, @PathVariable String name, @PathVariable Integer timeinterval, @PathVariable String strasse, @PathVariable Integer hausnummer, @PathVariable String stadt, @PathVariable String zipcode, @PathVariable String land, @PathVariable String ort_name, @PathVariable String geolocation, @PathVariable String twitterhashtag, @PathVariable String organisatoren_name, @PathVariable String sponsoren_name, @PathVariable String vorname, @PathVariable String nachname);
+		ResponseEntity<Konferenz> insertentity(@PathVariable String id, @PathVariable String name, @PathVariable Integer timeinterval, @PathVariable String strasse, @PathVariable Integer hausnummer, @PathVariable String stadt, @PathVariable String zipcode, @PathVariable String land, @PathVariable String ort_name, @PathVariable String geolocation, @PathVariable String twitterhashtag, @PathVariable String organisatoren_name, @PathVariable String sponsoren_name, @PathVariable String vorname, @PathVariable String nachname);
 
+		Vector<Konferenz> createtestdate();
 		@Async
 		ResponseEntity<Konferenz> findByName(String name);
 
