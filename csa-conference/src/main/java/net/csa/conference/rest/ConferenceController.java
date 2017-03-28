@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -23,6 +24,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 public class ConferenceController implements KonferenzRepository {
     private final MongoOperations mongoOps;
     private final static String [] testhashtag = {"FrostCon","CeBIT","Bitkom","googleio","E3","scaladays"};
+    private final static String datum = "13.03.201";
 
     @Autowired
     public ConferenceController(MongoOperations mongoOps) {
@@ -42,9 +44,11 @@ public class ConferenceController implements KonferenzRepository {
 
 
     @CrossOrigin(origins = "*")
-    @RequestMapping(path = "/insertonebyparameter/{id}/{name}/{timeinterval}/{strasse}/{hausnummer}/{stadt}/{zipcode}/{land}/{ort_name}/{geolocation}/{twitterhashtag}/{vorname}/{nachname}/{organisatoren_name}/{sponsoren_name}", method = RequestMethod.POST)
-    public ResponseEntity<Konferenz> insertentity(@PathVariable String id, @PathVariable String name, @PathVariable Integer timeinterval, @PathVariable String strasse, @PathVariable Integer hausnummer, @PathVariable String stadt, @PathVariable String zipcode, @PathVariable String land, @PathVariable String ort_name, @PathVariable String geolocation, @PathVariable String twitterhashtag, @PathVariable String organisatoren_name, @PathVariable String sponsoren_name, @PathVariable String vorname, @PathVariable String nachname) {
+    @RequestMapping(path = "/insertonebyparameter/{id}/{name}/{strasse}/{hausnummer}/{stadt}/{zipcode}/{land}/{ort_name}/{geolocation}/{twitterhashtag}/{vorname}/{nachname}/{organisatoren_name}/{sponsoren_name}/{von}/{bis}", method = RequestMethod.POST)
+    public ResponseEntity<Konferenz> insertentity(@PathVariable String id, @PathVariable String name, @PathVariable String strasse, @PathVariable Integer hausnummer, @PathVariable String stadt, @PathVariable String zipcode, @PathVariable String land, @PathVariable String ort_name, @PathVariable String geolocation, @PathVariable String twitterhashtag, @PathVariable String organisatoren_name, @PathVariable String sponsoren_name, @PathVariable String vorname, @PathVariable String nachname, @PathVariable String von, @PathVariable String bis) {
         //Konferenz k = new Konferenz();
+        String datum_von;
+        String datum_bis;
         Konferenz konferenz;
         Adresse adresse;
         Veranstaltungsort veranstaltungsort;
@@ -55,6 +59,8 @@ public class ConferenceController implements KonferenzRepository {
         Organisator organisator;
         //HttpStatus ht;
         //ht = new HttpStatus(200, "Konferenz was inserted")
+        datum_von = von;
+        datum_bis = bis;
         adresse = new Adresse(strasse, hausnummer, stadt, zipcode, land);
         veranstaltungsort = new Veranstaltungsort(ort_name, adresse);
         person = new Person(vorname, nachname);
@@ -64,7 +70,7 @@ public class ConferenceController implements KonferenzRepository {
         organisator = new Organisator( person, name );
 
 
-        konferenz = new Konferenz( id, name, timeinterval, veranstaltungsort, geoloc, sponsor, person, twitterhash, organisator);
+        konferenz = new Konferenz( id, name, veranstaltungsort, geoloc, sponsor, person, twitterhash, organisator, datum_von, datum_bis);
         /*k.setUuid(id);
         k.setKonferenz_name(name);
         k.setZeitinterval(timeinterval);*/
@@ -85,7 +91,7 @@ public class ConferenceController implements KonferenzRepository {
         Twitterhashtag twitterhash;
         Organisator organisator;
         Vector<Konferenz> ve_k = new Vector<Konferenz>(  );
-        for (int i = 0; i < testhashtag.length; i++) {
+        for (int i = 1; i < testhashtag.length; i++) {
             stringinteger = Integer.toString( i );
             adresse = new Adresse("teststraße"+stringinteger, i, "teststadt"+stringinteger, "4345"+stringinteger, stringinteger);
             veranstaltungsort = new Veranstaltungsort("testort"+stringinteger, adresse);
@@ -94,9 +100,10 @@ public class ConferenceController implements KonferenzRepository {
             geoloc = new GeoLocation( "testgeo"+stringinteger);
             twitterhash = new Twitterhashtag(testhashtag[i]);
             organisator = new Organisator( person, "testname"+stringinteger );
-            konferenz = new Konferenz( stringinteger, "testname"+stringinteger, i+10, veranstaltungsort, geoloc, sponsor, person, twitterhash, organisator);
+            konferenz = new Konferenz( stringinteger, "testname"+stringinteger, veranstaltungsort, geoloc, sponsor, person, twitterhash, organisator, datum+stringinteger, datum + Integer.toString( i + 1));
             ve_k.add(konferenz);
-            mongoOps.insert( konferenz,stringinteger );
+
+            mongoOps.insert(konferenz);
         }
         return ve_k;
 
@@ -122,10 +129,17 @@ public class ConferenceController implements KonferenzRepository {
         //mongoOps.findOne(Query.query(where("twitterhash.hashtag").is(twitterhash)), Konferenz.class)
     }
 
+    @CrossOrigin(origins = "*")
     @Override
     @RequestMapping(path = "/deleteall", method = RequestMethod.POST)
     public void deleteAll() {
         mongoOps.dropCollection( Konferenz.class );
+//        Set<String> collectionnames;
+//        collectionnames = mongoOps.getCollectionNames();
+//        //collectionnames.toArray().length;
+//        for (int i = 0; i < collectionnames.toArray().length; i++) {
+//            mongoOps.dropCollection( Integer.toString( i ) );
+//        }
         // TODO Auto-generated method stub
 
     }
