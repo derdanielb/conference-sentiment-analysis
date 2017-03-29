@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 @Repository
 public interface ConferenceRepository extends PagingAndSortingRepository<Conference, String> {
@@ -34,9 +35,11 @@ public interface ConferenceRepository extends PagingAndSortingRepository<Confere
 
     List<Conference> findBySponsors(AbstractOrganiserSponsor aos);
 
-    List<Conference> findByNameContaining(String name);
+    Stream<Conference> findByNameContaining(String name);
 
     List<Conference> findByHashtagContaining(String hashtag);
+
+    List<Conference> findByOrganisersContaining(AbstractOrganiserSponsor aos);
 
     //DELETE
     List<Conference> deleteByName(String name);

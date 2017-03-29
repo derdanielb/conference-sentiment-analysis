@@ -8,4 +8,8 @@ public class Group extends AbstractOrganiserSponsor {
         super(name);
     }
 
+    public boolean equals(Object obj) {
+        return this.getName().equals(((Group) obj).getName());
+    }
+
 }

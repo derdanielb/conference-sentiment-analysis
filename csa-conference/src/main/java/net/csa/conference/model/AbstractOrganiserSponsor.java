@@ -18,4 +18,8 @@ public abstract class AbstractOrganiserSponsor {
     public String getName() {
         return name;
     }
+
+    public boolean equals(Object obj) {
+        return this.getName().equals(((AbstractOrganiserSponsor) obj).getName());
+    }
 }

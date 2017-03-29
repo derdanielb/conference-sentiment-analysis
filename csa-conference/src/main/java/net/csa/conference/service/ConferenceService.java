@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 @Service
 public class ConferenceService {
@@ -73,13 +74,15 @@ public class ConferenceService {
         return repository.findBySponsors(aos);
     }
 
-    public List<Conference> findByNameContaining(String name) {
+    public Stream<Conference> findByNameContaining(String name) {
         return repository.findByNameContaining(name);
     }
 
     public List<Conference> findByHashtagContaining(String hashtag) {
         return repository.findByHashtagContaining(hashtag);
     }
+
+    public List<Conference> findByOrganisersContaining(AbstractOrganiserSponsor aos) { return repository.findByOrganisersContaining(aos); }
 
     //DELETE
     public List<Conference> deleteByName(String name) {

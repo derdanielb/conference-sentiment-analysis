@@ -19,5 +19,10 @@ public class NaturalPerson extends AbstractOrganiserSponsor {
         return firstname;
     }
 
+    public boolean equals(Object obj) {
+        if(this.getName().equals(((NaturalPerson) obj).getName()))
+            if(this.getFirstname().equals(((NaturalPerson) obj).getFirstname())) return true;
+        return false;
+    }
 
 }
