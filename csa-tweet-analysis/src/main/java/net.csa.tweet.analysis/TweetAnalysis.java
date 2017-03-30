@@ -53,7 +53,7 @@ public class TweetAnalysis {
                         .withBootstrapServers("localhost:19092")
                         .withGroupId("csa-twitter-analysis")
                         .withProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-                        .withProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+                        .withProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
 
         Source<ConsumerMessage.CommittableMessage<String, String>, Consumer.Control> kafkaSource =
                 Consumer.committableSource(consumerSettings, Subscriptions.topics("tc-topic-0",
@@ -238,7 +238,7 @@ public class TweetAnalysis {
         CompletableFuture<Done> completableFuture = completionStage.toCompletableFuture();
 
         try {
-            Thread.sleep(10000);//TODO adjust time!
+            Thread.sleep(15000);
             killSwitch.shutdown();
             completableFuture.get(5, TimeUnit.SECONDS); // awaiting the future to complete with a timeout
             // log the overall status
