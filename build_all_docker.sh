@@ -1,3 +1,9 @@
+#!/bin/sh
+set -e
+
+cat /tmp/my_twitter_consumer_key.txt > /dev/null
+cat /tmp/my_twitter_consumer_secret.txt > /dev/null
+
 cd ./csa-conference
 ../docker_image.sh
 echo "csa-conference done."
