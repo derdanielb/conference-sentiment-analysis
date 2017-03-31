@@ -78,6 +78,7 @@ public class ConferenceController implements KonferenzRepository {
     }
 
     @Override
+    @CrossOrigin(origins = "*")
     @RequestMapping(path = "/inserttestdata", method = RequestMethod.POST, produces = "application/json")
     public Vector<Konferenz> createtestdate() {
         String stringinteger;
@@ -128,8 +129,8 @@ public class ConferenceController implements KonferenzRepository {
         //mongoOps.findOne(Query.query(where("twitterhash.hashtag").is(twitterhash)), Konferenz.class)
     }
 
-    @CrossOrigin(origins = "*")
     @Override
+    @CrossOrigin(origins = "*")
     @RequestMapping(path = "/deleteall", method = RequestMethod.POST)
     public void deleteAll() {
         mongoOps.dropCollection( Konferenz.class );
