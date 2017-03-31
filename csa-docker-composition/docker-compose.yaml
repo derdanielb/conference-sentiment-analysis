@@ -63,8 +63,6 @@ services:
       - csa_kafka_01
     environment:
       ZK_HOSTS: csa_zookeeper4kafka_01:19336
-    volumes:
-      - csa_kafka_manager_01_data:/var/lib/kafka_manager/data
   csa_conference:
     container_name: csa_conference_01
     image: csa/csa-conference
@@ -72,13 +70,9 @@ services:
       - csa_mongodb_01
     environment:
       spring.data.mongodb.uri: mongodb://csa_mongodb_01:27017/database
-    volumes:
-      - csa_twitter_search_01_data:/var/lib/csa_conference/data
   csa_twitter_search:
     container_name: csa_twitter_search_01
     image: csa/csa-twitter-search
-    volumes:
-      - csa_twitter_search_01_data:/var/lib/csa_twitter_search/data
   csa_conference_tweets:
     container_name: csa_conference_tweets_01
     image: csa/csa-conference-tweets
@@ -88,8 +82,6 @@ services:
     environment:
       conference.host: csa_conference:8080
       search.host: csa_twitter_search:8080
-    volumes:
-      - csa_conference_tweets_01_data:/var/lib/csa_conference_tweets/data
   csa_spa:
     container_name: csa_spa_01
     image: csa/csa-spa
@@ -99,15 +91,8 @@ services:
       - csa_conference
       - csa_twitter_search
       - csa_conference_tweets
-    volumes:
-      - csa_spa_01_data:/var/lib/csa_spa/data
 volumes:
   csa_mongodb_01_data:
   csa_zookeeper4kafka_01_data:
   csa_zookeeper4kafka_01_log:
   csa_kafka_01_data:
-  csa_kafka_manager_01_data:
-  csa_conference_01_data:
-  csa_twitter_search_01_data:
-  csa_conference_tweets_01_data:
-  csa_spa_01_data:
