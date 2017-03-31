@@ -1,6 +1,8 @@
 package net.csa.conference.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -12,12 +14,14 @@ public class Conference {
 
     @Id
     private String uuid;
+    @TextIndexed
     private String name;
     private LocalDateTime startdatetime;
     private LocalDateTime enddatetime;
     private String location;
     private Address address;
-    private GeoLocation geolocation;
+    private double[] geolocation;
+    @Indexed
     private String hashtag;
     private List<AbstractOrganiserSponsor> organisers = new ArrayList<>();
     private List<AbstractOrganiserSponsor> sponsors = new ArrayList<>();
@@ -36,12 +40,12 @@ public class Conference {
         this.name = name;
     }
 
-    public LocalDateTime getStartDateTime() {
+    public LocalDateTime getStartdatetime() {
         return startdatetime;
     }
 
-    public void setStartDateTime(LocalDateTime startDateTime) {
-        this.startdatetime = startDateTime;
+    public void setStartdatetime(LocalDateTime startdatetime) {
+        this.startdatetime = startdatetime;
     }
 
     public LocalDateTime getEnddatetime() {
@@ -68,11 +72,11 @@ public class Conference {
         this.address = address;
     }
 
-    public GeoLocation getGeolocation() {
+    public double[] getGeolocation() {
         return geolocation;
     }
 
-    public void setGeolocation(GeoLocation geolocation) {
+    public void setGeolocation(double[] geolocation) {
         this.geolocation = geolocation;
     }
 

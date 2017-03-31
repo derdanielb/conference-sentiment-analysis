@@ -1,0 +1,17 @@
+#result-list-conferences-tweets {
+  margin-top: 32px;
+}
+
+.result-conferences-tweets-header {
+  font-weight: bold;
+  color: #0300ff;
+}
+
+#message {
+  margin-top: 16px;
+  font-weight: bold;
+}
+
+result-tweet {
+  margin-bottom: 10px;
+}

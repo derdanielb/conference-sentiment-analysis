@@ -1,0 +1,12 @@
+header nav a {
+  color: #0300ff;
+  background-color: lightgray;
+  text-decoration: none;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+header nav a:hover,
+header nav a .active {
+  color: #608aff;
+}

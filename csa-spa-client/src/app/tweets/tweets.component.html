@@ -1,3 +1,13 @@
-<p>
-  tweets works!
-</p>
+<form #form="ngForm" (ngSubmit)="getTweets()">
+  <input id="search-input" [(ngModel)]="searchtext" placeholder="Hashtag" name="searchtext">
+  <button id="search-button" type="submit">Suche</button>
+</form>
+
+<div id="message">{{message}}</div>
+
+<div id="result-list-tweets">
+  <div *ngFor="let tweet of tweets" class="result-tweet">
+    {{tweet}}
+    <hr>
+  </div>
+</div>

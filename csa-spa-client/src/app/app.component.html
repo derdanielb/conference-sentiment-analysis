@@ -1,6 +1,14 @@
-<h1>
-  {{title}}
-</h1>
-<app-conferences>Loading...</app-conferences>
-<app-tweets>Loading...</app-tweets>
-<app-conferences-and-tweets>Loading...</app-conferences-and-tweets>
+<header>
+  <h1>
+    {{title}}
+  </h1>
+
+  <nav>
+    <a id="nav-conferences" routerLink="/conferences" routerLinkActive="active">Konferenzen</a>
+    <a id="nav-twitter" routerLink="/tweets" routerLinkActive="active">Twitter</a>
+    <a id="nav-conferences-tweets" routerLink="/conferences-tweets" routerLinkActive="active">Konferenzen + Tweets</a>
+  </nav>
+  <hr>
+</header>
+
+<router-outlet></router-outlet>

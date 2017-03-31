@@ -27,7 +27,7 @@ public interface ConferenceRepository extends PagingAndSortingRepository<Confere
 
     List<Conference> findByAddress(Address address);
 
-    List<Conference> findByGeolocation(GeoLocation geolocation);
+    List<Conference> findByGeolocation(double[] geolocation);
 
     List<Conference> findByHashtag(String hashtag);
 
@@ -35,7 +35,7 @@ public interface ConferenceRepository extends PagingAndSortingRepository<Confere
 
     List<Conference> findBySponsors(AbstractOrganiserSponsor aos);
 
-    Stream<Conference> findByNameContaining(String name);
+    List<Conference> findByNameContaining(String name);
 
     List<Conference> findByHashtagContaining(String hashtag);
 

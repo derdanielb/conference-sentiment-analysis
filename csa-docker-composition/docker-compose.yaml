@@ -84,6 +84,14 @@ services:
       restart: always
       volumes:
             - csa_conference_tweets_01_data:/var/lib/conference-tweets/data
+  csa_spa_client_01:
+        container_name: csa_spa_client_01
+        image: csa-spa-client:latest
+        ports:
+          - "4200/tcp:4200/tcp"
+        restart: always
+        volumes:
+              - csa_spa_client_01_data:/var/lib/spa-client/data
 volumes:
   csa_mongodb_01_data:
   csa_zookeeper4kafka_01_data:
@@ -92,3 +100,4 @@ volumes:
   csa_conference_01_data:
   csa_twitter_search_01_data:
   csa_conference_tweets_01_data:
+  csa_spa_client_01_data:

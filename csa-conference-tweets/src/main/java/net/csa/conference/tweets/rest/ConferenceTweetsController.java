@@ -27,6 +27,7 @@ public class ConferenceTweetsController {
 
     //READ per hashtag
     @RequestMapping(path = "/hashtag/{hashtag}", method = RequestMethod.GET)
+    @CrossOrigin(origins="*")
     ConferencesWithTweets findByHashtag(@PathVariable String hashtag) {
 
         log.info("Search for Conference and tweets with hashtag: " + hashtag);

@@ -7,10 +7,7 @@ import org.springframework.social.twitter.api.SearchParameters;
 import org.springframework.social.twitter.api.SearchResults;
 import org.springframework.social.twitter.api.Tweet;
 import org.springframework.social.twitter.api.Twitter;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.text.ParseException;
@@ -39,6 +36,7 @@ class TwitterSearchController {
     }
 
     @RequestMapping(path = "/{hashtag}", method = RequestMethod.GET)
+    @CrossOrigin(origins="*")
     public List<String> helloTwitter(@PathVariable String hashtag) throws ParseException {
 
 

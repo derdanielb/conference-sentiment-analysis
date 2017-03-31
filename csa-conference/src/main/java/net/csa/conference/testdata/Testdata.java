@@ -73,17 +73,17 @@ public class Testdata {
             new Address("Hafenstraße", "89C", "Hamburg", "11111", "Germany")
     };
 
-    public static final GeoLocation[] geolocations = {
-            new GeoLocation(10.7, -2.5),
-            new GeoLocation(43, 12.37),
-            new GeoLocation(12.78, -6.2),
-            new GeoLocation(-62.12, 12.5),
-            new GeoLocation(45.6, -32.4),
-            new GeoLocation(-35.9, 8.23),
-            new GeoLocation(32.11, -8.29),
-            new GeoLocation(-17.4, -36.1),
-            new GeoLocation(-28.45, 45.3),
-            new GeoLocation(1.45, 26.78)
+    public static final double[][] geolocations = {
+            {10.7, -2.5},
+            {43, 12.37},
+            {12.78, -6.2},
+            {-62.12, 12.5},
+            {45.6, -32.4},
+            {-35.9, 8.23},
+            {32.11, -8.29},
+            {-17.4, -36.1},
+            {-28.45, 45.3},
+            {1.45, 26.78}
     };
     public static final String[] hashtags = {
             "testkonf",

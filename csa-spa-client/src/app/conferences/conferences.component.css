@@ -1,0 +1,13 @@
+#result-list-conferences {
+  margin-top: 32px;
+}
+
+.result-conference-header {
+  font-weight: bold;
+  color: #0300ff;
+}
+
+#message {
+  margin-top: 16px;
+  font-weight: bold;
+}

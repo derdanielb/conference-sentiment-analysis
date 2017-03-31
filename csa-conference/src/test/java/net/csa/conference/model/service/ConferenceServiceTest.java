@@ -88,7 +88,8 @@ public class ConferenceServiceTest {
 
     @Test
     public void findByGeolocation() {
-        List<Conference> conferences = service.findByGeolocation(new GeoLocation(1.45, 26.78));
+        double[] geolocation = {1.45, 26.78};
+        List<Conference> conferences = service.findByGeolocation(geolocation);
         Assert.assertTrue(conferences.size() == 1);
         Assert.assertTrue(conferences.get(0).getName().equals("Javaland"));
     }
@@ -102,8 +103,8 @@ public class ConferenceServiceTest {
 
     @Test
     public void findByNameContaining() {
-        Stream<Conference> conferences = service.findByNameContaining("Konferenz");
-        Assert.assertTrue(conferences.count() == 2);
+        List<Conference> conferences = service.findByNameContaining("Konferenz");
+        Assert.assertTrue(conferences.size() == 2);
     }
 
     @Test

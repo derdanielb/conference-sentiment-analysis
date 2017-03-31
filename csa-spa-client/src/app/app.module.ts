@@ -7,6 +7,15 @@ import { AppComponent } from './app.component';
 import { ConferencesComponent } from './conferences/conferences.component';
 import { TweetsComponent } from './tweets/tweets.component';
 import { ConferencesAndTweetsComponent } from './conferences-and-tweets/conferences-and-tweets.component';
+import {RouterModule, Routes} from "@angular/router";
+
+const appRoutes: Routes = [
+  { path: 'conferences', component: ConferencesComponent },
+  { path: 'tweets',      component: TweetsComponent },
+  { path: 'conferences-tweets', component: ConferencesAndTweetsComponent },
+  { path: '', redirectTo: '/conferences', pathMatch: 'full' },
+  { path: '**', redirectTo: '/conferences' }
+]
 
 @NgModule({
   declarations: [
@@ -18,7 +27,8 @@ import { ConferencesAndTweetsComponent } from './conferences-and-tweets/conferen
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    RouterModule.forRoot(appRoutes)
   ],
   providers: [],
   bootstrap: [AppComponent]

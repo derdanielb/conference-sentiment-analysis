@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,6 +26,7 @@ public class ConferenceController {
     //CREATE
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
+    @CrossOrigin(origins="*")
     Conference create(@RequestBody @Valid Conference conference) {
         log.debug("Added Conference with id + " + conference.getUuid());
         return service.save(conference);
@@ -32,6 +34,7 @@ public class ConferenceController {
 
     //READ per uuid
     @RequestMapping(path = "/uuid/{uuid}", method = RequestMethod.GET)
+    @CrossOrigin(origins="*")
     Conference findById(@PathVariable String uuid) {
         log.debug("Search for Conference with id " + uuid);
         return service.findOne(uuid);
@@ -39,6 +42,7 @@ public class ConferenceController {
 
     //READ all
     @RequestMapping(method = RequestMethod.GET)
+    @CrossOrigin(origins="*")
     List<Conference> findAll() {
         log.debug("Search for all Conferences");
         return service.findAll();
@@ -46,13 +50,15 @@ public class ConferenceController {
 
     //READ by name
     @RequestMapping(path = "/name/{name}", method = RequestMethod.GET)
-    List<Conference> findByName(@PathVariable String name) {
+    @CrossOrigin(origins="*")
+    List<Conference> findByNameContaining(@PathVariable String name) {
         log.debug("Search for Conferences with name " + name);
-        return service.findByName(name);
+        return service.findByNameContaining(name);
     }
 
     //READ by hashtag
     @RequestMapping(path = "/hashtag/{hashtag}", method = RequestMethod.GET)
+    @CrossOrigin(origins="*")
     List<Conference> findByHashtag(@PathVariable String hashtag) {
         log.debug("Search for Conferences with hashtag " + hashtag);
         return service.findByHashtag(hashtag);
@@ -60,6 +66,7 @@ public class ConferenceController {
 
     //UPDATE
     @RequestMapping(path = "/update/{uuid}", method = RequestMethod.PUT)
+    @CrossOrigin(origins="*")
     Conference update(@RequestBody @Valid Conference conference) {
         validateConferenceByUuid(conference.getUuid());
         log.debug("Update Conference with id " + conference.getUuid());
@@ -68,6 +75,7 @@ public class ConferenceController {
 
     //DELETE
     @RequestMapping(path = "/delete/{uuid}", method = RequestMethod.DELETE)
+    @CrossOrigin(origins="*")
     void delete(@PathVariable String uuid) {
         validateConferenceByUuid(uuid);
         log.debug("Delete Conference with id " + uuid);
@@ -76,6 +84,7 @@ public class ConferenceController {
 
     //DELETE Database
     @RequestMapping(path = "/clearDB", method = RequestMethod.GET)
+    @CrossOrigin(origins="*")
     String clearDatabase() {
         log.debug("Clear Database");
         service.deleteAll();
@@ -84,6 +93,7 @@ public class ConferenceController {
 
     //CREATE Test Database
     @RequestMapping(path = "/createTestDB", method = RequestMethod.GET)
+    @CrossOrigin(origins="*")
     String createTestDB() {
         log.debug("Create Test Database");
         service.createTestDB();

@@ -58,7 +58,7 @@ public class ConferenceService {
         return repository.findByAddress(address);
     }
 
-    public List<Conference> findByGeolocation(GeoLocation geolocation) {
+    public List<Conference> findByGeolocation(double[] geolocation) {
         return repository.findByGeolocation(geolocation);
     }
 
@@ -74,7 +74,7 @@ public class ConferenceService {
         return repository.findBySponsors(aos);
     }
 
-    public Stream<Conference> findByNameContaining(String name) {
+    public List<Conference> findByNameContaining(String name) {
         return repository.findByNameContaining(name);
     }
 
@@ -114,7 +114,7 @@ public class ConferenceService {
 
         for(int i=0; i< Testdata.names.length; i++) {
             Conference conference = new Conference(Testdata.names[i]);
-            conference.setStartDateTime(Testdata.startdatetimes[i]);
+            conference.setStartdatetime(Testdata.startdatetimes[i]);
             conference.setEnddatetime(Testdata.enddatetimes[i]);
             conference.setLocation(Testdata.locations[i]);
             conference.setAddress(Testdata.addresses[i]);

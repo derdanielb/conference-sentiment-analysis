@@ -2,7 +2,6 @@ package net.csa.conference.model.repository;
 
 import net.csa.conference.model.Address;
 import net.csa.conference.model.Conference;
-import net.csa.conference.model.GeoLocation;
 import net.csa.conference.repository.ConferenceRepository;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -37,9 +36,10 @@ public class ConferenceRepositoryTest {
         conference.setLocation("Building A");
         conference.setHashtag("#test");
         conference.setAddress(new Address("Street", "23A", "New York", "66666", "USA"));
-        conference.setStartDateTime(LocalDateTime.of(2017, Month.APRIL, 10, 20, 30));
+        conference.setStartdatetime(LocalDateTime.of(2017, Month.APRIL, 10, 20, 30));
         conference.setEnddatetime(LocalDateTime.of(2017, Month.APRIL, 12, 15, 00));
-        conference.setGeolocation(new GeoLocation(-20.5, 34.7));
+        double[] geolocation = {-20.5, 34.7};
+        conference.setGeolocation(geolocation);
 
         conference = repository.save(conference);
 

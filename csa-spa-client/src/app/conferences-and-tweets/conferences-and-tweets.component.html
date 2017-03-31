@@ -1,3 +1,45 @@
-<p>
-  conferences-and-tweets works!
-</p>
+<form #form="ngForm" (ngSubmit)="getConferencesAndTweets()">
+  <input id="search-input" [(ngModel)]="searchtext" placeholder="Hashtag" name="searchtext">
+  <button id="search-button" type="submit">Suche</button>
+</form>
+
+<div id="message">{{message}}</div>
+
+<div id="result-list-conferences-tweets">
+  <div *ngFor="let conference of conferences" class="result-conferences-tweets">
+    <div class="result-conferences-tweets-header">{{conference.name}} (#{{conference.hashtag}})</div>
+    <ul class="result-conference-body">
+      <li>Veranstaltungsort: {{conference.location}}</li>
+      <li>Adresse:
+        <ul>
+          <li>Straße: {{conference.address.street}}</li>
+          <li>Hausnummer: {{conference.address.houseNumber}}</li>
+          <li>Stadt: {{conference.address.city}}</li>
+          <li>Postleitzahl: {{conference.address.zipCode}}</li>
+          <li>Land: {{conference.address.country}}</li>
+        </ul>
+      </li>
+      <li>Geolocation: {{conference.geolocation[0]}}, {{conference.geolocation[1]}}</li>
+      <li>Zeitraum: {{conference.startdatetime}} - {{conference.enddatetime}}</li>
+      <li>Organisatoren:
+        <ul>
+          <li *ngFor="let organiser of conference.organisers">
+            {{organiser.firstname}} {{organiser.name}}
+          </li>
+        </ul>
+      </li>
+      <li>Sponsoren:
+        <ul>
+          <li *ngFor="let sponsor of conference.sponsors">
+            {{sponsor.firstname}} {{sponsor.name}}</li>
+        </ul>
+      </li>
+      <li>Tweets:
+          <ul>
+            <li *ngFor="let tweet of tweets" class="result-tweet">{{tweet}}</li>
+          </ul>
+      </li>
+    </ul>
+    <hr>
+  </div>
+</div>
