@@ -9,6 +9,8 @@
         <option value="$PROJECT_DIR$/csa-conference/pom.xml" />
         <option value="$PROJECT_DIR$/csa-twitter-search/pom.xml" />
         <option value="$PROJECT_DIR$/csa-tweet-collector/pom.xml" />
+        <option value="$PROJECT_DIR$/csa-tweet-analysis_/pom.xml" />
+        <option value="$PROJECT_DIR$/csa-tweet-analysis/pom.xml" />
       </list>
     </option>
   </component>

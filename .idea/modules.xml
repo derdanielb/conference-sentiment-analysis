@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/conference-sentiment-analysis.iml" filepath="$PROJECT_DIR$/conference-sentiment-analysis.iml" />
       <module fileurl="file://$PROJECT_DIR$/csa-conference/csa-conference.iml" filepath="$PROJECT_DIR$/csa-conference/csa-conference.iml" />
+      <module fileurl="file://$PROJECT_DIR$/csa-tweet-analysis/csa-tweet-analysis.iml" filepath="$PROJECT_DIR$/csa-tweet-analysis/csa-tweet-analysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/csa-tweet-analysis1/csa-tweet-analysis1.iml" filepath="$PROJECT_DIR$/csa-tweet-analysis1/csa-tweet-analysis1.iml" />
       <module fileurl="file://$PROJECT_DIR$/csa-tweet-collector/csa-tweet-collector.iml" filepath="$PROJECT_DIR$/csa-tweet-collector/csa-tweet-collector.iml" />
       <module fileurl="file://$PROJECT_DIR$/csa-twitter-search/csa-twitter-search.iml" filepath="$PROJECT_DIR$/csa-twitter-search/csa-twitter-search.iml" />
     </modules>

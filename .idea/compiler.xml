@@ -7,13 +7,18 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="csa-conference" />
+        <module name="csa-tweet-analysis" />
+        <module name="csa-tweet-analysis1" />
         <module name="csa-tweet-collector" />
         <module name="csa-twitter-search" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="csa-conference" target="1.8" />
+      <module name="csa-tweet-analysis" target="1.8" />
+      <module name="csa-tweet-analysis1" target="1.8" />
       <module name="csa-tweet-collector" target="1.8" />
+      <module name="csa-tweet-collector (1)" target="1.8" />
       <module name="csa-twitter-search" target="1.8" />
     </bytecodeTargetLevel>
   </component>
