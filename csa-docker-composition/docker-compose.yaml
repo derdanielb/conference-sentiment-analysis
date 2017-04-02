@@ -35,6 +35,13 @@ services:
       - csa_twitter_search_01
     volumes:
       - csa_conference_tweets_01_data:/var/lib/conferencetweets/data
+  csa-app-client-spa:
+      container_name: csa_spa_01
+      image: csa-app-client-spa:latest
+      ports:
+        - "4200/tcp:4200/tcp"
+      volumes:
+        - csa_spa_01_data:/val/lib/spa/data
   csa_zookeeper4kafka_01:
     container_name: csa_zookeeper4kafka_01
     image: confluentinc/cp-zookeeper:3.0.1
@@ -87,6 +94,7 @@ volumes:
   csa_conference_01_data:
   csa_twitter_search_01_data:
   csa_conference_tweets_01_data:
+  csa_spa_01_data:
   csa_zookeeper4kafka_01_data:
   csa_zookeeper4kafka_01_log:
   csa_kafka_01_data:

@@ -18,6 +18,10 @@ public class TweetAnalyzerResult {
 	}
 
 	public void printResult() {
+		for (TweetAnalysis tweetAnalysis : analysisList) {
+			tweetAnalysis.printList();
+		}
+
 		Collections.sort(analysisList, new Comparator<TweetAnalysis>() {
 			@Override
 			public int compare(TweetAnalysis o1, TweetAnalysis o2) {
@@ -25,13 +29,13 @@ public class TweetAnalyzerResult {
 			}
 		});
 		System.out.println("---------------------------------------------------");
-		System.out.println("RESULT");
+		System.out.println("RESULTS");
 		System.out.println("---------------------------------------------------");
 		System.out.println("RANKING FOR TWEET-COUNT:");
 		int i = 1;
 		for (TweetAnalysis tweetAnalysis : analysisList) {
 			System.out.println(i + ". Place");
-			tweetAnalysis.printList();
+			tweetAnalysis.printAnalysis();
 			System.out.println("------------------------");
 			i++;
 		}
@@ -47,7 +51,7 @@ public class TweetAnalyzerResult {
 		i = 1;
 		for (TweetAnalysis tweetAnalysis : analysisList) {
 			System.out.println(i + ". Place");
-			tweetAnalysis.printList();
+			tweetAnalysis.printAnalysis();
 			System.out.println("------------------------");
 			i++;
 		}

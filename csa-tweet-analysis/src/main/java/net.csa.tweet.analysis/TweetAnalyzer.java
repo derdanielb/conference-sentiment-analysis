@@ -102,7 +102,7 @@ public class TweetAnalyzer {
 
 		}
 
-		final Flow<TweetAnalysis, NotUsed, NotUsed> tweetAnalyserResultFlow;
+		final Flow<TweetAnalysis, NotUsed, NotUsed> tweetAnalyzerResultFlow;
 		{
 			Flow<TweetAnalysis, NotUsed, NotUsed> flow =
 					Flow.fromFunction(p -> {
@@ -112,7 +112,7 @@ public class TweetAnalyzer {
 						result.addTweetAnalysis(p);
 						return NotUsed.getInstance();
 					});
-			tweetAnalyserResultFlow = flow.log("csa-tweet-analyzer-tweetAnalyzerResultFlow");
+			tweetAnalyzerResultFlow = flow.log("csa-tweet-analyzer-tweetAnalyzerResultFlow");
 
 		}
 
@@ -126,12 +126,12 @@ public class TweetAnalyzer {
 			final SourceShape<String> tweetSourceShape = b.add(tweetSource);
 			final FlowShape<String, Pair<List<Tweet>, Integer>> tweetMappingFlowShape = b.add(tweetMappingFlow);
 			final FlowShape<Pair<List<Tweet>, Integer>, TweetAnalysis> tweetAnalysisFlowShape = b.add(tweetAnalysisFlow);
-			final FlowShape<TweetAnalysis, NotUsed> tweetAnalyserResultFlowShape = b.add(tweetAnalyserResultFlow);
+			final FlowShape<TweetAnalysis, NotUsed> tweetAnalyzerResultFlowShape = b.add(tweetAnalyzerResultFlow);
 
 			b.from(tweetSourceShape)
 					.via(tweetMappingFlowShape)
 					.via(tweetAnalysisFlowShape)
-					.via(tweetAnalyserResultFlowShape)
+					.via(tweetAnalyzerResultFlowShape)
 					.to(s);
 
 			return ClosedShape.getInstance();
