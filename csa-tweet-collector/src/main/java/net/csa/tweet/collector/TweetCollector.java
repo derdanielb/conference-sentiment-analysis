@@ -96,19 +96,18 @@ public class TweetCollector {
         final Graph<FanInShape2<String, Integer, Pair<String, Integer>>, NotUsed> zip = ZipWith.create(Pair::new);
 
         // flow to create a http request to our twitter search
-        final Flow<Pair<String, Integer>, Pair<HttpRequest, Integer>, NotUsed> createRequestFlow;
+        final Flow<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>, NotUsed> createRequestFlow;
         {
-            Flow<Pair<String, Integer>, Pair<HttpRequest, Integer>, NotUsed> flow
+            Flow<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>, NotUsed> flow
                     = Flow.fromFunction(p -> new Pair<>(HttpRequest
-                    .create("http://localhost:8090//twitter/search/" + p.first()),
-                    p.second()));
+                    .create("http://localhost:8090//twitter/search/" + p.first()), p));
             createRequestFlow = flow.log("csa-tweet-collector-createRequestFlow");
         }
 
         // flow to actually execute each http request to the twitter flow using Akka HTTP client-side
-        final Flow<Pair<HttpRequest, Integer>, Pair<Try<HttpResponse>, Integer>, NotUsed> httpClientFlow;
+        final Flow<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>, NotUsed> httpClientFlow;
         {
-            Flow<Pair<HttpRequest, Integer>, Pair<Try<HttpResponse>, Integer>, NotUsed> flow
+            Flow<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>, NotUsed> flow
                     = Http.get(system).superPool(materializer);
             flow = flow
                     .map(p -> {
@@ -120,21 +119,23 @@ public class TweetCollector {
         }
 
         // flow to process the HttpResponse with the twitter tweets
-        final Flow<Pair<Try<HttpResponse>, Integer>, Pair<List<Tweet>, Integer>, NotUsed> httpResponseFlow;
+        // returns a pair: first element is the json string from the twitter-search rest api and second a pair
+        // consists of the hashtag and the number
+        final Flow<Pair<Try<HttpResponse>, Pair<String, Integer>>, Pair<String, Pair<String, Integer>>, NotUsed> httpResponseFlow;
         {
-            Flow<Pair<Try<HttpResponse>, Integer>, Pair<List<Tweet>, Integer>, NotUsed> flow
+            Flow<Pair<Try<HttpResponse>, Pair<String, Integer>>, Pair<String, Pair<String, Integer>>, NotUsed> flow
                     = Flow.fromFunction(p -> {
-                        HttpEntity.Strict httpEntity = p.first().get().entity().toStrict(5, materializer).toCompletableFuture().get();
-                        String tweets = httpEntity.getData().utf8String();
+                        CompletableFuture<HttpEntity.Strict> completableFuture = p.first().get().entity().toStrict(30, materializer).toCompletableFuture();
+                        String tweets = completableFuture.get().getData().utf8String();
                         log.info("[httpResponseFlow] Element: " + p.second() + ", Tweets: " + tweets);
 
-                        List<Tweet> tweetsList= new ArrayList<Tweet>();
+                        /*List<Tweet> tweetsList= new ArrayList<Tweet>();
                         JSONArray jsonTweets = new JSONArray(tweets);
                         for(int i = 0; i < jsonTweets.length(); i++) {
                             tweetsList.add(new Tweet(jsonTweets.getString(i)));
-                        }
+                        }*/
 
-                        return Pair.create(tweetsList, p.second());
+                        return Pair.create(tweets, p.second());
                     }
             );
             httpResponseFlow = flow;
@@ -147,22 +148,24 @@ public class TweetCollector {
                 .createKafkaProducer();
 
         // sink to write tweets in kafka topic
-        Sink<Pair<List<Tweet>, Integer>, CompletionStage<Done>> sink
+        Sink<Pair<String, Pair<String, Integer>>, CompletionStage<Done>> sink
                 = Sink.foreach(p -> {
 
-                    // transform list of tweets in json array
-                    String tweets = "[";
+            // transform list of tweets in json array
+                    /*String tweets = "[";
                     for(int i = 0; i < p.first().size(); i++) {
                         tweets += "\"" + p.first().get(i).getMessage() + "\"";
                         if(i < p.first().size() - 1) tweets += ",";
                         else tweets += "]";
-                    }
+                    }*/
 
-                    // write the json tweet array to kafka topic tweets
-                    kafkaProducer.send(new ProducerRecord<String, String>("tweets", tweets));
+            String tweets = p.first().substring(1);
+            String content = "[\"" + p.second().first() + "\"," + tweets;
+            // write the json tweet array to kafka topic tweets-[hashtag]
+            kafkaProducer.send(new ProducerRecord<String, String>("tweets-" + p.second().first(), content));
 
-                    log.info("[Sink] Element: " + p.second() + " with " + p.first().size() + " tweets");
-                    log.info("[Sink] kafka: " + tweets);
+            log.info("[Sink] Element: " + p.second());
+            log.info("[Sink] kafka: " + content);
 
         });
 
@@ -181,13 +184,13 @@ public class TweetCollector {
             final FanInShape2<String, Integer, Pair<String, Integer>> zipShape = b.add(zip);
 
             // flow shape to create an HttpRequest for every hashtag
-            final FlowShape<Pair<String, Integer>, Pair<HttpRequest, Integer>> createRequestFlowShape = b.add(createRequestFlow);
+            final FlowShape<Pair<String, Integer>, Pair<HttpRequest, Pair<String, Integer>>> createRequestFlowShape = b.add(createRequestFlow);
 
             // flow shape to apply Akka HTTP client-side in the processing graph to call csa-twitter-search for each hashtag
-            final FlowShape<Pair<HttpRequest, Integer>, Pair<Try<HttpResponse>, Integer>> httpClientFlowShape = b.add(httpClientFlow);
+            final FlowShape<Pair<HttpRequest, Pair<String, Integer>>, Pair<Try<HttpResponse>, Pair<String, Integer>>> httpClientFlowShape = b.add(httpClientFlow);
 
             // flow shape to get the twitter tweets for each hashtag out of the HTTPResponse
-            final FlowShape<Pair<Try<HttpResponse>, Integer>, Pair<List<Tweet>, Integer>> httpResponseFlowShape = b.add(httpResponseFlow);
+            final FlowShape<Pair<Try<HttpResponse>, Pair<String, Integer>>, Pair<String, Pair<String, Integer>>> httpResponseFlowShape = b.add(httpResponseFlow);
 
 
             b.from(hashtagSourceShape).toInlet(zipShape.in0());
@@ -206,11 +209,11 @@ public class TweetCollector {
         CompletionStage<Done> completionStage = RunnableGraph.fromGraph(g).run(materializer);
         CompletableFuture<Done> completableFuture = completionStage.toCompletableFuture();
 
-        //Done done = completableFuture.get(30, TimeUnit.SECONDS); // awaiting the future to complete with a timeout
-        // wait for completition
-        while(!completableFuture.isDone()) {
-            Thread.sleep(100);
-        }
+        Done done = completableFuture.get(60, TimeUnit.SECONDS); // awaiting the future to complete with a timeout
+        //wait for completition
+        //while(!completableFuture.isDone()) {
+        //    Thread.sleep(100);
+        //}
 
         // log the overall status
         if (completableFuture.isDone()) {

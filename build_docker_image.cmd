@@ -1,0 +1,1 @@
+mvn clean && mvn package -DskipTests && mvn docker:build

@@ -13,7 +13,7 @@ services:
   csa_zookeeper4kafka_01:
     container_name: csa_zookeeper4kafka_01
     image: confluentinc/cp-zookeeper:3.0.1
-    network_mode: host
+    #network_mode: host
     ports:
      - "19336/tcp:19336/tcp"
     environment:
@@ -31,14 +31,14 @@ services:
   csa_kafka_01:
     container_name: csa_kafka_01
     image: confluentinc/cp-kafka:3.0.1
-    network_mode: host
+    #network_mode: host
     ports:
      - "19092/tcp:19092/tcp"
     depends_on:
      - csa_zookeeper4kafka_01
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: ${SERVER_IP_OR_HOST}:19336
+      KAFKA_ZOOKEEPER_CONNECT: csa_zookeeper4kafka_01:19336
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${SERVER_IP_OR_HOST}:19092
       KAFKA_LOG_CLEANER_ENABLE: 'false'
       KAFKA_LOG_RETENTION_MS: -1

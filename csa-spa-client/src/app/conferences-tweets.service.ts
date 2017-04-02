@@ -14,6 +14,16 @@ export class ConferencesTweetsService {
   tweetsRestUrl : string = 'http://localhost:8090/twitter/search/';
   conferencesTweetsRestUrl : string = 'http://localhost:8099/conferencetweets/hashtag/';
 
+  getAllConferences() {
+    let headers = new Headers({ 'Accept': 'application/json' });
+    let options = new RequestOptions({ headers: headers });
+
+    return this.http.get(this.conferencesRestUrl, options)
+      .toPromise()
+      .then(this.extractArrayData)
+      .catch(this.handleError);
+  }
+
   getConferences(search: string, filter: string) : Promise<Conference[]> {
 
     let headers = new Headers({ 'Accept': 'application/json' });
